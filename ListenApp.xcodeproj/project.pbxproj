@@ -23,6 +23,7 @@
 		19B41F1B2970025700DC30C1 /* PlayListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F1A2970025700DC30C1 /* PlayListViewController.swift */; };
 		19B41F1E2970027C00DC30C1 /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F1D2970027C00DC30C1 /* SettingTableViewCell.swift */; };
 		19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F1F2970029200DC30C1 /* SettingViewController.swift */; };
+		19B41F25297046BD00DC30C1 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F24297046BD00DC30C1 /* Audio.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		19B41F1A2970025700DC30C1 /* PlayListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListViewController.swift; sourceTree = "<group>"; };
 		19B41F1D2970027C00DC30C1 /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
 		19B41F1F2970029200DC30C1 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		19B41F24297046BD00DC30C1 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 				19B41EED296FFEA200DC30C1 /* SceneDelegate.swift */,
 				19B41EF4296FFEA300DC30C1 /* Assets.xcassets */,
 				19B41EF9296FFEA300DC30C1 /* Info.plist */,
+				19B41F23297046A600DC30C1 /* Entities */,
 				19B41F22297002C400DC30C1 /* Scences */,
 			);
 			path = ListenApp;
@@ -134,6 +137,14 @@
 				19B41F0A2970017E00DC30C1 /* player */,
 			);
 			path = Scences;
+			sourceTree = "<group>";
+		};
+		19B41F23297046A600DC30C1 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				19B41F24297046BD00DC30C1 /* Audio.swift */,
+			);
+			path = Entities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -220,6 +231,7 @@
 				19B41F10297001C600DC30C1 /* PlayerViewController.swift in Sources */,
 				19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */,
 				19B41F0E297001AD00DC30C1 /* PlayerProgressView.swift in Sources */,
+				19B41F25297046BD00DC30C1 /* Audio.swift in Sources */,
 				19B41F1E2970027C00DC30C1 /* SettingTableViewCell.swift in Sources */,
 				19B41F1B2970025700DC30C1 /* PlayListViewController.swift in Sources */,
 				19B41F172970022E00DC30C1 /* PlayListHeaderView.swift in Sources */,

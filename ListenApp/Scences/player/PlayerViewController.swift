@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class PlayerViewController : UIViewController {
     
@@ -13,12 +14,15 @@ class PlayerViewController : UIViewController {
     private lazy var playerProgressView = PlayerProgressView()
     private lazy var pageViewController = PageViewController()
     
+    var audio : Audio?
+    var player : AVAudioPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setNavigationBar()
         setLayout()
+        configurePlayer()
     }
     
     
@@ -38,66 +42,35 @@ class PlayerViewController : UIViewController {
 }
 
 
+// Player Method
 private extension PlayerViewController {
-    func createForderInDocument() {
-        let fileManager = FileManager.default
-        let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let directoryURL = documentURL.appendingPathComponent("NewForder")
-        
-        do {
-            try fileManager.createDirectory(at:directoryURL, withIntermediateDirectories: false)
-        } catch let e as NSError {
-            print(e.localizedDescription)
-        }
-    }
     
-    func createFileInDocument() {
-        let fileManager = FileManager.default
-        let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileName = documentURL.appendingPathComponent("FileName.txt")
-        
-        let text = "Hello World!"
-        do {
-            try text.write(to: fileName, atomically: false, encoding: .utf8)
-        } catch let e as NSError {
-            print(e.localizedDescription)
-        }
-    }
-    
-    
-    func deleteFileInDocument() {
+    func getDocumentFileURL() -> URL {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//        let directoryURL = documentsURL.appendingPathComponent("NewDirectory")
-
-        let fileURL = documentsURL.appendingPathComponent("FileName.txt")
-
-        do {
-            try fileManager.removeItem(at: fileURL)
-        } catch let e {
-            print(e.localizedDescription)
-        }
         
+        let title = audio?.title ?? ""
+        let finalURL = documentsURL.appendingPathComponent("\(title).mp3")
+        
+        return finalURL
     }
     
-    func getFileInDocument() {
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        // 3. 파일이 있는 Directory 설정
-//        let directoryURL = documentsURL.appendingPathComponent("NewDirectory")
-        let helloPath = documentsURL.appendingPathComponent("FileName.txt")
+    func configurePlayer() {
+        let url = getDocumentFileURL()
+        print("url: \(url)")
         
         do {
-            let text = try String(contentsOf: helloPath, encoding: .utf8)
-            print(text) // Hello world
-        } catch let e {
-            print(e.localizedDescription)
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.play()
+        } catch {
+            print("Error: Audio File missing.")
         }
     }
     
 }
 
 
+// UI Design
 private extension PlayerViewController {
     func setNavigationBar() {
         
@@ -132,7 +105,6 @@ private extension PlayerViewController {
             $0.bottom.equalTo(playerController.snp.top)
             $0.height.equalTo(45)
         }
-//
         
         pageViewController.view.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview().inset(20)

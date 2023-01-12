@@ -42,7 +42,7 @@ class PlayerControlView : UIView {
         return stackView
     }()
     
-    //
+    
     private lazy var subController : UIStackView = {
         let stackView = UIStackView()
 

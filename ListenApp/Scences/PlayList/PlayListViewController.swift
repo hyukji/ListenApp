@@ -32,23 +32,86 @@ class PlayListViewController : UIViewController {
         super.viewDidLoad()
         
         setLayout()
-        tapNowPlayingView()
+        addActionToNowPlayingView()
     }
     
     
     
     // when NowPlayeringView was tapped, push PlayerVC to navigation
-    private func tapNowPlayingView() {
+    private func addActionToNowPlayingView() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(PushPlayerVC(_:)))
         nowPlayingView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc func PushPlayerVC(_ sender: UITapGestureRecognizer) {
         let playerVC = PlayerViewController()
+        
+        let nowAudio = Audio(title: "01 Test1")
+        playerVC.audio = nowAudio
+        
         navigationController?.pushViewController(playerVC, animated: true)
     }
 
     
+}
+
+
+// FielManage Method
+extension PlayListViewController {
+    
+    func createForderInDocument() {
+        let fileManager = FileManager.default
+        let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let directoryURL = documentURL.appendingPathComponent("NewForder")
+        
+        do {
+            try fileManager.createDirectory(at:directoryURL, withIntermediateDirectories: false)
+        } catch let e as NSError {
+            print(e.localizedDescription)
+        }
+    }
+    
+    func createFileInDocument() {
+        let fileManager = FileManager.default
+        let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileName = documentURL.appendingPathComponent("FileName.txt")
+        
+        let text = "Hello World!"
+        do {
+            try text.write(to: fileName, atomically: false, encoding: .utf8)
+        } catch let e as NSError {
+            print(e.localizedDescription)
+        }
+    }
+    
+    
+    func deleteFileInDocument() {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+
+        let fileURL = documentsURL.appendingPathComponent("FileName.txt")
+
+        do {
+            try fileManager.removeItem(at: fileURL)
+        } catch let e {
+            print(e.localizedDescription)
+        }
+    }
+    
+    
+    func getFileInDocument() {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        let finalURL = documentsURL.appendingPathComponent("FileName")
+        
+        do {
+            let text = try String(contentsOf: finalURL, encoding: .utf8)
+            print(text) // Hello world
+        } catch let e {
+            print(e.localizedDescription)
+        }
+    }
 }
 
 
@@ -72,6 +135,10 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let playerVC = PlayerViewController()
+        
+        let nowAudio = Audio(title: "01 Test1")
+        playerVC.audio = nowAudio
+        
         navigationController?.pushViewController(playerVC, animated: true)
         
     }

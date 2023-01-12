@@ -35,6 +35,65 @@ class PlayerViewController : UIViewController {
     }
     
     
+}
+
+
+private extension PlayerViewController {
+    func createForderInDocument() {
+        let fileManager = FileManager.default
+        let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let directoryURL = documentURL.appendingPathComponent("NewForder")
+        
+        do {
+            try fileManager.createDirectory(at:directoryURL, withIntermediateDirectories: false)
+        } catch let e as NSError {
+            print(e.localizedDescription)
+        }
+    }
+    
+    func createFileInDocument() {
+        let fileManager = FileManager.default
+        let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileName = documentURL.appendingPathComponent("FileName.txt")
+        
+        let text = "Hello World!"
+        do {
+            try text.write(to: fileName, atomically: false, encoding: .utf8)
+        } catch let e as NSError {
+            print(e.localizedDescription)
+        }
+    }
+    
+    
+    func deleteFileInDocument() {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//        let directoryURL = documentsURL.appendingPathComponent("NewDirectory")
+
+        let fileURL = documentsURL.appendingPathComponent("FileName.txt")
+
+        do {
+            try fileManager.removeItem(at: fileURL)
+        } catch let e {
+            print(e.localizedDescription)
+        }
+        
+    }
+    
+    func getFileInDocument() {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        // 3. 파일이 있는 Directory 설정
+//        let directoryURL = documentsURL.appendingPathComponent("NewDirectory")
+        let helloPath = documentsURL.appendingPathComponent("FileName.txt")
+        
+        do {
+            let text = try String(contentsOf: helloPath, encoding: .utf8)
+            print(text) // Hello world
+        } catch let e {
+            print(e.localizedDescription)
+        }
+    }
     
 }
 

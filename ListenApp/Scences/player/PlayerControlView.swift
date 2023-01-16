@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import AVFoundation
 
 class PlayerControlView : UIView {
+    var timeInterval = 5.0
     
     lazy var mainController : UIStackView = {
         let stackView = UIStackView()
@@ -33,6 +35,12 @@ class PlayerControlView : UIView {
         playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
         secondFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: secondImageConfig), for: .normal)
         waveFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: waveImageConfig), for: .normal)
+        
+        playButton.addTarget(self, action: #selector(tapPlayButton(_:)), for: .touchUpInside)
+        secondBackButton.addTarget(self, action: #selector(tapSecondBackButton), for: .touchUpInside)
+        secondFrontButton.addTarget(self, action: #selector(tapSecondFrontButton), for: .touchUpInside)
+//        waveBackButton.addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
+//        waveFrontButton.addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
         
         
         [waveBackButton, secondBackButton, playButton, secondFrontButton, waveFrontButton].forEach{
@@ -82,6 +90,42 @@ class PlayerControlView : UIView {
     }
     
 }
+    
+
+// PlayerControlView functions of tap UIButton
+extension PlayerControlView {
+    @objc private func tapPlayButton(_ sender: UIButton) {
+        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
+        if player.isPlaying {
+            player.pause()
+            sender.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
+        } else {
+            player.play()
+            sender.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
+        }
+    }
+    
+    @objc private func tapSecondBackButton() {
+        let currentTime = player.currentTime
+        player.currentTime = currentTime - timeInterval
+    }
+    
+    @objc private func tapSecondFrontButton() {
+        let currentTime = player.currentTime
+        player.currentTime = currentTime + timeInterval
+    }
+    
+    @objc private func waveBackButton() {
+        
+    }
+    
+    @objc private func waveFrontButton() {
+        
+    }
+}
+
+
+
 
 extension PlayerControlView {
     private func setLayout() {

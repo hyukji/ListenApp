@@ -14,15 +14,12 @@ class PlayerViewController : UIViewController {
     private lazy var playerProgressView = PlayerProgressView()
     private lazy var pageViewController = PageViewController()
     
-    var audio : Audio?
-    var player : AVAudioPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setNavigationBar()
         setLayout()
-        configurePlayer()
     }
     
     
@@ -43,9 +40,9 @@ class PlayerViewController : UIViewController {
 
 
 // Player Method
-private extension PlayerViewController {
+extension PlayerViewController {
     
-    func getDocumentFileURL() -> URL {
+    private func getDocumentFileURL() -> URL {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         
@@ -57,11 +54,15 @@ private extension PlayerViewController {
     
     func configurePlayer() {
         let url = getDocumentFileURL()
-        print("url: \(url)")
         
         do {
+            
             player = try AVAudioPlayer(contentsOf: url)
-            player?.play()
+//            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+//            try AVAudioSession.sharedInstance().setActive(true)
+//            player.prepareToPlay()
+            player.play()
+            
         } catch {
             print("Error: Audio File missing.")
         }

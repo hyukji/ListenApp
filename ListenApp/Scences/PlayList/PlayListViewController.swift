@@ -7,7 +7,10 @@
 
 import UIKit
 import SnapKit
+import AVFoundation
 
+var audio : Audio?
+var player : AVAudioPlayer!
 
 class PlayListViewController : UIViewController {
     
@@ -44,11 +47,9 @@ class PlayListViewController : UIViewController {
     }
     
     @objc func PushPlayerVC(_ sender: UITapGestureRecognizer) {
+        if audio == nil { return }
+        
         let playerVC = PlayerViewController()
-        
-        let nowAudio = Audio(title: "01 Test1")
-        playerVC.audio = nowAudio
-        
         navigationController?.pushViewController(playerVC, animated: true)
     }
 
@@ -137,7 +138,8 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         let playerVC = PlayerViewController()
         
         let nowAudio = Audio(title: "01 Test1")
-        playerVC.audio = nowAudio
+        audio = nowAudio
+        playerVC.configurePlayer()
         
         navigationController?.pushViewController(playerVC, animated: true)
         

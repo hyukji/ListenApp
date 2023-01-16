@@ -9,8 +9,6 @@ import UIKit
 import AVFoundation
 
 class PlayerControlView : UIView {
-    var timeInterval = 5.0
-    
     lazy var mainController : UIStackView = {
         let stackView = UIStackView()
         
@@ -53,7 +51,7 @@ class PlayerControlView : UIView {
     
     private lazy var subController : UIStackView = {
         let stackView = UIStackView()
-
+        
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fillEqually
@@ -96,23 +94,23 @@ class PlayerControlView : UIView {
 extension PlayerControlView {
     @objc private func tapPlayButton(_ sender: UIButton) {
         let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
-        if player.isPlaying {
-            player.pause()
+        if playerController.player.isPlaying {
+            playerController.pausePlayer()
             sender.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
         } else {
-            player.play()
+            playerController.playPlayer()
             sender.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
         }
     }
     
     @objc private func tapSecondBackButton() {
-        let currentTime = player.currentTime
-        player.currentTime = currentTime - timeInterval
+        let currentTime = playerController.player.currentTime
+        playerController.player.currentTime = currentTime - playerController.timeInterval
     }
     
     @objc private func tapSecondFrontButton() {
-        let currentTime = player.currentTime
-        player.currentTime = currentTime + timeInterval
+        let currentTime = playerController.player.currentTime
+        playerController.player.currentTime = currentTime + playerController.timeInterval
     }
     
     @objc private func waveBackButton() {
@@ -130,7 +128,6 @@ extension PlayerControlView {
 extension PlayerControlView {
     private func setLayout() {
         
-        
         [mainController, subController].forEach{
             addSubview($0)
         }
@@ -145,9 +142,5 @@ extension PlayerControlView {
             $0.bottom.equalTo(subController.snp.top).offset(-22)
         }
         
-        
-        
     }
-    
-    
 }

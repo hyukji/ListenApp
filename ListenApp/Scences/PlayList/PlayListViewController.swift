@@ -9,8 +9,7 @@ import UIKit
 import SnapKit
 import AVFoundation
 
-var audio : Audio?
-var player : AVAudioPlayer!
+var playerController = PlayerController()
 
 class PlayListViewController : UIViewController {
     
@@ -47,7 +46,7 @@ class PlayListViewController : UIViewController {
     }
     
     @objc func PushPlayerVC(_ sender: UITapGestureRecognizer) {
-        if audio == nil { return }
+        if playerController.audio == nil { return }
         
         let playerVC = PlayerViewController()
         navigationController?.pushViewController(playerVC, animated: true)
@@ -59,6 +58,16 @@ class PlayListViewController : UIViewController {
 
 // FielManage Method
 extension PlayListViewController {
+    
+    private func getDocumentFileURL() -> URL {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        let title = playerController.audio?.title ?? ""
+        let finalURL = documentsURL.appendingPathComponent("\(title).mp3")
+        
+        return finalURL
+    }
     
     func createForderInDocument() {
         let fileManager = FileManager.default
@@ -138,8 +147,10 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         let playerVC = PlayerViewController()
         
         let nowAudio = Audio(title: "01 Test1")
-        audio = nowAudio
-        playerVC.configurePlayer()
+        playerController.audio = nowAudio
+        
+        let url = getDocumentFileURL()
+        playerController.configurePlayer(url: url)
         
         navigationController?.pushViewController(playerVC, animated: true)
         

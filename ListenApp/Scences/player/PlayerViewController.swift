@@ -35,39 +35,6 @@ class PlayerViewController : UIViewController {
         print("tapPlayerSetting")
     }
     
-    
-}
-
-
-// Player Method
-extension PlayerViewController {
-    
-    private func getDocumentFileURL() -> URL {
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        
-        let title = audio?.title ?? ""
-        let finalURL = documentsURL.appendingPathComponent("\(title).mp3")
-        
-        return finalURL
-    }
-    
-    func configurePlayer() {
-        let url = getDocumentFileURL()
-        
-        do {
-            
-            player = try AVAudioPlayer(contentsOf: url)
-//            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
-//            try AVAudioSession.sharedInstance().setActive(true)
-//            player.prepareToPlay()
-            player.play()
-            
-        } catch {
-            print("Error: Audio File missing.")
-        }
-    }
-    
 }
 
 

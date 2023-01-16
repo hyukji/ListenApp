@@ -29,6 +29,10 @@ class PlayerViewController : UIViewController {
         tabBarController?.tabBar.isTranslucent = false
         
         navigationController?.popToRootViewController(animated: true)
+        
+        guard let timer = playerProgressView.timer else { return }
+        if timer.isValid { timer.invalidate() }
+        
     }
     
     @objc func tapPlayerSetting() {

@@ -30,21 +30,21 @@ class PlayerController {
         player.prepareToPlay()
 //        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
 //        try AVAudioSession.sharedInstance().setActive(true)
-//        player.prepareToPlay()
+        player.prepareToPlay()
         player.play()
-//        timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(), userInfo: nil, repeats: true)
+        // notification to PlayerProgressView timer
     }
     
     func stopPlayer() {
         player.stop()
-        // timer.inval
+        player.currentTime = 0
+        // notification to PlayerProgressView timer
     }
     
     func pausePlayer() {
-        player.stop()
-        player.currentTime = 0
+        player.pause()
         
-        // timer.inval
+        // notification to PlayerProgressView timer
     }
     
 }

@@ -13,6 +13,8 @@ var playerController = PlayerController()
 
 class PlayListViewController : UIViewController {
     
+    var playList : [Audio] = [Audio(title: "01 Test1"), Audio(title: "02 Test2")]
+    
     private lazy var header = PlayListHeaderView(frame: .zero)
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
     private lazy var tableView : UITableView = {
@@ -35,6 +37,7 @@ class PlayListViewController : UIViewController {
         
         setLayout()
         addActionToNowPlayingView()
+        
     }
     
     
@@ -58,16 +61,6 @@ class PlayListViewController : UIViewController {
 
 // FielManage Method
 extension PlayListViewController {
-    
-    private func getDocumentFileURL() -> URL {
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        
-        let title = playerController.audio?.title ?? ""
-        let finalURL = documentsURL.appendingPathComponent("\(title).mp3")
-        
-        return finalURL
-    }
     
     func createForderInDocument() {
         let fileManager = FileManager.default
@@ -117,7 +110,6 @@ extension PlayListViewController {
         
         do {
             let text = try String(contentsOf: finalURL, encoding: .utf8)
-            print(text) // Hello world
         } catch let e {
             print(e.localizedDescription)
         }
@@ -131,14 +123,14 @@ extension PlayListViewController {
 extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        20
+        playList.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListTableViewCell", for: indexPath) as? PlayListTableViewCell else {return UITableViewCell()}
         
-        cell.setLayout()
+        cell.setLayout(audio : playList[indexPath.row])
         
         return cell
     }
@@ -146,11 +138,12 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let playerVC = PlayerViewController()
         
-        let nowAudio = Audio(title: "01 Test1")
-        playerController.audio = nowAudio
-        
-        let url = getDocumentFileURL()
-        playerController.configurePlayer(url: url)
+        let newAudio = playList[indexPath.row]
+        if playerController.audio?.title != newAudio.title {
+            playerController.audio = newAudio
+            playerController.isNewAudio = true
+            playerController.configurePlayer()
+        }
         
         navigationController?.pushViewController(playerVC, animated: true)
         

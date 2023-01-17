@@ -10,14 +10,13 @@ import AVFoundation
 
 class PlayerViewController : UIViewController {
     
-    private lazy var playerController = PlayerControlView()
+    private lazy var playerControllerView = PlayerControlView()
     private lazy var playerProgressView = PlayerProgressView()
     private lazy var pageViewController = PageViewController()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setNavigationBar()
         setLayout()
     }
@@ -32,7 +31,6 @@ class PlayerViewController : UIViewController {
         
         guard let timer = playerProgressView.timer else { return }
         if timer.isValid { timer.invalidate() }
-        
     }
     
     @objc func tapPlayerSetting() {
@@ -46,10 +44,9 @@ class PlayerViewController : UIViewController {
 private extension PlayerViewController {
     func setNavigationBar() {
         
-        navigationItem.title = "노래 제목1"
+        navigationItem.title = playerController.audio?.title
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backToRootVC))
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.horizontal.3"), style: .plain, target: self, action: #selector(tapPlayerSetting))
         
         navigationItem.leftBarButtonItem?.tintColor = .label
@@ -62,11 +59,11 @@ private extension PlayerViewController {
         
         addChild(pageViewController)
         
-        [playerController, playerProgressView, pageViewController.view].forEach{
+        [playerControllerView, playerProgressView, pageViewController.view].forEach{
             view.addSubview($0)
         }
         
-        playerController.snp.makeConstraints{
+        playerControllerView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(50)
             $0.height.equalTo(130)
@@ -74,7 +71,7 @@ private extension PlayerViewController {
         
         playerProgressView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(playerController.snp.top)
+            $0.bottom.equalTo(playerControllerView.snp.top)
             $0.height.equalTo(45)
         }
         

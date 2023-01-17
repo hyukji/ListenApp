@@ -64,10 +64,12 @@ class PlayListTableViewCell : UITableViewCell {
     }()
     
     
-    func setLayout() {
+    func setLayout(audio : Audio) {
         [imgView, playButton, stackView].forEach{
             addSubview($0)
         }
+        
+        titleLabel.text = audio.title
         
         imgView.snp.makeConstraints{
             $0.top.bottom.equalToSuperview().inset(10)

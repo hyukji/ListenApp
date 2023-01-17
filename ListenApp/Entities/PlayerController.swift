@@ -8,43 +8,78 @@
 import Foundation
 import AVFoundation
 
+enum PlayerStatus {
+    case play
+    case pause
+    case stop
+}
+
 class PlayerController {
     var player : AVAudioPlayer!
     var audio : Audio?
+    var status : PlayerStatus = .pause
     
     var timeInterval = 5.0
-    var isProgressBarInited = false
+    var isNewAudio = false
     
-    func configurePlayer(url : URL) {
+    
+    
+    func configurePlayer() {
+        if !isNewAudio { return }
+        if status == .play { stopPlayer() }
+        
+        let url = getDocumentFileURL()
         do {
-            print(url)
+            isNewAudio = false
             player = try AVAudioPlayer(contentsOf: url)
             playPlayer()
-            
         } catch {
             print("Error: Audio File missing.")
         }
     }
     
+    func getDocumentFileURL() -> URL {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        let title = audio?.title ?? ""
+        let finalURL = documentsURL.appendingPathComponent("\(title).mp3")
+        
+        return finalURL
+    }
+    
     func playPlayer() {
-        player.prepareToPlay()
+        
 //        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
 //        try AVAudioSession.sharedInstance().setActive(true)
         player.prepareToPlay()
         player.play()
-        // notification to PlayerProgressView timer
+        status = .play
+        
+        NotificateToProgressView()
     }
     
     func stopPlayer() {
         player.stop()
         player.currentTime = 0
-        // notification to PlayerProgressView timer
+        status = .stop
+        
+        NotificateToProgressView()
     }
     
     func pausePlayer() {
         player.pause()
+        status = .pause
         
-        // notification to PlayerProgressView timer
+        NotificateToProgressView()
+    }
+    
+    func NotificateToProgressView() {
+        NotificationCenter.default.post(
+            name: Notification.Name("playerStatusChanged"),
+            object: nil,
+            userInfo: nil
+        )
     }
     
 }

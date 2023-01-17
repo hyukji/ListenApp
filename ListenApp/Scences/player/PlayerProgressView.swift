@@ -24,7 +24,6 @@ class PlayerProgressView : UIView {
     
     lazy var currentTimeLabel : UILabel = {
         let label = UILabel()
-        label.text = TimeIntervalToString(playerController.player.currentTime)
         label.font = .systemFont(ofSize: 10)
         label.textColor = .tintColor
         
@@ -34,7 +33,6 @@ class PlayerProgressView : UIView {
     
     lazy var DurationLabel : UILabel = {
         let label = UILabel()
-        label.text = TimeIntervalToString(playerController.player.duration)
         label.font = .systemFont(ofSize: 10)
         label.textColor = .lightGray
         
@@ -44,7 +42,9 @@ class PlayerProgressView : UIView {
     override init(frame: CGRect) {
         super .init(frame: frame)
         setLayout()
-        timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
+        addNotificationObserver()
+        configureTimeAndView()
+        adminTimer()
         
     }
     
@@ -53,13 +53,7 @@ class PlayerProgressView : UIView {
     }
     
     deinit {
-        print("deinit")
-        
-    }
-    
-    @objc func updatePlayTime() {
-        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
-        progressView.progress = Float(playerController.player.currentTime / playerController.player.duration)
+        NotificationCenter.default.removeObserver(self)
     }
     
     func TimeIntervalToString(_ time:TimeInterval) -> String {
@@ -69,6 +63,34 @@ class PlayerProgressView : UIView {
         return strTime
     }
     
+    func addNotificationObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adminTimer),
+            name: Notification.Name("playerStatusChanged"),
+            object: nil
+        )
+    }
+    
+    @objc func adminTimer() {
+        if playerController.status == .play {
+            timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
+        } else {
+            guard let timer = timer else { return }
+            if timer.isValid { timer.invalidate() }
+        }
+    }
+    
+    @objc func configureTimeAndView() {
+        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
+        DurationLabel.text = TimeIntervalToString(playerController.player.duration)
+        progressView.progress = Float(playerController.player.currentTime / playerController.player.duration)
+    }
+    
+    @objc func updatePlayTime() {
+        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
+        progressView.progress = Float(playerController.player.currentTime / playerController.player.duration)
+    }
     
 }
 

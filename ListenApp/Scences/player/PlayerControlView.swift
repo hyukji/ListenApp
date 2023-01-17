@@ -28,9 +28,11 @@ class PlayerControlView : UIView {
         let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 33, weight: .regular), scale: .default)
         let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
         
+        
+        secondBackButton.setImage(UIImage(systemName: "gobackward.\(Int(playerController.timeInterval))", withConfiguration: secondImageConfig), for: .normal)
+        secondFrontButton.setImage(UIImage(systemName: "goforward.\(Int(playerController.timeInterval))", withConfiguration: secondImageConfig), for: .normal)
+//        waveBackButton.setImage(UIImage(named: "forwardWave"), for: .normal)
         waveBackButton.setImage(UIImage(systemName: "gobackward", withConfiguration: waveImageConfig), for: .normal)
-        secondBackButton.setImage(UIImage(systemName: "gobackward", withConfiguration: secondImageConfig), for: .normal)
-        secondFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: secondImageConfig), for: .normal)
         waveFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: waveImageConfig), for: .normal)
         setPlayButtonImage(btn : playButton)
         

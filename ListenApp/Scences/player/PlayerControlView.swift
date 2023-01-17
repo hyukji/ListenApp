@@ -30,9 +30,9 @@ class PlayerControlView : UIView {
         
         waveBackButton.setImage(UIImage(systemName: "gobackward", withConfiguration: waveImageConfig), for: .normal)
         secondBackButton.setImage(UIImage(systemName: "gobackward", withConfiguration: secondImageConfig), for: .normal)
-        playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
         secondFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: secondImageConfig), for: .normal)
         waveFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: waveImageConfig), for: .normal)
+        setPlayButtonImage(btn : playButton)
         
         playButton.addTarget(self, action: #selector(tapPlayButton(_:)), for: .touchUpInside)
         secondBackButton.addTarget(self, action: #selector(tapSecondBackButton), for: .touchUpInside)
@@ -87,20 +87,27 @@ class PlayerControlView : UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func setPlayButtonImage(btn : UIButton) {
+        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
+        if playerController.status == .play {
+            btn.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
+        } else {
+            btn.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
+        }
+    }
+    
 }
     
 
 // PlayerControlView functions of tap UIButton
 extension PlayerControlView {
     @objc private func tapPlayButton(_ sender: UIButton) {
-        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
-        if playerController.player.isPlaying {
+        if playerController.status == .play {
             playerController.pausePlayer()
-            sender.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
         } else {
             playerController.playPlayer()
-            sender.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
         }
+        setPlayButtonImage(btn : sender)
     }
     
     @objc private func tapSecondBackButton() {

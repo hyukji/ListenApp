@@ -12,11 +12,8 @@ class PageViewController : UIViewController {
     var currentIndex = 0
     
     lazy var VCList: [UIViewController] = {
-        let imageVC = UIViewController()
-        let waveVC = UIViewController()
-            
-        imageVC.view.backgroundColor = .blue
-        waveVC.view.backgroundColor = .red
+        let imageVC = PageImageViewController()
+        let waveVC = PageWaveViewController()
         
         return [imageVC, waveVC]
     }()
@@ -114,7 +111,7 @@ private extension PageViewController {
         pageViewStackView.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.width.equalTo(70)
-            $0.bottom.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(10)
         }
         
         pageViewController.view.snp.makeConstraints{

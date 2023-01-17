@@ -27,7 +27,7 @@ class NowPlayingView : UIView {
     private lazy var titleLabel : UILabel = {
         let label = UILabel()
         
-        label.text = "Title111111111111111111"
+        label.text = "01 Title1"
         label.font = .systemFont(ofSize: 15, weight: .semibold)
         label.textColor = .white
         

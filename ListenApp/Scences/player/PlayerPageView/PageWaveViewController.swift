@@ -6,15 +6,18 @@
 //
 
 import UIKit
+import DSWaveformImage
 
 class PageWaveViewController : UIViewController {
+    private let waveformImageDrawer = WaveformImageDrawer()
+    private let audioURL = playerController.getDocumentFileURL()
     
     lazy var imageView : UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "MusicBasic")
         imageView.contentMode = .scaleToFill
         imageView.frame.size.width = view.frame.width * 3
-        imageView.frame.size.height = view.frame.height / 2
+        imageView.frame.size.height = 300
         
         return imageView
     }()
@@ -26,7 +29,6 @@ class PageWaveViewController : UIViewController {
         scrollView.showsHorizontalScrollIndicator = true
         
         scrollView.contentSize.width = imageView.frame.size.width
-        
         scrollView.addSubview(imageView)
         
         return scrollView
@@ -34,6 +36,20 @@ class PageWaveViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        waveformImageDrawer.waveformImage(
+            fromAudioAt: audioURL, with: .init(
+                size: imageView.frame.size,
+                style: .striped(.init(color: view.tintColor)),
+                dampening: .init(percentage: 0.2, sides: .left, easing: { x in pow(x, 4) }),
+                verticalScalingFactor: 2)
+        ) { image in
+            // need to jump back to main queue
+            DispatchQueue.main.async {
+                self.imageView.image = image
+            }
+        }
         
         setLayout()
 

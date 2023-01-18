@@ -82,7 +82,7 @@ class PlayerProgressView : UIView {
         }
     }
     
-    @objc func configureTimeAndView() {
+    func configureTimeAndView() {
         currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
         DurationLabel.text = TimeIntervalToString(playerController.player.duration)
         progressView.progress = Float(playerController.player.currentTime / playerController.player.duration)

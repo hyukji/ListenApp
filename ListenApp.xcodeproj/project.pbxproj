@@ -26,6 +26,8 @@
 		19B41F1E2970027C00DC30C1 /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F1D2970027C00DC30C1 /* SettingTableViewCell.swift */; };
 		19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F1F2970029200DC30C1 /* SettingViewController.swift */; };
 		19B41F25297046BD00DC30C1 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F24297046BD00DC30C1 /* Audio.swift */; };
+		19D775D32978046A00252A52 /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 19D775D22978046A00252A52 /* DSWaveformImage */; };
+		19D775D62978146A00252A52 /* PlaygroundForWaveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D775D52978146A00252A52 /* PlaygroundForWaveImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,7 @@
 		19B41F1D2970027C00DC30C1 /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
 		19B41F1F2970029200DC30C1 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		19B41F24297046BD00DC30C1 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		19D775D52978146A00252A52 /* PlaygroundForWaveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundForWaveImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19D775D32978046A00252A52 /* DSWaveformImage in Frameworks */,
 				19B41F072970013000DC30C1 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -109,6 +113,7 @@
 				19B41F12297001EC00DC30C1 /* PageViewController.swift */,
 				19A62ED22976FB320040EC5D /* PageImageViewController.swift */,
 				19A62ED42976FB830040EC5D /* PageWaveViewController.swift */,
+				19D775D52978146A00252A52 /* PlaygroundForWaveImage.swift */,
 			);
 			path = PlayerPageView;
 			sourceTree = "<group>";
@@ -171,6 +176,7 @@
 			name = ListenApp;
 			packageProductDependencies = (
 				19B41F062970013000DC30C1 /* SnapKit */,
+				19D775D22978046A00252A52 /* DSWaveformImage */,
 			);
 			productName = ListenApp;
 			productReference = 19B41EE8296FFEA200DC30C1 /* ListenApp.app */;
@@ -202,6 +208,7 @@
 			mainGroup = 19B41EDF296FFEA200DC30C1;
 			packageReferences = (
 				19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
 			);
 			productRefGroup = 19B41EE9296FFEA200DC30C1 /* Products */;
 			projectDirPath = "";
@@ -233,6 +240,7 @@
 				19B41F0C2970019800DC30C1 /* PlayerControlView.swift in Sources */,
 				19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */,
 				19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */,
+				19D775D62978146A00252A52 /* PlaygroundForWaveImage.swift in Sources */,
 				19B41F10297001C600DC30C1 /* PlayerViewController.swift in Sources */,
 				19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */,
 				19A62ED32976FB320040EC5D /* PageImageViewController.swift in Sources */,
@@ -453,6 +461,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dmrschmidt/DSWaveformImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -460,6 +476,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		19D775D22978046A00252A52 /* DSWaveformImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
+			productName = DSWaveformImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

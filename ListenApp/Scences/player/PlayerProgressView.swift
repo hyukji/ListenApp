@@ -74,11 +74,15 @@ class PlayerProgressView : UIView {
     
     @objc func adminTimer() {
         if playerController.status == .play {
-            timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
+            if let timer = timer {
+                if timer.isValid { return }
+            }
+            self.timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
         } else {
             updatePlayTime()
-            guard let timer = timer else { return }
-            if timer.isValid { timer.invalidate() }
+            if let timer = timer {
+                if timer.isValid { timer.invalidate() }
+            }
         }
     }
     

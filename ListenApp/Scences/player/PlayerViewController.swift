@@ -21,6 +21,11 @@ class PlayerViewController : UIViewController {
         setLayout()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        guard let timer = playerProgressView.timer else { return }
+        if timer.isValid { timer.invalidate() }
+    }
+    
     
     // go back rootViewVC(PlayListVC or SettingVC)
     @objc func backToRootVC() {
@@ -28,9 +33,6 @@ class PlayerViewController : UIViewController {
         tabBarController?.tabBar.isTranslucent = false
         
         navigationController?.popToRootViewController(animated: true)
-        
-        guard let timer = playerProgressView.timer else { return }
-        if timer.isValid { timer.invalidate() }
     }
     
     @objc func tapPlayerSetting() {

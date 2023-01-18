@@ -16,7 +16,7 @@ class PageWaveViewController : UIViewController {
     
     lazy var currentTimeLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = .systemFont(ofSize: 25, weight: .semibold)
         label.textColor = .label
         
         return label
@@ -34,19 +34,31 @@ class PageWaveViewController : UIViewController {
         imageView.image = UIImage(named: "MusicBasic")
         imageView.contentMode = .scaleToFill
         
-        imageView.frame.size = CGSize(width: playerController.player.duration * 5, height: 300)
+        imageView.frame.size = CGSize(width: Int(playerController.player.duration) * 5, height: 300)
         
         return imageView
     }()
     
     lazy var scrollView : UIScrollView = {
+        let leftView = UIView()
+        let rightView = UIView()
         let scrollView = UIScrollView()
+        
+        leftView.backgroundColor = .systemBackground
+        rightView.backgroundColor = .systemBackground
+        
+        let size = CGSize(width: (view.frame.size.width - 40) / 2, height: view.frame.size.height)
+        leftView.frame.size = size
+        rightView.frame.size = size
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceHorizontal = true
         scrollView.showsHorizontalScrollIndicator = false
+        scrollView.contentSize.width = imageView.frame.size.width + view.frame.size.width
         
-        scrollView.contentSize.width = imageView.frame.size.width
+        scrollView.addSubview(leftView)
         scrollView.addSubview(imageView)
+        scrollView.addSubview(rightView)
         
         return scrollView
     }()
@@ -56,11 +68,18 @@ class PageWaveViewController : UIViewController {
         
         setWaveImage()
         addNotificationObserver()
-        configureTimer()
-        adminTimer()
-        
         setLayout()
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        updatePlayTime()
+        adminTimer()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        guard let timer = timer else { return }
+        if timer.isValid { timer.invalidate() }
     }
     
     func setWaveImage() {
@@ -96,7 +115,7 @@ class PageWaveViewController : UIViewController {
     
     @objc func adminTimer() {
         if playerController.status == .play {
-            timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
         } else {
             updatePlayTime()
             guard let timer = timer else { return }
@@ -104,13 +123,10 @@ class PageWaveViewController : UIViewController {
         }
     }
     
-    func configureTimer() {
-        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
-        // 화면 중심 맞추기
-    }
-    
     @objc func updatePlayTime() {
         currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
+        let nx = playerController.player.currentTime * 5
+        scrollView.contentOffset = CGPointMake(nx, 0);
         
         // 화면 중심 맞추기
     }

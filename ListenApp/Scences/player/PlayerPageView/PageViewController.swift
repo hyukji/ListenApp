@@ -110,14 +110,14 @@ private extension PageViewController {
         
         pageViewStackView.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(70)
+            $0.width.equalTo(100)
             $0.bottom.equalToSuperview().inset(10)
         }
         
         pageViewController.view.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview()
             $0.top.equalToSuperview().inset(30)
-            $0.bottom.equalToSuperview().inset(60)
+            $0.bottom.equalToSuperview().inset(100)
         }
     }
     

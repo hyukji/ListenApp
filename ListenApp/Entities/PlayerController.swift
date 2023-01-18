@@ -74,6 +74,11 @@ class PlayerController {
         NotificateToProgressView()
     }
     
+    func changePlayerTime(changedTime : TimeInterval) {
+        player.currentTime = changedTime
+        NotificateToProgressView()
+    }
+    
     func NotificateToProgressView() {
         NotificationCenter.default.post(
             name: Notification.Name("playerStatusChanged"),

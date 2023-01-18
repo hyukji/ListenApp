@@ -83,6 +83,7 @@ class PlayerControlView : UIView {
         super .init(frame: frame)
         
         setLayout()
+        
     }
     
     required init(coder: NSCoder) {
@@ -113,13 +114,14 @@ extension PlayerControlView {
     }
     
     @objc private func tapSecondBackButton() {
-        let currentTime = playerController.player.currentTime
-        playerController.player.currentTime = currentTime - playerController.timeInterval
+        let changedTime = playerController.player.currentTime - playerController.timeInterval
+        playerController.changePlayerTime(changedTime: changedTime)
+        
     }
     
     @objc private func tapSecondFrontButton() {
-        let currentTime = playerController.player.currentTime
-        playerController.player.currentTime = currentTime + playerController.timeInterval
+        let changedTime = playerController.player.currentTime + playerController.timeInterval
+        playerController.changePlayerTime(changedTime: changedTime)
     }
     
     @objc private func waveBackButton() {

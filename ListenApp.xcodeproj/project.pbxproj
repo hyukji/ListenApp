@@ -27,7 +27,6 @@
 		19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F1F2970029200DC30C1 /* SettingViewController.swift */; };
 		19B41F25297046BD00DC30C1 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F24297046BD00DC30C1 /* Audio.swift */; };
 		19D775D32978046A00252A52 /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 19D775D22978046A00252A52 /* DSWaveformImage */; };
-		19D775D62978146A00252A52 /* PlaygroundForWaveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D775D52978146A00252A52 /* PlaygroundForWaveImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,7 +50,6 @@
 		19B41F1D2970027C00DC30C1 /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
 		19B41F1F2970029200DC30C1 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		19B41F24297046BD00DC30C1 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
-		19D775D52978146A00252A52 /* PlaygroundForWaveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundForWaveImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,7 +111,6 @@
 				19B41F12297001EC00DC30C1 /* PageViewController.swift */,
 				19A62ED22976FB320040EC5D /* PageImageViewController.swift */,
 				19A62ED42976FB830040EC5D /* PageWaveViewController.swift */,
-				19D775D52978146A00252A52 /* PlaygroundForWaveImage.swift */,
 			);
 			path = PlayerPageView;
 			sourceTree = "<group>";
@@ -240,7 +237,6 @@
 				19B41F0C2970019800DC30C1 /* PlayerControlView.swift in Sources */,
 				19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */,
 				19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */,
-				19D775D62978146A00252A52 /* PlaygroundForWaveImage.swift in Sources */,
 				19B41F10297001C600DC30C1 /* PlayerViewController.swift in Sources */,
 				19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */,
 				19A62ED32976FB320040EC5D /* PageImageViewController.swift in Sources */,

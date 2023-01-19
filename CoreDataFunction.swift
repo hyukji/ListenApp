@@ -28,8 +28,8 @@ class CoreDataFunc {
         return finalURL
     }
     
-    func initializeSave() {
-        let url = getDocumentFileURL(title: "01 Test1")
+    func initializeSave(title : String) {
+        let url = getDocumentFileURL(title: title)
         
         let waveformImageDrawer = WaveformImageDrawer()
         waveformImageDrawer.waveformImage(
@@ -44,7 +44,7 @@ class CoreDataFunc {
                 let audio = NowAudio(
                     waveImage: image ?? UIImage(),
                     mainImage: UIImage(named: "MusicBasic") ?? UIImage(),
-                    title: "01 Test1",
+                    title: title,
                     currentTime: 0.0
                 )
                 self.saveAudio(nowAudio: audio)
@@ -101,5 +101,47 @@ class CoreDataFunc {
         return audioList
     }
     
+    // title이 같은 데이터 찾아서 해당 데이터 업데이트
+    func updateAudio(newAudio : NowAudio) {
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
+        fetchRequest.predicate = NSPredicate(format: "title = %@", newAudio.title)
+        
+        do {
+            let result = try context.fetch(fetchRequest)
+            let audio = result[0]
+            audio.setValue(newAudio.uuid, forKey: "uuid")
+            audio.setValue(newAudio.waveImage.pngData(), forKey: "waveImage")
+            audio.setValue(newAudio.mainImage.pngData(), forKey: "mainImage")
+            audio.setValue(newAudio.title, forKey: "title")
+            audio.setValue(newAudio.currentTime, forKey: "currentTime")
+            do {
+                try context.save()
+            } catch {
+                print(error)
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
+    
+    func deleteAudio(willdeleteAudio : NowAudio) {
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
+        fetchRequest.predicate = NSPredicate(format: "title = %@", willdeleteAudio.title)
+        
+        do {
+            let result = try context.fetch(fetchRequest)
+            for obj in result {
+                context.delete(obj)
+            }
+            do {
+                try context.save()
+            } catch {
+                print(error)
+            }
+        } catch {
+            print(error)
+        }
+    }
     
 }

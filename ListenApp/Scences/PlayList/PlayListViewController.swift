@@ -37,7 +37,8 @@ class PlayListViewController : UIViewController {
         
         setLayout()
         addActionToNowPlayingView()
-//        CoreDataFunc().initializeSave()
+//        CoreDataFunc().initializeSave(title : "01 Test1")
+//        CoreDataFunc().initializeSave(title : "02 Test2")
         playList = CoreDataFunc().fetchAudio()
         
     }

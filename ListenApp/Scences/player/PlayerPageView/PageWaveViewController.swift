@@ -10,6 +10,7 @@ import DSWaveformImage
 
 class PageWaveViewController : UIViewController {
     var timer : Timer?
+    let ImagelengthPerSec = 10.0
     
     private let waveformImageDrawer = WaveformImageDrawer()
     private let audioURL = playerController.getDocumentFileURL()
@@ -34,7 +35,7 @@ class PageWaveViewController : UIViewController {
         imageView.image = UIImage(named: "MusicBasic")
         imageView.contentMode = .scaleToFill
         
-        imageView.frame.size = CGSize(width: Int(playerController.player.duration) * 5, height: 300)
+        imageView.frame.size.width = playerController.player.duration * ImagelengthPerSec
         
         return imageView
     }()
@@ -51,6 +52,7 @@ class PageWaveViewController : UIViewController {
         leftView.frame.size = size
         rightView.frame.size = size
         
+        scrollView.delegate = self
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceHorizontal = true
         scrollView.showsHorizontalScrollIndicator = false
@@ -136,6 +138,32 @@ class PageWaveViewController : UIViewController {
         // 화면 중심 맞추기
     }
 }
+
+extension PageWaveViewController : UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if playerController.status == .play {
+            playerController.intermitPlayer()
+        }
+        print("begin")
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate == false && playerController.status == .intermit {
+            playerController.playPlayer()
+        }
+    }
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if let timer = timer { if timer.isValid { return }}
+        
+        let x = Double(scrollView.contentOffset.x)
+        playerController.changePlayerTime(changedTime : TimeInterval(x / 5))
+    }
+    
+}
+
+
 
 
 extension PageWaveViewController {

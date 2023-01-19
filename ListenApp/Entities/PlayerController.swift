@@ -12,6 +12,7 @@ enum PlayerStatus {
     case play
     case pause
     case stop
+    case intermit
 }
 
 class PlayerController {
@@ -49,14 +50,14 @@ class PlayerController {
     }
     
     func playPlayer() {
-        
 //        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
 //        try AVAudioSession.sharedInstance().setActive(true)
         player.prepareToPlay()
         player.play()
-        status = .play
         
-        NotificateToProgressView()
+        status = .play
+
+        NotificateTo()
     }
     
     func stopPlayer() {
@@ -64,22 +65,29 @@ class PlayerController {
         player.currentTime = 0
         status = .stop
         
-        NotificateToProgressView()
+        NotificateTo()
+    }
+    
+    func intermitPlayer() {
+        player.pause()
+        status = .intermit
+        
+        NotificateTo()
     }
     
     func pausePlayer() {
         player.pause()
         status = .pause
         
-        NotificateToProgressView()
+        NotificateTo()
     }
     
     func changePlayerTime(changedTime : TimeInterval) {
         player.currentTime = changedTime
-        NotificateToProgressView()
+        NotificateTo()
     }
     
-    func NotificateToProgressView() {
+    func NotificateTo() {
         NotificationCenter.default.post(
             name: Notification.Name("playerStatusChanged"),
             object: nil,

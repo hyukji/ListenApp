@@ -11,7 +11,6 @@ class PlayListTableViewCell : UITableViewCell {
     
     private lazy var imgView : UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "MusicBasic")
         imageView.contentMode = .scaleAspectFill
         
         imageView.layer.borderWidth = 1
@@ -64,11 +63,12 @@ class PlayListTableViewCell : UITableViewCell {
     }()
     
     
-    func setLayout(audio : Audio) {
+    func setLayout(audio : NowAudio) {
         [imgView, playButton, stackView].forEach{
             addSubview($0)
         }
         
+        imgView.image = audio.mainImage
         titleLabel.text = audio.title
         
         imgView.snp.makeConstraints{

@@ -17,7 +17,7 @@ enum PlayerStatus {
 
 class PlayerController {
     var player : AVAudioPlayer!
-    var audio : Audio?
+    var audio : NowAudio?
     var status : PlayerStatus = .pause
     
     var timeInterval = 5.0

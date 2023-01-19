@@ -13,7 +13,7 @@ var playerController = PlayerController()
 
 class PlayListViewController : UIViewController {
     
-    var playList : [Audio] = [Audio(title: "01 Test1"), Audio(title: "02 Test2")]
+    var playList : [NowAudio]?
     
     private lazy var header = PlayListHeaderView(frame: .zero)
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
@@ -37,6 +37,8 @@ class PlayListViewController : UIViewController {
         
         setLayout()
         addActionToNowPlayingView()
+//        CoreDataFunc().initializeSave()
+        playList = CoreDataFunc().fetchAudio()
         
     }
     
@@ -110,6 +112,7 @@ extension PlayListViewController {
         
         do {
             let text = try String(contentsOf: finalURL, encoding: .utf8)
+            print(text)
         } catch let e {
             print(e.localizedDescription)
         }
@@ -123,22 +126,33 @@ extension PlayListViewController {
 extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        playList.count
+        if let list = playList { return list.count }
+        return 0
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListTableViewCell", for: indexPath) as? PlayListTableViewCell else {return UITableViewCell()}
         
-        cell.setLayout(audio : playList[indexPath.row])
+        if let list = playList {
+            cell.setLayout(audio : list[indexPath.row])
+            return cell
+        } else {
+            return UITableViewCell()
+        }
         
-        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let playerVC = PlayerViewController()
         
-        let newAudio = playList[indexPath.row]
+        guard let list = playList
+        else {
+            print("Cant find audioFile")
+            return
+        }
+        
+        let newAudio = list[indexPath.row]
         if playerController.audio?.title != newAudio.title {
             playerController.audio = newAudio
             playerController.isNewAudio = true

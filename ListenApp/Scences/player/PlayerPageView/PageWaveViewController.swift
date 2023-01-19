@@ -35,7 +35,8 @@ class PageWaveViewController : UIViewController {
         imageView.image = UIImage(named: "MusicBasic")
         imageView.contentMode = .scaleToFill
         
-        imageView.frame.size.width = playerController.player.duration * ImagelengthPerSec
+        imageView.image = playerController.audio?.waveImage
+        imageView.frame.size = playerController.audio?.waveImage.size ?? CGSize(width: 0, height: 0)
         
         return imageView
     }()
@@ -44,13 +45,11 @@ class PageWaveViewController : UIViewController {
     lazy var leftView : UIView = {
         let view = UIView()
 
-        view.backgroundColor = .yellow
         return view
     }()
 
     lazy var rightView : UIView = {
         let view = UIView()
-        view.backgroundColor = .blue
 
         return view
     }()
@@ -79,7 +78,6 @@ class PageWaveViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setWaveImage()
         addNotificationObserver()
         setLayout()
 
@@ -93,21 +91,6 @@ class PageWaveViewController : UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         guard let timer = timer else { return }
         if timer.isValid { timer.invalidate() }
-    }
-    
-    func setWaveImage() {
-        waveformImageDrawer.waveformImage(
-            fromAudioAt: audioURL, with: .init(
-                size: imageView.frame.size,
-                style: .striped(.init(color: view.tintColor)),
-                dampening: nil,
-                verticalScalingFactor: 0.5)
-        ) { image in
-            // need to jump back to main queue
-            DispatchQueue.main.async {
-                self.imageView.image = image
-            }
-        }
     }
     
     func TimeIntervalToString(_ time:TimeInterval) -> String {
@@ -149,12 +132,13 @@ class PageWaveViewController : UIViewController {
     }
 }
 
+
+// 스크롤 동작 인식
 extension PageWaveViewController : UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if playerController.status == .play {
             playerController.intermitPlayer()
         }
-        print("begin")
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -206,7 +190,7 @@ extension PageWaveViewController {
         }
         imageView.snp.makeConstraints{
             $0.height.equalToSuperview()
-            $0.width.equalTo(playerController.player.duration * ImagelengthPerSec)
+//            $0.width.equalTo(playerController.player.duration * ImagelengthPerSec)
         }
         rightView.snp.makeConstraints{
             $0.height.equalToSuperview()

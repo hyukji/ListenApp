@@ -40,28 +40,38 @@ class PageWaveViewController : UIViewController {
         return imageView
     }()
     
+
+    lazy var leftView : UIView = {
+        let view = UIView()
+
+        view.backgroundColor = .yellow
+        return view
+    }()
+
+    lazy var rightView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .blue
+
+        return view
+    }()
+
+    lazy var contentStackView : UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+//        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        return stackView
+    }()
+    
     lazy var scrollView : UIScrollView = {
-        let leftView = UIView()
-        let rightView = UIView()
         let scrollView = UIScrollView()
-        
-        leftView.backgroundColor = .systemBackground
-        rightView.backgroundColor = .systemBackground
-        
-        let size = CGSize(width: (view.frame.size.width - 40) / 2, height: view.frame.size.height)
-        leftView.frame.size = size
-        rightView.frame.size = size
         
         scrollView.delegate = self
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceHorizontal = true
         scrollView.showsHorizontalScrollIndicator = false
-        scrollView.contentSize.width = imageView.frame.size.width + view.frame.size.width
-        
-        scrollView.addSubview(leftView)
-        scrollView.addSubview(imageView)
-        scrollView.addSubview(rightView)
-
         
         return scrollView
     }()
@@ -172,6 +182,14 @@ extension PageWaveViewController {
         [currentTimeLabel, scrollView, currentIndicator].forEach{
             view.addSubview($0)
         }
+        
+        
+        scrollView.addSubview(contentStackView)
+        contentStackView.addArrangedSubview(leftView)
+        contentStackView.addArrangedSubview(imageView)
+        contentStackView.addArrangedSubview(rightView)
+        
+        
         currentTimeLabel.snp.makeConstraints{
             $0.bottom.equalToSuperview()
             $0.centerX.equalToSuperview()
@@ -180,6 +198,23 @@ extension PageWaveViewController {
         scrollView.snp.makeConstraints{
             $0.bottom.equalTo(currentTimeLabel.snp.top).offset(-10)
             $0.top.leading.trailing.equalToSuperview()
+        }
+        
+        leftView.snp.makeConstraints{
+            $0.height.equalToSuperview()
+            $0.width.equalTo(scrollView).multipliedBy(0.5)
+        }
+        imageView.snp.makeConstraints{
+            $0.height.equalToSuperview()
+            $0.width.equalTo(playerController.player.duration * ImagelengthPerSec)
+        }
+        rightView.snp.makeConstraints{
+            $0.height.equalToSuperview()
+            $0.width.equalTo(scrollView).multipliedBy(0.5)
+        }
+        
+        contentStackView.snp.makeConstraints{
+            $0.top.bottom.leading.trailing.height.equalTo(scrollView)
         }
         
         currentIndicator.snp.makeConstraints{

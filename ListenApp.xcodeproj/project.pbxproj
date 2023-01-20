@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193FAB6B29759C3500385BD4 /* PlayerController.swift */; };
-		199BF310297AD88B00DAD3E1 /* GCDWebserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* GCDWebserver.swift */; };
+		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
+		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
+		199BF314297AEDA600DAD3E1 /* DocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF313297AEDA600DAD3E1 /* DocumentItem.swift */; };
 		199F3AD329791A97001C6A3B /* AudioData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD129791A97001C6A3B /* AudioData.xcdatamodeld */; };
 		199F3AD629792045001C6A3B /* Audio+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */; };
 		199F3AD929792141001C6A3B /* CoreDataFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD829792141001C6A3B /* CoreDataFunction.swift */; };
@@ -37,7 +39,9 @@
 
 /* Begin PBXFileReference section */
 		193FAB6B29759C3500385BD4 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
-		199BF30F297AD88B00DAD3E1 /* GCDWebserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDWebserver.swift; sourceTree = "<group>"; };
+		199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebUploader.swift; sourceTree = "<group>"; };
+		199BF311297AEB4900DAD3E1 /* MyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFileManager.swift; sourceTree = "<group>"; };
+		199BF313297AEDA600DAD3E1 /* DocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentItem.swift; sourceTree = "<group>"; };
 		199F3AD229791A97001C6A3B /* AudioData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AudioData.xcdatamodel; sourceTree = "<group>"; };
 		199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Audio+CoreDataClass.swift"; sourceTree = "<group>"; };
 		199F3AD829792141001C6A3B /* CoreDataFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFunction.swift; sourceTree = "<group>"; };
@@ -172,7 +176,9 @@
 			children = (
 				19B41F24297046BD00DC30C1 /* NowAudio.swift */,
 				193FAB6B29759C3500385BD4 /* PlayerController.swift */,
-				199BF30F297AD88B00DAD3E1 /* GCDWebserver.swift */,
+				199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */,
+				199BF311297AEB4900DAD3E1 /* MyFileManager.swift */,
+				199BF313297AEDA600DAD3E1 /* DocumentItem.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -324,10 +330,12 @@
 				19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */,
 				19A62ED32976FB320040EC5D /* PageImageViewController.swift in Sources */,
 				19B41F0E297001AD00DC30C1 /* PlayerProgressView.swift in Sources */,
+				199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */,
 				19B41F25297046BD00DC30C1 /* NowAudio.swift in Sources */,
+				199BF314297AEDA600DAD3E1 /* DocumentItem.swift in Sources */,
 				19A62ED52976FB830040EC5D /* PageWaveViewController.swift in Sources */,
 				19B41F1E2970027C00DC30C1 /* SettingTableViewCell.swift in Sources */,
-				199BF310297AD88B00DAD3E1 /* GCDWebserver.swift in Sources */,
+				199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */,
 				19B41F1B2970025700DC30C1 /* PlayListViewController.swift in Sources */,
 				19B41F172970022E00DC30C1 /* PlayListHeaderView.swift in Sources */,
 				199F3ADB29792643001C6A3B /* Audio+CoreDataProperties.swift in Sources */,

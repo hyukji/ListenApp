@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import GCDWebServer
 
 class PlayListHeaderView : UIView {
     private lazy var mainLabel : UILabel = {
@@ -47,6 +46,7 @@ class PlayListHeaderView : UIView {
         super.init(frame: frame)
         
         setLayout()
+//        MyWebUploader().initWebUploader()
     }
     
     required init?(coder: NSCoder) {

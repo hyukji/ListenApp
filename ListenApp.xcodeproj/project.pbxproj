@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193FAB6B29759C3500385BD4 /* PlayerController.swift */; };
+		199BF310297AD88B00DAD3E1 /* GCDWebserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* GCDWebserver.swift */; };
 		199F3AD329791A97001C6A3B /* AudioData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD129791A97001C6A3B /* AudioData.xcdatamodeld */; };
 		199F3AD629792045001C6A3B /* Audio+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */; };
 		199F3AD929792141001C6A3B /* CoreDataFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD829792141001C6A3B /* CoreDataFunction.swift */; };
@@ -36,6 +37,7 @@
 
 /* Begin PBXFileReference section */
 		193FAB6B29759C3500385BD4 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
+		199BF30F297AD88B00DAD3E1 /* GCDWebserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDWebserver.swift; sourceTree = "<group>"; };
 		199F3AD229791A97001C6A3B /* AudioData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AudioData.xcdatamodel; sourceTree = "<group>"; };
 		199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Audio+CoreDataClass.swift"; sourceTree = "<group>"; };
 		199F3AD829792141001C6A3B /* CoreDataFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFunction.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 			children = (
 				19B41F24297046BD00DC30C1 /* NowAudio.swift */,
 				193FAB6B29759C3500385BD4 /* PlayerController.swift */,
+				199BF30F297AD88B00DAD3E1 /* GCDWebserver.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -180,7 +183,6 @@
 				7F26B11B73A0C3D37BD988AE /* Pods-ListenApp.debug.xcconfig */,
 				E95A5ACEE65507482DBFCF52 /* Pods-ListenApp.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -243,7 +245,7 @@
 			);
 			mainGroup = 19B41EDF296FFEA200DC30C1;
 			packageReferences = (
-				19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit.git" */,
+				19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
 			);
 			productRefGroup = 19B41EE9296FFEA200DC30C1 /* Products */;
@@ -325,6 +327,7 @@
 				19B41F25297046BD00DC30C1 /* NowAudio.swift in Sources */,
 				19A62ED52976FB830040EC5D /* PageWaveViewController.swift in Sources */,
 				19B41F1E2970027C00DC30C1 /* SettingTableViewCell.swift in Sources */,
+				199BF310297AD88B00DAD3E1 /* GCDWebserver.swift in Sources */,
 				19B41F1B2970025700DC30C1 /* PlayListViewController.swift in Sources */,
 				19B41F172970022E00DC30C1 /* PlayListHeaderView.swift in Sources */,
 				199F3ADB29792643001C6A3B /* Audio+CoreDataProperties.swift in Sources */,
@@ -536,7 +539,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit.git" */ = {
+		19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
 			requirement = {
@@ -557,7 +560,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		19B41F062970013000DC30C1 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit.git" */;
+			package = 19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
 		};
 		19D775D22978046A00252A52 /* DSWaveformImage */ = {

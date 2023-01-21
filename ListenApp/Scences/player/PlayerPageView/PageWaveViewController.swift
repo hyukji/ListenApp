@@ -12,8 +12,8 @@ class PageWaveViewController : UIViewController {
     var timer : Timer?
     let ImagelengthPerSec = 10.0
     
+    let playerController = PlayerController.playerController
     private let waveformImageDrawer = WaveformImageDrawer()
-    private let audioURL = playerController.getDocumentFileURL()
     
     lazy var currentTimeLabel : UILabel = {
         let label = UILabel()

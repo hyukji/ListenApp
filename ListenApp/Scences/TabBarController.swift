@@ -11,13 +11,17 @@ import SnapKit
 class TabBarController: UITabBarController {
     
     private lazy var PlayListVC : UIViewController = {
-        let viewController = UINavigationController(rootViewController: PlayListViewController())
+        let rootViewController = PlayListViewController()
+        rootViewController.url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let viewController = UINavigationController(rootViewController: rootViewController)
+        
         let tabBarItem = UITabBarItem(
             title: "홈",
             image: UIImage(systemName: "house"),
             tag: 0
         )
         viewController.tabBarItem = tabBarItem
+        
         return viewController
     }()
     

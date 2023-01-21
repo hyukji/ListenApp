@@ -9,14 +9,15 @@ import UIKit
 import SnapKit
 import AVFoundation
 
-var playerController = PlayerController()
-
 class PlayListViewController : UIViewController {
-    
     var playList : [DocumentItem] = []
+    let playerController = PlayerController.playerController
     var filemanager = MyFileManager()
+    var url : URL!
     
-    private lazy var header = PlayListHeaderView(frame: .zero)
+    
+    private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
+    
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
@@ -38,7 +39,8 @@ class PlayListViewController : UIViewController {
         
         setLayout()
         addActionToNowPlayingView()
-        playList = filemanager.getAudioFileListFromDocument()
+        playList = filemanager.getAudioFileListFromDocument(url : url)
+        
 //        playList = CoreDataFunc().fetchAudio()
         
     }
@@ -79,22 +81,26 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let playerVC = PlayerViewController()
-//
-//        guard let list = playList
-//        else {
-//            print("Cant find audioFile")
-//            return
-//        }
-//
-//        let newAudio = list[indexPath.row]
-//        if playerController.audio?.title != newAudio.title {
-//            playerController.audio = newAudio
-//            playerController.isNewAudio = true
-//            playerController.configurePlayer()
-//        }
-//
-//        navigationController?.pushViewController(playerVC, animated: true)
+        let item = playList[indexPath.row]
+        
+        if item.type == .file {
+            if playerController.audio?.title != item.title {
+                playerController.audio = NowAudio(waveImage: UIImage(),
+                                                  mainImage: UIImage(),
+                                                  title: item.title,
+                                                  currentTime: 0.0)
+                playerController.isNewAudio = true
+                playerController.configurePlayer()
+            }
+            
+            let playerVC = PlayerViewController()
+            navigationController?.pushViewController(playerVC, animated: true)
+        }
+        else {
+            let playListVC = PlayListViewController()
+            playListVC.url = item.url
+            navigationController?.pushViewController(playListVC, animated: true)
+        }
         
     }
     
@@ -129,6 +135,7 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
 extension PlayListViewController {
     
     private func setLayout() {
+        self.navigationItem.setHidesBackButton(true, animated: false)
         [header, tableView, nowPlayingView].forEach{
             view.addSubview($0)
         }

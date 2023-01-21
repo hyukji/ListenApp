@@ -8,6 +8,7 @@
 import UIKit
 
 class PlayerProgressView : UIView {
+    let playerController = PlayerController.playerController
     var timer : Timer?
     
     lazy var progressView : UIProgressView = {

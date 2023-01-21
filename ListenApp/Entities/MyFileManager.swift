@@ -31,20 +31,14 @@ class MyFileManager {
         }
     }
     
-    
-    
-    
-    
-    func getAudioFileListFromDocument() -> [DocumentItem] {
+    func getAudioFileListFromDocument(url : URL) -> [DocumentItem] {
         let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
-        let fileManager = FileManager.default
-        let documentsURL =  fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
                 
         // [애플리케이션 폴더에 저장되어 있는 파일 리스트 확인]
         var list : [DocumentItem] = []
         var urls : [URL] = []
         do {
-            urls = try FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
+            urls = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
             
             for url in urls {
                 if url.deletingPathExtension().lastPathComponent == ".Trash" { continue }
@@ -70,7 +64,6 @@ class MyFileManager {
         return list
         
     }
-    
     
 //    func getFileInDocument() {
 //        let fileManager = FileManager.default

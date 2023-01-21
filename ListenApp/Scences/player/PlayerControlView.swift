@@ -9,6 +9,7 @@ import UIKit
 import AVFoundation
 
 class PlayerControlView : UIView {
+    let playerController = PlayerController.playerController
     lazy var mainController : UIStackView = {
         let stackView = UIStackView()
         

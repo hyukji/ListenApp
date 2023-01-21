@@ -38,6 +38,7 @@ class PlayListViewController : UIViewController {
         super.viewDidLoad()
         
         setLayout()
+        setFuncInheaderBtn()
         addActionToNowPlayingView()
         playList = filemanager.getAudioFileListFromDocument(url : url)
         
@@ -111,7 +112,7 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         view.frame.size = CGSize(width: tableView.frame.width, height: 100)
 
         let label = UILabel()
-        label.text = "총 20개 파일"
+        label.text = "총 \(playList.count)개 파일"
         label.font = .systemFont(ofSize: 13)
         label.textColor = .secondaryLabel
         
@@ -133,6 +134,20 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
 
 // layout Setting
 extension PlayListViewController {
+    
+    @objc func tapEditBtn() {
+        print("tapEditBtn")
+    }
+    
+    
+    @objc func tapBackBtn() {
+        navigationController?.popToRootViewController(animated: true)
+    }
+    
+    private func setFuncInheaderBtn(){
+        header.backBtn.addTarget(self, action: #selector(tapBackBtn), for: .touchUpInside)
+        header.editBtn.addTarget(self, action: #selector(tapEditBtn), for: .touchUpInside)
+    }
     
     private func setLayout() {
         self.navigationItem.setHidesBackButton(true, animated: false)

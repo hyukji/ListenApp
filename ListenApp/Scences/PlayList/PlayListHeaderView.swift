@@ -9,58 +9,45 @@ import UIKit
 import SnapKit
 
 class PlayListHeaderView : UIView {
+    let headerTitle : String
+    
+    lazy var backBtn : UIButton = {
+        let btn = UIButton()
+        let btnConfigation = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .bold), scale: .default)
+        btn.setImage(UIImage(systemName: "chevron.backward", withConfiguration: btnConfigation), for: .normal)
+        btn.tintColor = .label
+
+        return btn
+    }()
+    
     private lazy var mainLabel : UILabel = {
         let label = UILabel()
-        label.text = "재생목록"
         label.font = .systemFont(ofSize: 35, weight: .bold)
         label.textColor = .label
-        
         
         return label
     }()
     
-    private lazy var editBtn : UIButton = {
+    lazy var editBtn : UIButton = {
         let btn = UIButton()
-        btn.setTitle("편집", for: .normal)
-        btn.setTitleColor(.label, for: .normal)
-        btn.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-        
-        btn.addTarget(self, action: #selector(tapEditBtn), for: .touchUpInside)
-        
-        return btn
-    }()
-
-    private lazy var plusBtn : UIButton = {
-        let btn = UIButton()
-        btn.setImage(UIImage(systemName: "plus"), for: .normal)
-        btn.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        let btnConfigation = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .bold), scale: .default)
+        btn.setImage(UIImage(systemName: "ellipsis", withConfiguration: btnConfigation), for: .normal)
         btn.tintColor = .label
         
-        btn.addTarget(self, action: #selector(tapPlusBtn), for: .touchUpInside)
-
         return btn
     }()
+
     
-    
-    override init(frame: CGRect) {
+    init(frame : CGRect ,headerTitle: String) {
+        self.headerTitle = headerTitle
         super.init(frame: frame)
         
         setLayout()
-//        MyWebUploader().initWebUploader()
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    @objc private func tapEditBtn() {
-        print("tapEditBtn")
-    }
-    
-    
-    @objc private func tapPlusBtn() {
-        print("tapPlusBtn")
     }
     
 }
@@ -69,13 +56,29 @@ extension PlayListHeaderView {
     
     private func setLayout() {
         
-        [mainLabel, editBtn, plusBtn].forEach{
+        [mainLabel, editBtn].forEach{
             addSubview($0)
         }
         
-        mainLabel.snp.makeConstraints {
-            $0.bottom.equalToSuperview().inset(20)
-            $0.leading.equalToSuperview().offset(20)
+        if headerTitle == "Documents" {
+            mainLabel.text = "재생목록"
+            mainLabel.snp.makeConstraints {
+                $0.centerY.equalToSuperview()
+                $0.leading.equalToSuperview().offset(20)
+            }
+            
+        } else {
+            mainLabel.text = headerTitle
+            addSubview(backBtn)
+            backBtn.snp.makeConstraints {
+                $0.centerY.equalToSuperview()
+                $0.leading.equalToSuperview().offset(20)
+            }
+            
+            mainLabel.snp.makeConstraints {
+                $0.centerY.equalToSuperview()
+                $0.leading.equalTo(backBtn.snp.trailing).offset(15)
+            }
         }
         
         editBtn.snp.makeConstraints {
@@ -83,10 +86,6 @@ extension PlayListHeaderView {
             $0.trailing.equalToSuperview().inset(20)
         }
 
-        plusBtn.snp.makeConstraints {
-            $0.centerY.equalTo(mainLabel)
-            $0.trailing.equalTo(editBtn.snp.leading).offset(-10)
-        }
 
     }
     

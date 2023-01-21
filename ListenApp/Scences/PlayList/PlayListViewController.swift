@@ -15,6 +15,8 @@ class PlayListViewController : UIViewController {
     var filemanager = MyFileManager()
     var url : URL!
     
+    var sortOrder = SortOrder.forward
+    var selectedSort = SelectedSort.name
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
     
@@ -38,12 +40,17 @@ class PlayListViewController : UIViewController {
         super.viewDidLoad()
         
         setLayout()
-        setFuncInheaderBtn()
+        setFuncInHeaderBtn()
         addActionToNowPlayingView()
         playList = filemanager.getAudioFileListFromDocument(url : url)
         
 //        playList = CoreDataFunc().fetchAudio()
         
+    }
+    
+    func refreshPlayListVC() {
+        playList = filemanager.getAudioFileListFromDocument(url : url)
+        tableView.reloadData()
     }
     
     
@@ -131,23 +138,76 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
 }
 
 
-
-// layout Setting
+// header btn functions
 extension PlayListViewController {
-    
-    @objc func tapEditBtn() {
-        print("tapEditBtn")
-    }
-    
     
     @objc func tapBackBtn() {
         navigationController?.popToRootViewController(animated: true)
     }
     
-    private func setFuncInheaderBtn(){
+    private func setFuncInHeaderBtn(){
         header.backBtn.addTarget(self, action: #selector(tapBackBtn), for: .touchUpInside)
-        header.editBtn.addTarget(self, action: #selector(tapEditBtn), for: .touchUpInside)
+        
+        header.editBtn.menu = createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
+        header.editBtn.showsMenuAsPrimaryAction = true
+        
     }
+    
+    func createMenus(selectedSort : SelectedSort, sortOrder : SortOrder) -> UIMenu {
+        let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in print("선택") })
+        let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
+            self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
+            self.refreshPlayListVC()
+        })
+        
+        let wifi = UIAction(title: "와이파이 파일 추가", image: UIImage(systemName: "wifi"), handler: { _ in print("와이파이") })
+        let cable = UIAction(title: "USB 파일 추가", image: UIImage(systemName: "cable.connector.horizontal"), handler: { _ in print("usb") })
+        
+        let adminDocumentMenu = UIMenu(title: "", options: .displayInline, children: [select, newFolder])
+        let newFileMenu = UIMenu(title: "", options: .displayInline, children: [wifi, cable])
+        let sortingMenu = createSortMenu(selectedSort : self.selectedSort, sortOrder : self.sortOrder)
+        
+        return UIMenu(title: "", options: .displayInline, children: [adminDocumentMenu, newFileMenu, sortingMenu])
+    }
+    
+    func createSortMenu(selectedSort : SelectedSort, sortOrder : SortOrder) -> UIMenu {
+        let selectedOrderImg = sortOrder == .forward ? UIImage(systemName: "chevron.up") : UIImage(systemName: "chevron.down")
+        
+        var name = UIAction(title: "이름", image: nil, state: .off, handler: { _ in
+            self.tapSortMenu(selectedSort : .name)})
+        var category = UIAction(title: "종류", image: nil, state: .off, handler: { _ in
+            self.tapSortMenu(selectedSort : .category)})
+        var date = UIAction(title: "날짜", image: nil, state: .off, handler: { _ in self.tapSortMenu(selectedSort : .date)})
+        var size = UIAction(title: "크기", image: nil, state: .off, handler: { _ in self.tapSortMenu(selectedSort : .size)})
+            
+        switch selectedSort {
+        case .name:
+            name = UIAction(title: "이름", image: selectedOrderImg, state: .on, handler: { _ in self.tapSortMenu(selectedSort : .name)})
+        case .category:
+            category = UIAction(title: "종류", image: selectedOrderImg, state: .on, handler: { _ in self.tapSortMenu(selectedSort : .category)})
+        case .date:
+            date = UIAction(title: "날짜", image: selectedOrderImg, state: .on, handler: { _ in self.tapSortMenu(selectedSort : .date)})
+        case .size:
+            size = UIAction(title: "크기", image: selectedOrderImg, state: .on, handler: { _ in self.tapSortMenu(selectedSort : .size)})
+        }
+                
+        return UIMenu(title: "", options: .displayInline, children: [name, category, date, size])
+    }
+    
+    func tapSortMenu(selectedSort : SelectedSort) {
+        if self.selectedSort == selectedSort {
+            self.sortOrder = self.sortOrder == .forward ? SortOrder.reverse : SortOrder.forward
+        }
+        self.selectedSort = selectedSort
+        
+        header.editBtn.menu = self.createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
+    }
+    
+}
+
+
+// layout Setting
+extension PlayListViewController {
     
     private func setLayout() {
         self.navigationItem.setHidesBackButton(true, animated: false)

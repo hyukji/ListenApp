@@ -68,11 +68,11 @@ class PlayListTableViewCell : UITableViewCell {
             imgView.layer.borderColor = UIColor.lightGray.cgColor
             imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
             
-            
             let image = UIImage(systemName: "play", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)
         }
         else {
+            imgView.layer.borderWidth = 0
             imgView.tintColor = .label
             imgView.contentMode = .scaleAspectFit
             imgView.image =  UIImage(systemName: "folder")

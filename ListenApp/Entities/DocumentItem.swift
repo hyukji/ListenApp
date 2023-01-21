@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum DocumentItemType {
+enum DocumentItemType : Comparable {
     case folder
     case file
 }
@@ -15,5 +15,9 @@ enum DocumentItemType {
 struct DocumentItem {
     let title : String
     let url : URL
+    let creationDate : Date
+    let size : UInt64
     let type : DocumentItemType
 }
+
+

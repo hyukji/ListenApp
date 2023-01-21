@@ -15,7 +15,7 @@ class PlayListViewController : UIViewController {
     var filemanager = MyFileManager()
     var url : URL!
     
-    var sortOrder = SortOrder.forward
+    var sortOrder = ComparisonResult.orderedAscending
     var selectedSort = SelectedSort.name
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
@@ -153,7 +153,7 @@ extension PlayListViewController {
         
     }
     
-    func createMenus(selectedSort : SelectedSort, sortOrder : SortOrder) -> UIMenu {
+    func createMenus(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
         let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in print("선택") })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
             self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
@@ -170,8 +170,8 @@ extension PlayListViewController {
         return UIMenu(title: "", options: .displayInline, children: [adminDocumentMenu, newFileMenu, sortingMenu])
     }
     
-    func createSortMenu(selectedSort : SelectedSort, sortOrder : SortOrder) -> UIMenu {
-        let selectedOrderImg = sortOrder == .forward ? UIImage(systemName: "chevron.up") : UIImage(systemName: "chevron.down")
+    func createSortMenu(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
+        let selectedOrderImg = sortOrder == .orderedAscending ? UIImage(systemName: "chevron.up") : UIImage(systemName: "chevron.down")
         
         var name = UIAction(title: "이름", image: nil, state: .off, handler: { _ in
             self.tapSortMenu(selectedSort : .name)})
@@ -196,13 +196,41 @@ extension PlayListViewController {
     
     func tapSortMenu(selectedSort : SelectedSort) {
         if self.selectedSort == selectedSort {
-            self.sortOrder = self.sortOrder == .forward ? SortOrder.reverse : SortOrder.forward
+            self.sortOrder = self.sortOrder == .orderedAscending ? .orderedDescending : .orderedAscending
         }
         self.selectedSort = selectedSort
-        
         header.editBtn.menu = self.createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
+        
+        sortPlayList()
+        self.tableView.reloadData()
+        
     }
     
+    
+    
+    func sortPlayList() {
+        let isAscending = self.sortOrder == .orderedAscending ? true : false
+        
+        switch self.selectedSort {
+        case .name:
+            self.playList.sort{
+                return ($0.title < $1.title) == isAscending
+            }
+        case .category:
+            self.playList.sort{
+                return ($0.type < $1.type) == isAscending
+            }
+        case .date:
+            self.playList.sort{
+                return ($0.creationDate < $1.creationDate) == isAscending
+            }
+        case .size:
+            self.playList.sort{
+                return ($0.size < $1.size) == isAscending
+            }
+        }
+    
+    }
 }
 
 

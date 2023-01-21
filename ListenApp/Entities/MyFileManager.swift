@@ -38,20 +38,25 @@ class MyFileManager {
         var list : [DocumentItem] = []
         var urls : [URL] = []
         do {
-            urls = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            urls = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
             
             for url in urls {
                 if url.deletingPathExtension().lastPathComponent == ".Trash" { continue }
                 
+                let attr = try fileManager.attributesOfItem(atPath: url.path) as NSDictionary
                 if url.hasDirectoryPath {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
                                             url: url,
+                                            creationDate : attr.fileCreationDate() ?? Date(),
+                                            size : attr.fileSize(),
                                             type: .folder)
                     list.append(item)
                 }
                 else if allowedFileExtensions.contains(url.pathExtension) {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
                                             url: url,
+                                            creationDate : attr.fileCreationDate() ?? Date(),
+                                            size : attr.fileSize(),
                                             type: .file)
                     list.append(item)
                 }

@@ -19,6 +19,7 @@ class PlayListViewController : UIViewController {
     var selectedSort = SelectedSort.name
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
+    private lazy var editingFooter = UIView()
     
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
     private lazy var tableView : UITableView = {
@@ -133,8 +134,45 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         return view
     }
     
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
+    }
     
     
+    
+}
+
+// editing multiselection
+extension PlayListViewController {
+    func setLayoutForBeginEditing() {
+        if self.tableView.isEditing == false { return }
+        
+        self.header.setBtnHiddenForBeginEditing()
+        
+        tabBarController?.tabBar.isHidden = true
+        tabBarController?.tabBar.isTranslucent = true
+        
+        self.editingFooter.isHidden = false
+        self.nowPlayingView.isHidden = true
+    }
+    
+    @objc func tapEditBtnForComplete(){
+        self.tableView.isEditing = false
+        setLayoutForEndEditing()
+    }
+    
+    func setLayoutForEndEditing() {
+        if self.tableView.isEditing == true { return }
+        
+        self.header.setBtnHiddenForEndEditing()
+        
+        tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.isTranslucent = false
+        
+        self.editingFooter.isHidden = true
+        self.nowPlayingView.isHidden = false
+        
+    }
 }
 
 
@@ -142,19 +180,24 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
 extension PlayListViewController {
     
     @objc func tapBackBtn() {
-        navigationController?.popToRootViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
     private func setFuncInHeaderBtn(){
         header.backBtn.addTarget(self, action: #selector(tapBackBtn), for: .touchUpInside)
         
+        header.completeBtn.addTarget(self, action: #selector(tapEditBtnForComplete), for: .touchUpInside)
         header.editBtn.menu = createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
         header.editBtn.showsMenuAsPrimaryAction = true
         
     }
     
     func createMenus(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
-        let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in print("선택") })
+        let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in
+            self.tableView.allowsMultipleSelectionDuringEditing = true
+            self.tableView.setEditing(true, animated: true)
+            self.setLayoutForBeginEditing()
+        })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
             self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
             self.refreshPlayListVC()
@@ -206,8 +249,6 @@ extension PlayListViewController {
         
     }
     
-    
-    
     func sortPlayList() {
         let isAscending = self.sortOrder == .orderedAscending ? true : false
         
@@ -239,9 +280,11 @@ extension PlayListViewController {
     
     private func setLayout() {
         self.navigationItem.setHidesBackButton(true, animated: false)
-        [header, tableView, nowPlayingView].forEach{
+        [header, tableView, nowPlayingView, editingFooter].forEach{
             view.addSubview($0)
         }
+        editingFooter.backgroundColor = .red
+        editingFooter.isHidden = true
         
         header.snp.makeConstraints{
             $0.leading.trailing.equalTo(view)
@@ -262,5 +305,12 @@ extension PlayListViewController {
             $0.bottom.equalTo(tableView).inset(30)
         }
 
+        editingFooter.snp.makeConstraints{
+            $0.height.equalTo(100)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
+        }
+        
+        
     }
 }

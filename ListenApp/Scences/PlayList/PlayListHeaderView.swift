@@ -37,6 +37,15 @@ class PlayListHeaderView : UIView {
         return btn
     }()
 
+    lazy var completeBtn : UIButton = {
+        let btn = UIButton()
+        
+        btn.setTitle("완료", for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 20)
+        btn.setTitleColor(.label, for: .normal)
+        
+        return btn
+    }()
     
     init(frame : CGRect ,headerTitle: String) {
         self.headerTitle = headerTitle
@@ -50,15 +59,27 @@ class PlayListHeaderView : UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setBtnHiddenForBeginEditing() {
+        completeBtn.isHidden = false
+        editBtn.isHidden = true
+    }
+    
+    func setBtnHiddenForEndEditing() {
+        editBtn.isHidden = false
+        completeBtn.isHidden = true
+    }
+    
 }
 
 extension PlayListHeaderView {
     
     private func setLayout() {
         
-        [mainLabel, editBtn].forEach{
+        [mainLabel, editBtn, completeBtn].forEach{
             addSubview($0)
         }
+        
+        completeBtn.isHidden = true
         
         if headerTitle == "Documents" {
             mainLabel.text = "재생목록"
@@ -85,8 +106,13 @@ extension PlayListHeaderView {
             $0.centerY.equalTo(mainLabel)
             $0.trailing.equalToSuperview().inset(20)
         }
+        
+        completeBtn.snp.makeConstraints {
+            $0.centerY.equalTo(mainLabel)
+            $0.trailing.equalToSuperview().inset(20)
+        }
 
-
+        
     }
     
     

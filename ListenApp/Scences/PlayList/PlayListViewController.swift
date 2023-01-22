@@ -138,15 +138,18 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         return .none
     }
     
-    
-    
 }
+
 
 // editing multiselection
 extension PlayListViewController {
+    
+    @objc func changeTableViewEditingAndLayout(){
+        self.tableView.isEditing = !self.tableView.isEditing
+        self.tableView.isEditing == true ? setLayoutForBeginEditing() : setLayoutForEndEditing()
+    }
+    
     func setLayoutForBeginEditing() {
-        if self.tableView.isEditing == false { return }
-        
         self.header.setBtnHiddenForBeginEditing()
         
         tabBarController?.tabBar.isHidden = true
@@ -156,14 +159,7 @@ extension PlayListViewController {
         self.nowPlayingView.isHidden = true
     }
     
-    @objc func tapEditBtnForComplete(){
-        self.tableView.isEditing = false
-        setLayoutForEndEditing()
-    }
-    
     func setLayoutForEndEditing() {
-        if self.tableView.isEditing == true { return }
-        
         self.header.setBtnHiddenForEndEditing()
         
         tabBarController?.tabBar.isHidden = false
@@ -186,17 +182,19 @@ extension PlayListViewController {
     private func setFuncInHeaderBtn(){
         header.backBtn.addTarget(self, action: #selector(tapBackBtn), for: .touchUpInside)
         
-        header.completeBtn.addTarget(self, action: #selector(tapEditBtnForComplete), for: .touchUpInside)
+        header.completeBtn.addTarget(self, action: #selector(changeTableViewEditingAndLayout), for: .touchUpInside)
+        
         header.editBtn.menu = createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
         header.editBtn.showsMenuAsPrimaryAction = true
         
+//
     }
     
     func createMenus(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
         let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in
             self.tableView.allowsMultipleSelectionDuringEditing = true
-            self.tableView.setEditing(true, animated: true)
-            self.setLayoutForBeginEditing()
+            //PlayList menu's "selection uiaction" has 'perform(afterdelay)' for removing [ASSERT] about hiding editBtn when it's menu is working
+            self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.5)
         })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
             self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)

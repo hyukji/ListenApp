@@ -19,7 +19,31 @@ class PlayListViewController : UIViewController {
     var selectedSort = SelectedSort.name
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
-    private lazy var editingFooter = UIView()
+    private lazy var editingFooter : UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fillEqually
+        
+        stackView.tintColor = .label
+        
+        let renameButton = UIButton()
+        let moveButton = UIButton()
+        let deleteButton = UIButton()
+        
+        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .light), scale: .default)
+        
+        renameButton.setImage(UIImage(systemName: "a.square", withConfiguration: repeatImageConfig), for: .normal)
+        moveButton.setImage(UIImage(systemName: "folder", withConfiguration: repeatImageConfig), for: .normal)
+        deleteButton.setImage(UIImage(systemName: "trash", withConfiguration: repeatImageConfig), for: .normal)
+        
+        [renameButton, moveButton, deleteButton].forEach{
+            stackView.addArrangedSubview($0)
+        }
+        
+        return stackView
+    }()
     
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
     private lazy var tableView : UITableView = {
@@ -193,6 +217,7 @@ extension PlayListViewController {
     func createMenus(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
         let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in
             self.tableView.allowsMultipleSelectionDuringEditing = true
+            
             //PlayList menu's "selection uiaction" has 'perform(afterdelay)' for removing [ASSERT] about hiding editBtn when it's menu is working
             self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.5)
         })
@@ -281,7 +306,7 @@ extension PlayListViewController {
         [header, tableView, nowPlayingView, editingFooter].forEach{
             view.addSubview($0)
         }
-        editingFooter.backgroundColor = .red
+        
         editingFooter.isHidden = true
         
         header.snp.makeConstraints{
@@ -293,7 +318,7 @@ extension PlayListViewController {
         tableView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(header.snp.bottom)
-            $0.bottom.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
 
         nowPlayingView.snp.makeConstraints{
@@ -304,9 +329,10 @@ extension PlayListViewController {
         }
 
         editingFooter.snp.makeConstraints{
-            $0.height.equalTo(100)
-            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(tableView.snp.bottom)
             $0.bottom.equalToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(view.snp.width).multipliedBy(1)
         }
         
         

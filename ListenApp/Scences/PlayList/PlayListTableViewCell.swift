@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import SnapKit
 
 class PlayListTableViewCell : UITableViewCell {
     
-    private lazy var imgView : UIImageView = {
+    lazy var imgView : UIImageView = {
         let imageView = UIImageView()
         
         return imageView
@@ -49,12 +50,31 @@ class PlayListTableViewCell : UITableViewCell {
     private lazy var rightIconButton : UIButton = {
         let button = UIButton()
         
-        
-//      button.addTarget(self, action: #selector(tapPlayBtn), for: .touchUpInside)
-        
         return button
     }()
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if self.isEditing { setIndentLayout() }
+        else if rightIconButton.isHidden { deleteIndentLayout() }
+    }
+    
+    func setIndentLayout() {
+        imgView.snp.updateConstraints{
+            $0.leading.equalToSuperview().offset(55)
+        }
+
+        rightIconButton.isHidden = true
+    }
+    
+    func deleteIndentLayout() {
+        imgView.snp.updateConstraints{
+            $0.leading.equalToSuperview().offset(20)
+        }
+
+        rightIconButton.isHidden = false
+    }
     
     func setLayout(item : DocumentItem) {
         [imgView, rightIconButton, stackView].forEach{
@@ -81,7 +101,6 @@ class PlayListTableViewCell : UITableViewCell {
             let image = UIImage(systemName: "chevron.right", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)
         }
-    
         
         titleLabel.text = item.title
         
@@ -98,7 +117,7 @@ class PlayListTableViewCell : UITableViewCell {
         
         stackView.snp.makeConstraints{
             $0.leading.equalTo(imgView.snp.trailing).offset(10)
-            $0.trailing.equalTo(rightIconButton.snp.leading)
+            $0.trailing.equalTo(rightIconButton.snp.leading).offset(-10)
             $0.top.equalTo(imgView).inset(5)
             $0.bottom.equalTo(imgView).inset(5)
         }

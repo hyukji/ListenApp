@@ -264,7 +264,16 @@ extension PlayListViewController {
             self.changeEditingFooterButtonStatus()
         })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
-            self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
+//            self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
+            let customAlerVC = CustomAlertViewController()
+            
+            customAlerVC.alertCategory = .newFolder
+            customAlerVC.delegate = self
+            
+            customAlerVC.modalPresentationStyle = .overFullScreen
+            customAlerVC.modalTransitionStyle = .crossDissolve
+            self.present(customAlerVC, animated: true, completion: nil)
+            
             self.refreshPlayListVC()
         })
         
@@ -339,6 +348,21 @@ extension PlayListViewController {
     }
 }
 
+
+extension PlayListViewController : CustomAlertDelegate {
+    func confirmRename(text: String) {
+        print(text)
+    }
+    
+    func confirmNewFolder(text: String) {
+        print(text)
+    }
+    
+    func confirmAddWifiFile() {
+        print("Addwifi")
+    }
+    
+}
 
 // layout Setting
 extension PlayListViewController {

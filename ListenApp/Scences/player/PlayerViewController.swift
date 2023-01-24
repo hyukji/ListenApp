@@ -30,7 +30,7 @@ class PlayerViewController : UIViewController {
     // go back rootViewVC(PlayListVC or SettingVC)
     @objc func backToRootVC() {
         tabBarController?.tabBar.isHidden = false
-        tabBarController?.tabBar.isTranslucent = false
+        tabBarController?.tabBar.isTranslucent = true
         
         navigationController?.popToRootViewController(animated: true)
     }

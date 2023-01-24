@@ -40,7 +40,10 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-        tabBar.isTranslucent = true
+        
+//        tabBarController?.tabBar.isHidden = false
+//        tabBarController?.tabBar.isTranslucent = false
+        
         
         viewControllers = [PlayListVC, SettingVC]
     }

@@ -52,38 +52,28 @@ class PlayListTableViewCell : UITableViewCell {
         
         return button
     }()
-    
+//
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if self.isEditing { setIndentLayout() }
-        else if rightIconButton.isHidden { deleteIndentLayout() }
-    }
-    
-    func setIndentLayout() {
-        imgView.snp.updateConstraints{
-            $0.leading.equalToSuperview().offset(55)
+        if isEditing {
+            self.rightIconButton.isHidden = true
+        } else {
+            self.rightIconButton.isHidden = false
         }
 
-        rightIconButton.isHidden = true
-    }
-    
-    func deleteIndentLayout() {
-        imgView.snp.updateConstraints{
-            $0.leading.equalToSuperview().offset(20)
-        }
-
-        rightIconButton.isHidden = false
     }
     
     func setLayout(item : DocumentItem) {
+        self.selectionStyle = .default
+        
         [imgView, rightIconButton, stackView].forEach{
-            addSubview($0)
+            contentView.addSubview($0)
         }
         
         let buttonImgConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
         if item.type == .file {
-            imgView.contentMode = .scaleAspectFill
+            imgView.contentMode = .scaleAspectFit
             imgView.layer.borderWidth = 1
             imgView.layer.borderColor = UIColor.lightGray.cgColor
             imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
@@ -96,7 +86,7 @@ class PlayListTableViewCell : UITableViewCell {
             imgView.tintColor = .label
             imgView.contentMode = .scaleAspectFit
             imgView.image =  UIImage(systemName: "folder")
-//            imgView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+            //            imgView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
             
             let image = UIImage(systemName: "chevron.right", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)
@@ -121,9 +111,7 @@ class PlayListTableViewCell : UITableViewCell {
             $0.top.equalTo(imgView).inset(5)
             $0.bottom.equalTo(imgView).inset(5)
         }
+        
     }
     
-    
 }
-
-

@@ -15,32 +15,20 @@ class PlayListViewController : UIViewController {
     var filemanager = MyFileManager()
     var url : URL!
     
-    var sortOrder = ComparisonResult.orderedAscending
-    var selectedSort = SelectedSort.name
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
+    
+    private lazy var renameButton = UIButton()
+    private lazy var moveButton = UIButton()
+    private lazy var deleteButton = UIButton()
+    
     private lazy var editingFooter : UIStackView = {
         let stackView = UIStackView()
         
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fillEqually
-        
         stackView.tintColor = .label
-        
-        let renameButton = UIButton()
-        let moveButton = UIButton()
-        let deleteButton = UIButton()
-        
-        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .light), scale: .default)
-        
-        renameButton.setImage(UIImage(systemName: "a.square", withConfiguration: repeatImageConfig), for: .normal)
-        moveButton.setImage(UIImage(systemName: "folder", withConfiguration: repeatImageConfig), for: .normal)
-        deleteButton.setImage(UIImage(systemName: "trash", withConfiguration: repeatImageConfig), for: .normal)
-        
-        [renameButton, moveButton, deleteButton].forEach{
-            stackView.addArrangedSubview($0)
-        }
         
         return stackView
     }()
@@ -48,7 +36,7 @@ class PlayListViewController : UIViewController {
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
-        tableView.rowHeight = 80
+//        tableView.rowHeight = 80
         tableView.separatorStyle = .none
         
         tableView.delegate = self
@@ -59,6 +47,9 @@ class PlayListViewController : UIViewController {
         return tableView
     }()
     
+    
+    var sortOrder = ComparisonResult.orderedAscending
+    var selectedSort = SelectedSort.name
     
     
     override func viewDidLoad() {
@@ -100,6 +91,10 @@ class PlayListViewController : UIViewController {
 // TableView
 extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        80
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return playList.count
     }
@@ -108,12 +103,17 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListTableViewCell", for: indexPath) as? PlayListTableViewCell else {return UITableViewCell()}
         
-        cell.setLayout(item : playList[indexPath.row])
+        cell.setLayout(item: playList[indexPath.row])
         return cell
         
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ : UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            changeEditingFooterButtonStatus()
+            return
+        }
+        
         let item = playList[indexPath.row]
         
         if item.type == .file {
@@ -162,6 +162,47 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         return .none
     }
     
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        changeEditingFooterButtonStatus()
+        
+    }
+    
+}
+
+// editingFooter button functions
+extension PlayListViewController {
+    func setEditingFooterButton() {
+        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .light), scale: .default)
+        
+        renameButton.setImage(UIImage(systemName: "a.square", withConfiguration: repeatImageConfig), for: .normal)
+        moveButton.setImage(UIImage(systemName: "folder", withConfiguration: repeatImageConfig), for: .normal)
+        deleteButton.setImage(UIImage(systemName: "trash", withConfiguration: repeatImageConfig), for: .normal)
+        
+        [renameButton, moveButton, deleteButton].forEach{
+            editingFooter.addArrangedSubview($0)
+        }
+    }
+    
+    func changeEditingFooterButtonStatus() {
+        let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
+        
+        switch selectedIndexPath.count {
+        case 0:
+            [renameButton, moveButton, deleteButton].forEach{
+                $0.isEnabled = false
+            }
+        case 1:
+            [renameButton, moveButton, deleteButton].forEach{
+                $0.isEnabled = true
+            }
+        default:
+            renameButton.isEnabled = false
+            [moveButton, deleteButton].forEach{
+                $0.isEnabled = true
+            }
+        }
+        
+    }
     
 }
 
@@ -177,8 +218,8 @@ extension PlayListViewController {
     func setLayoutForBeginEditing() {
         self.header.setBtnHiddenForBeginEditing()
         
-        tabBarController?.tabBar.isHidden = true
         tabBarController?.tabBar.isTranslucent = true
+        tabBarController?.tabBar.isHidden = true
         
         self.editingFooter.isHidden = false
         self.nowPlayingView.isHidden = true
@@ -188,7 +229,6 @@ extension PlayListViewController {
         self.header.setBtnHiddenForEndEditing()
         
         tabBarController?.tabBar.isHidden = false
-        tabBarController?.tabBar.isTranslucent = false
         
         self.editingFooter.isHidden = true
         self.nowPlayingView.isHidden = false
@@ -221,6 +261,7 @@ extension PlayListViewController {
             
             //PlayList menu's "selection uiaction" has 'perform(afterdelay)' for removing [ASSERT] about hiding editBtn when it's menu is working
             self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.5)
+            self.changeEditingFooterButtonStatus()
         })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
             self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
@@ -303,7 +344,9 @@ extension PlayListViewController {
 extension PlayListViewController {
     
     private func setLayout() {
+        setEditingFooterButton()
         self.navigationItem.setHidesBackButton(true, animated: false)
+        
         [header, tableView, nowPlayingView, editingFooter].forEach{
             view.addSubview($0)
         }

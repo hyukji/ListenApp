@@ -71,6 +71,15 @@ class CustomAlertViewController: UIViewController {
         return label
     }()
     
+    private lazy var IPadderssLabel: UILabel = {
+        let label = UILabel()
+        label.text = IPaddress
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.numberOfLines = 0
+        
+        return label
+    }()
+    
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.text = defaultName
@@ -113,6 +122,8 @@ class CustomAlertViewController: UIViewController {
     var alertCategory : AlertCategory!
     
     var defaultName = "새로운 파일"
+    
+    var IPaddress = ""
     var confirmButtonText = "확인"
     var cancelButtonText = "취소"
     
@@ -130,6 +141,19 @@ class CustomAlertViewController: UIViewController {
             cancelButton.isHidden = false
             confirmButton.isHidden = false
         }
+        
+        switch alertCategory {
+        case .rename, .newFolder:
+            textField.isHidden = false
+            IPadderssLabel.isHidden = true
+        case .addWifiFile:
+            textField.isHidden = true
+            IPadderssLabel.isHidden = false
+        default:
+            textField.isHidden = true
+            IPadderssLabel.isHidden = true
+        }
+        
     }
     
     @objc func tapconfirmButton(_ sender: Any) {
@@ -168,6 +192,8 @@ class CustomAlertViewController: UIViewController {
         contentStackView.addArrangedSubview(titleLabel)
         contentStackView.addArrangedSubview(textLabel)
         contentStackView.addArrangedSubview(textField)
+        contentStackView.addArrangedSubview(IPadderssLabel)
+        
         
         if alertCategory.alerttype == .canCancel {
             buttonStackView.addArrangedSubview(cancelButton)
@@ -235,7 +261,7 @@ extension AlertCategory {
         case .newFolder:
             return "새로운 파일 이름을 적어주세요"
         case .addWifiFile:
-            return "http://192.168.0.14:8080/ 으로 접속해주세요"
+            return "기기와 동일한 와이파이에 연결한 후에 하단의 주소로 접속해주세요"
         case .addCableFile:
             return "연결 후에 파일로 이도애주세요"
         }

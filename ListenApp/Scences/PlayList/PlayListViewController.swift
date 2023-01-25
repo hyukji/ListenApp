@@ -13,6 +13,7 @@ class PlayListViewController : UIViewController {
     var playList : [DocumentItem] = []
     let playerController = PlayerController.playerController
     var filemanager = MyFileManager()
+    var webUploader = MyWebUploader()
     var url : URL!
     
     
@@ -324,8 +325,29 @@ extension PlayListViewController {
             self.present(customAlerVC, animated: true, completion: nil)
         })
         
-        let wifi = UIAction(title: "와이파이 파일 추가", image: UIImage(systemName: "wifi"), handler: { _ in print("와이파이") })
-        let cable = UIAction(title: "USB 파일 추가", image: UIImage(systemName: "cable.connector.horizontal"), handler: { _ in print("usb") })
+        let wifi = UIAction(title: "와이파이 파일 추가", image: UIImage(systemName: "wifi"), handler: { _ in
+            let customAlerVC = CustomAlertViewController()
+            customAlerVC.alertCategory = .addWifiFile
+            
+            customAlerVC.IPaddress = self.webUploader.initWebUploader()
+            customAlerVC.delegate = self
+            
+            customAlerVC.modalPresentationStyle = .overFullScreen
+            customAlerVC.modalTransitionStyle = .crossDissolve
+            self.present(customAlerVC, animated: true, completion: nil)
+            
+            
+        })
+        let cable = UIAction(title: "USB 파일 추가", image: UIImage(systemName: "cable.connector.horizontal"), handler: { _ in
+            let customAlerVC = CustomAlertViewController()
+            customAlerVC.alertCategory = .addCableFile
+            
+//            customAlerVC.delegate = self
+            
+            customAlerVC.modalPresentationStyle = .overFullScreen
+            customAlerVC.modalTransitionStyle = .crossDissolve
+            self.present(customAlerVC, animated: true, completion: nil)
+        })
         
         let adminDocumentMenu = UIMenu(title: "", options: .displayInline, children: [select, newFolder])
         let newFileMenu = UIMenu(title: "", options: .displayInline, children: [wifi, cable])
@@ -411,7 +433,8 @@ extension PlayListViewController : CustomAlertDelegate {
     }
     
     func confirmAddWifiFile() {
-        print("Addwifi")
+        webUploader.stopWebUploader()
+        refreshPlayListVC()
     }
     
 }

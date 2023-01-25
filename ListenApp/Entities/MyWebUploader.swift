@@ -25,7 +25,6 @@ class MyWebUploader {
             let range = start..<end
             let mySubstring = str[range]
             ipAddress = String(mySubstring)
-            print("Visit \(webUploader.serverURL!) in your web browser")
         } else {
             ipAddress = "No Wifi connected"
         }

@@ -104,6 +104,8 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListTableViewCell", for: indexPath) as? PlayListTableViewCell else {return UITableViewCell()}
         
         cell.setLayout(item: playList[indexPath.row])
+        cell.tag = indexPath.row
+        
         return cell
         
     }
@@ -178,10 +180,48 @@ extension PlayListViewController {
         moveButton.setImage(UIImage(systemName: "folder", withConfiguration: repeatImageConfig), for: .normal)
         deleteButton.setImage(UIImage(systemName: "trash", withConfiguration: repeatImageConfig), for: .normal)
         
+        renameButton.addTarget(self, action: #selector(tapRenameButton), for: .touchUpInside)
+//        moveButton.addTarget(self, action: #selector(), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(tapDeleteButton), for: .touchUpInside)
+        
         [renameButton, moveButton, deleteButton].forEach{
             editingFooter.addArrangedSubview($0)
         }
     }
+    
+    @objc func tapRenameButton(){
+        let indexPath = tableView.indexPathForSelectedRow ?? IndexPath()
+        
+        let customAlerVC = CustomAlertViewController()
+        
+        customAlerVC.alertCategory = .rename
+        customAlerVC.defaultName = self.playList[indexPath.row].title
+
+        customAlerVC.delegate = self
+        
+        customAlerVC.modalPresentationStyle = .overFullScreen
+        customAlerVC.modalTransitionStyle = .crossDissolve
+        self.present(customAlerVC, animated: true, completion: nil)
+    }
+    
+    @objc func tapMoveButton(){
+        
+    }
+    
+    @objc func tapDeleteButton(){
+        let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
+        var selectedItems : [DocumentItem] = []
+        for indexPath in selectedIndexPath {
+            selectedItems.append(self.playList[indexPath.row])
+        }
+        
+        filemanager.deleteFilesInDocument(items: selectedItems)
+        refreshPlayListVC()
+        changeTableViewEditingAndLayout()
+        
+    }
+    
+    
     
     func changeEditingFooterButtonStatus() {
         let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
@@ -264,17 +304,22 @@ extension PlayListViewController {
             self.changeEditingFooterButtonStatus()
         })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
-//            self.filemanager.createForderInDocument(title: "새로운 폴더", documentsURL: self.url)
             let customAlerVC = CustomAlertViewController()
             
             customAlerVC.alertCategory = .newFolder
+            
+            // 새로운 폴더 라는 이름을 가진 파일 or 폴더 가 있다면 1을 추가
+            var defaultName = "새로운 폴더"
+            while self.playList.contains(where: {$0.title == defaultName}) {
+                defaultName += "1"
+            }
+            customAlerVC.defaultName = defaultName
+
             customAlerVC.delegate = self
             
             customAlerVC.modalPresentationStyle = .overFullScreen
             customAlerVC.modalTransitionStyle = .crossDissolve
             self.present(customAlerVC, animated: true, completion: nil)
-            
-            self.refreshPlayListVC()
         })
         
         let wifi = UIAction(title: "와이파이 파일 추가", image: UIImage(systemName: "wifi"), handler: { _ in print("와이파이") })
@@ -350,11 +395,17 @@ extension PlayListViewController {
 
 extension PlayListViewController : CustomAlertDelegate {
     func confirmRename(text: String) {
-        print(text)
+        let indexPath = tableView.indexPathForSelectedRow ?? IndexPath()
+        let item = self.playList[indexPath.row]
+        
+        filemanager.renameFileInDocument(item : item, newTitle: text, url: url)
+        changeTableViewEditingAndLayout()
+        refreshPlayListVC()
     }
     
     func confirmNewFolder(text: String) {
-        print(text)
+        self.filemanager.createForderInDocument(title: text, documentsURL: self.url)
+        refreshPlayListVC()
     }
     
     func confirmAddWifiFile() {

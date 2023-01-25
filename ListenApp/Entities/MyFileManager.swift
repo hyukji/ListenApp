@@ -21,12 +21,23 @@ class MyFileManager {
     }
     
     
-    func deleteFileInDocument(extendTitle : String, documentsURL : URL) {
-        let fileURL = documentsURL.appendingPathComponent(extendTitle)
-
+    func deleteFilesInDocument(items : [DocumentItem]) {
+        items.forEach{
+            do {
+                try fileManager.removeItem(at: $0.url)
+            } catch let e {
+                print(e.localizedDescription)
+            }
+        }
+    }
+    
+    func renameFileInDocument(item : DocumentItem, newTitle : String, url : URL) {
+        let originPath = item.url.path
+        let newPath = item.url.pathExtension == "" ? url.path + "/\(newTitle)"  : url.path + "/\(newTitle).\(item.url.pathExtension)"
+        
         do {
-            try fileManager.removeItem(at: fileURL)
-        } catch let e {
+            try fileManager.moveItem(atPath: originPath, toPath: newPath)
+        } catch let e as NSError {
             print(e.localizedDescription)
         }
     }

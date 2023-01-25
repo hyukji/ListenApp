@@ -73,6 +73,7 @@ class CustomAlertViewController: UIViewController {
     
     private lazy var textField: UITextField = {
         let textField = UITextField()
+        textField.text = defaultName
         textField.borderStyle = .roundedRect
         textField.clearButtonMode = .always
         
@@ -111,6 +112,7 @@ class CustomAlertViewController: UIViewController {
     
     var alertCategory : AlertCategory!
     
+    var defaultName = "새로운 파일"
     var confirmButtonText = "확인"
     var cancelButtonText = "취소"
     
@@ -186,6 +188,10 @@ class CustomAlertViewController: UIViewController {
         contentStackView.snp.makeConstraints {
             $0.top.leading.trailing.equalTo(containerView).inset(30)
             $0.bottom.equalToSuperview().offset(-100)
+        }
+        
+        textField.snp.makeConstraints{
+            $0.width.equalToSuperview()
         }
         
         buttonStackView.snp.makeConstraints {

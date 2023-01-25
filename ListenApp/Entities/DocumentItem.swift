@@ -13,10 +13,11 @@ enum DocumentItemType : Comparable {
 }
 
 struct DocumentItem {
-    let title : String
+    var title : String
     let url : URL
     let creationDate : Date
     let size : UInt64
+    let Audioextension : String?
     let type : DocumentItemType
 }
 

@@ -49,6 +49,7 @@ class MyFileManager {
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             size : attr.fileSize(),
+                                            Audioextension: nil,
                                             type: .folder)
                     list.append(item)
                 }
@@ -57,8 +58,10 @@ class MyFileManager {
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             size : attr.fileSize(),
+                                            Audioextension: url.pathExtension,
                                             type: .file)
                     list.append(item)
+                    
                 }
             }
         }
@@ -69,6 +72,12 @@ class MyFileManager {
         return list
         
     }
+    
+    
+    
+    
+//
+    
     
 //    func getFileInDocument() {
 //        let fileManager = FileManager.default

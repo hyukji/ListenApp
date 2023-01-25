@@ -61,7 +61,7 @@ class PlayListViewController : UIViewController {
         playList = filemanager.getAudioFileListFromDocument(url : url)
         
 //        playList = CoreDataFunc().fetchAudio()
-        
+    
     }
     
     func refreshPlayListVC() {
@@ -121,7 +121,8 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
                 playerController.audio = NowAudio(waveImage: UIImage(),
                                                   mainImage: UIImage(),
                                                   title: item.title,
-                                                  currentTime: 0.0)
+                                                  currentTime: 0.0,
+                                                  Audioextension: item.Audioextension)
                 playerController.isNewAudio = true
                 playerController.configurePlayer()
             }
@@ -164,9 +165,8 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         changeEditingFooterButtonStatus()
-        
     }
-    
+
 }
 
 // editingFooter button functions
@@ -252,9 +252,9 @@ extension PlayListViewController {
         header.editBtn.menu = createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
         header.editBtn.showsMenuAsPrimaryAction = true
         
-//
     }
     
+    // menu 목록들: adminDocumentMenu, newFileMenu, sortingMenu
     func createMenus(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
         let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in
             self.tableView.allowsMultipleSelectionDuringEditing = true
@@ -320,7 +320,6 @@ extension PlayListViewController {
         
         sortPlayList()
         self.tableView.reloadData()
-        
     }
     
     func sortPlayList() {

@@ -45,7 +45,8 @@ class CoreDataFunc {
                     waveImage: image ?? UIImage(),
                     mainImage: UIImage(named: "MusicBasic") ?? UIImage(),
                     title: title,
-                    currentTime: 0.0
+                    currentTime: 0.0,
+                    Audioextension: nil
                 )
                 self.saveAudio(nowAudio: audio)
             }
@@ -63,6 +64,7 @@ class CoreDataFunc {
             audio.setValue(nowAudio.mainImage.pngData(), forKey: "mainImage")
             audio.setValue(nowAudio.title, forKey: "title")
             audio.setValue(nowAudio.currentTime, forKey: "currentTime")
+            audio.setValue(nowAudio.Audioextension, forKey: "AudioExtension")
             
             do {
                 try context.save()
@@ -90,7 +92,8 @@ class CoreDataFunc {
                         waveImage: UIImage(data: waveImage) ?? UIImage(),
                         mainImage: UIImage(data: mainImage) ?? UIImage(),
                         title: title,
-                        currentTime: currentTime
+                        currentTime: currentTime,
+                        Audioextension: nil
                     )
                 )
             }

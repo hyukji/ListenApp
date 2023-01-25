@@ -13,5 +13,6 @@ struct NowAudio {
     let mainImage : UIImage
     let title : String
     let currentTime : Double
+    let Audioextension : String?
 }
 

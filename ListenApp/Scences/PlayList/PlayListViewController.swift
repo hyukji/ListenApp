@@ -59,6 +59,7 @@ class PlayListViewController : UIViewController {
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
         playList = filemanager.getAudioFileListFromDocument(url : url)
+        sortPlayList()
         
 //        playList = CoreDataFunc().fetchAudio()
     
@@ -66,6 +67,7 @@ class PlayListViewController : UIViewController {
     
     func refreshPlayListVC() {
         playList = filemanager.getAudioFileListFromDocument(url : url)
+        sortPlayList()
         tableView.reloadData()
     }
     

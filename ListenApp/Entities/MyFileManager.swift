@@ -10,6 +10,10 @@ import Foundation
 class MyFileManager {
     let fileManager = FileManager.default
     
+    func getDocumentUrl() -> URL {
+        return fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
     func createForderInDocument(title : String, documentsURL : URL) {
         let directoryURL = documentsURL.appendingPathComponent(title)
         
@@ -41,6 +45,24 @@ class MyFileManager {
             print(e.localizedDescription)
         }
     }
+    
+    func moveFileInDocument(selectedURLs : [URL], newUrl : URL) {
+        var URLs = selectedURLs
+        URLs.removeFirst()
+        
+        URLs.forEach{
+            let originPath = $0.path
+            let newPath = newUrl.path + "/\($0.lastPathComponent)"
+            
+            do {
+                try fileManager.moveItem(atPath: originPath, toPath: newPath)
+            } catch let e as NSError {
+                print(e.localizedDescription)
+            }
+        }
+    }
+    
+        
     
     func getAudioFileListFromDocument(url : URL) -> [DocumentItem] {
         let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]

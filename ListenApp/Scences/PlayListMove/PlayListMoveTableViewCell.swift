@@ -1,15 +1,14 @@
 //
-//  PlayListTableViewCell.swift
-//  ListenTo
+//  PlayListMoveTableViewCell.swift
+//  ListenApp
 //
-//  Created by 곽지혁 on 2023/01/10.
+//  Created by 곽지혁 on 2023/01/25.
 //
 
 import UIKit
-import SnapKit
 
-class PlayListTableViewCell : UITableViewCell {
-    
+
+class PlayListMoveTableViewCell : UITableViewCell {
     lazy var imgView : UIImageView = {
         let imageView = UIImageView()
         
@@ -41,7 +40,6 @@ class PlayListTableViewCell : UITableViewCell {
         view.distribution = .fill
         view.alignment = .leading
         
-        
         return view
     }()
     
@@ -51,17 +49,9 @@ class PlayListTableViewCell : UITableViewCell {
         return button
     }()
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if isEditing {
-            self.rightIconButton.isHidden = true
-        } else {
-            self.rightIconButton.isHidden = false
-        }
-
-    }
     
+    var isCanMoveFolder = true
+
     func setLayout(item : DocumentItem) {
         self.selectionStyle = .default
         
@@ -69,19 +59,21 @@ class PlayListTableViewCell : UITableViewCell {
             contentView.addSubview($0)
         }
         
-        
         let buttonImgConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        
         if item.type == .file {
             imgView.contentMode = .scaleAspectFit
             imgView.layer.borderWidth = 1
             imgView.layer.borderColor = UIColor.lightGray.cgColor
             imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
             
+            stackView.arrangedSubviews.forEach{
+                stackView.removeArrangedSubview($0)
+            }
             stackView.addArrangedSubview(titleLabel)
             stackView.addArrangedSubview(timeLabel)
             
-            let image = UIImage(systemName: "play", withConfiguration: buttonImgConfig)
-            rightIconButton.setImage(image, for: .normal)
+            titleLabel.textColor = .secondaryLabel
         }
         else {
             imgView.layer.borderWidth = 0
@@ -89,8 +81,13 @@ class PlayListTableViewCell : UITableViewCell {
             imgView.contentMode = .scaleAspectFit
             imgView.image =  UIImage(systemName: "folder")
             
-            stackView.removeArrangedSubview(timeLabel)
+            stackView.arrangedSubviews.forEach{
+                stackView.removeArrangedSubview($0)
+            }
             stackView.addArrangedSubview(titleLabel)
+            
+            titleLabel.textColor = isCanMoveFolder ? .label : . secondaryLabel
+            imgView.tintColor = isCanMoveFolder ? .label : . secondaryLabel
             
             let image = UIImage(systemName: "chevron.right", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)
@@ -119,3 +116,5 @@ class PlayListTableViewCell : UITableViewCell {
     }
     
 }
+
+

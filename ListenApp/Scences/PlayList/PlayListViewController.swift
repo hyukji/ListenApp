@@ -184,7 +184,7 @@ extension PlayListViewController {
         deleteButton.setImage(UIImage(systemName: "trash", withConfiguration: repeatImageConfig), for: .normal)
         
         renameButton.addTarget(self, action: #selector(tapRenameButton), for: .touchUpInside)
-//        moveButton.addTarget(self, action: #selector(), for: .touchUpInside)
+        moveButton.addTarget(self, action: #selector(tapMoveButton), for: .touchUpInside)
         deleteButton.addTarget(self, action: #selector(tapDeleteButton), for: .touchUpInside)
         
         [renameButton, moveButton, deleteButton].forEach{
@@ -208,7 +208,21 @@ extension PlayListViewController {
     }
     
     @objc func tapMoveButton(){
+        let PlayListMoveVC = PlayListMoveViewController()
+        PlayListMoveVC.url = filemanager.getDocumentUrl()
         
+        let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
+        var cannotMoveUrls : [URL] = [self.url]
+        for indexPath in selectedIndexPath {
+            cannotMoveUrls.append(self.playList[indexPath.row].url)
+        }
+        
+        PlayListMoveVC.selectedURLs = cannotMoveUrls
+        PlayListMoveVC.delegate = self
+        
+        let navigationContoller = UINavigationController(rootViewController: PlayListMoveVC)
+        
+        self.present(navigationContoller, animated: true)
     }
     
     @objc func tapDeleteButton(){
@@ -438,6 +452,15 @@ extension PlayListViewController : CustomAlertDelegate {
     }
     
 }
+
+
+extension PlayListViewController : refreshPlayListProtocol {
+    func refreshPlayList() {
+        self.changeTableViewEditingAndLayout()
+        self.refreshPlayListVC()
+    }
+}
+
 
 // layout Setting
 extension PlayListViewController {

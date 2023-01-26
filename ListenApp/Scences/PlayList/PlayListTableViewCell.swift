@@ -41,6 +41,8 @@ class PlayListTableViewCell : UITableViewCell {
         view.distribution = .fill
         view.alignment = .leading
         
+        view.addArrangedSubview(titleLabel)
+        view.addArrangedSubview(timeLabel)
         
         return view
     }()
@@ -77,8 +79,7 @@ class PlayListTableViewCell : UITableViewCell {
             imgView.layer.borderColor = UIColor.lightGray.cgColor
             imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
             
-            stackView.addArrangedSubview(titleLabel)
-            stackView.addArrangedSubview(timeLabel)
+            timeLabel.isHidden = false
             
             let image = UIImage(systemName: "play", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)
@@ -89,8 +90,7 @@ class PlayListTableViewCell : UITableViewCell {
             imgView.contentMode = .scaleAspectFit
             imgView.image =  UIImage(systemName: "folder")
             
-            stackView.removeArrangedSubview(timeLabel)
-            stackView.addArrangedSubview(titleLabel)
+            timeLabel.isHidden = true
             
             let image = UIImage(systemName: "chevron.right", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)

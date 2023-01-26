@@ -7,9 +7,8 @@
 
 import UIKit
 
-
-protocol refreshPlayListProtocol : AnyObject {
-    func refreshPlayList()
+protocol AfterMoveActionProtocol : AnyObject {
+    func afterMoveAction(text : String)
 }
 
 
@@ -22,7 +21,7 @@ class PlayListMoveViewController : UIViewController {
     var sortOrder = ComparisonResult.orderedAscending
     var selectedSort = SelectedSort.category
     
-    weak var delegate : refreshPlayListProtocol?
+    weak var delegate : AfterMoveActionProtocol?
     
     private lazy var header = PlayListMoveHeader(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
     private lazy var tableView : UITableView = {
@@ -132,8 +131,9 @@ extension PlayListMoveViewController {
     
     @objc func tapMoveBtn() {
         filemanager.moveFileInDocument(selectedURLs: selectedURLs, newUrl: url)
+        self.delegate?.afterMoveAction(text : url.path)
+        
         self.dismiss(animated: true)
-        delegate?.refreshPlayList()
     }
     
     private func setFuncInHeaderBtn(){

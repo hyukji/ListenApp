@@ -59,11 +59,14 @@ class PlayListViewController : UIViewController {
         setLayout()
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
-        playList = filemanager.getAudioFileListFromDocument(url : url)
-        sortPlayList()
         
 //        playList = CoreDataFunc().fetchAudio()
+    }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        refreshPlayListVC()
     }
     
     func refreshPlayListVC() {
@@ -318,7 +321,7 @@ extension PlayListViewController {
             self.tableView.allowsMultipleSelectionDuringEditing = true
             
             //PlayList menu's "selection uiaction" has 'perform(afterdelay)' for removing [ASSERT] about hiding editBtn when it's menu is working
-            self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.5)
+            self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.1)
             self.changeEditingFooterButtonStatus()
         })
         let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in

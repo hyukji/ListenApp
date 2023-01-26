@@ -121,10 +121,5 @@ extension PlayerProgressView {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(currentTimeLabel.snp.top).offset(-5)
         }
-        
-        
-        
     }
-    
-    
 }

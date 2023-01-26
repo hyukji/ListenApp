@@ -62,11 +62,13 @@ class PlayListHeaderView : UIView {
     func setBtnHiddenForBeginEditing() {
         completeBtn.isHidden = false
         editBtn.isHidden = true
+        backBtn.tintColor = .secondaryLabel
     }
     
     func setBtnHiddenForEndEditing() {
         editBtn.isHidden = false
         completeBtn.isHidden = true
+        backBtn.tintColor = .label
     }
     
 }

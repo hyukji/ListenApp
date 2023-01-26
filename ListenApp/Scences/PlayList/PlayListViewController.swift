@@ -298,6 +298,7 @@ extension PlayListViewController {
 extension PlayListViewController {
     
     @objc func tapBackBtn() {
+        if tableView.isEditing == true { return }
         navigationController?.popViewController(animated: true)
     }
     

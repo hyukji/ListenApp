@@ -92,6 +92,7 @@ extension PlayListMoveViewController : UITableViewDataSource, UITableViewDelegat
         let item = playList[indexPath.row]
         if item.type == .folder {
             let playListMoveVC = PlayListMoveViewController()
+            playListMoveVC.delegate = self.delegate
             playListMoveVC.url = item.url
             playListMoveVC.selectedURLs = selectedURLs
             

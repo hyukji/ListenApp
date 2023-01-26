@@ -461,7 +461,7 @@ extension PlayListViewController : CustomAlertDelegate {
 extension PlayListViewController : AfterMoveActionProtocol {
     func afterMoveAction(text : String) {
         self.changeTableViewEditingAndLayout()
-        self.navigationController?.popToRootViewController(animated: false)
+        self.refreshPlayListVC()
     }
 }
 

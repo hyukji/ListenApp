@@ -9,6 +9,7 @@ import UIKit
 
 class PlayerUpperView : UIView {
     let playerController = PlayerController.playerController
+    var timer : Timer?
     
     private var slider : UISlider = {
         let slider = UISlider()
@@ -71,8 +72,6 @@ class PlayerUpperView : UIView {
     }()
     
     
-
-    
     lazy var scrollView : UIScrollView = {
         let scrollView = UIScrollView()
 //
@@ -85,9 +84,16 @@ class PlayerUpperView : UIView {
         return scrollView
     }()
     
+    lazy var currentIndicator : UIView = {
+        let view = UIView()
+        view.backgroundColor = .tintColor
+        
+        return view
+    }()
+    
     lazy var timerLabel : UILabel = {
         let lbl = UILabel()
-        lbl.text = "00:00:00"
+        lbl.text = "00:00.00"
         lbl.textColor = .label
         lbl.font = .systemFont(ofSize: 45, weight: .semibold)
         
@@ -101,12 +107,27 @@ class PlayerUpperView : UIView {
         
         setLayout()
         configureTimeAndView()
+        addNotificationObserver()
+        adminTimer()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    
+    func configureTimeAndView() {
+        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
+        DurationLabel.text = TimeIntervalToString(playerController.player.duration)
+        timerLabel.text = TimerLabelString(playerController.player.currentTime)
+        slider.minimumValue = 0
+        slider.maximumValue = Float(playerController.player.duration)
+        slider.value = Float(playerController.player.currentTime)
+    }
     
     func TimeIntervalToString(_ time:TimeInterval) -> String {
         let min = Int(time/60)
@@ -115,17 +136,51 @@ class PlayerUpperView : UIView {
         return strTime
     }
     
-    func configureTimeAndView() {
-        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
-        DurationLabel.text = TimeIntervalToString(playerController.player.duration)
-        slider.minimumValue = 0
-        slider.maximumValue = Float(playerController.player.duration)
-        slider.value = Float(playerController.player.currentTime)
+    func TimerLabelString(_ time:TimeInterval) -> String {
+        let min = Int(time/60)
+        let sec = Int(time.truncatingRemainder(dividingBy: 60))
+        let micro = (Int((time*100).truncatingRemainder(dividingBy: 100)))
+        let strTime = String(format: "%02d:%02d.%02d", min, sec, micro)
+        return strTime
     }
     
     
+}
+
+// timer observer functions
+extension PlayerUpperView {
+    // playerController 에서 status가 변할 때마다 noti를 보낸다.
+    func addNotificationObserver() {
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adminTimer),
+            name: Notification.Name("playerStatusChanged"),
+            object: nil
+        )
+    }
     
+    // noti를 받으면 status에 따라 timer에 0.01단위의 schedule을 설정
+    @objc func adminTimer() {
+        if playerController.status == .play {
+            if let timer = timer {
+                if timer.isValid { return }
+            }
+            self.timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
+        } else {
+            updatePlayTime()
+            if let timer = timer {
+                if timer.isValid { timer.invalidate() }
+            }
+        }
+    }
     
+    // 0.01초마다 업데이트
+    @objc func updatePlayTime() {
+        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
+        timerLabel.text = TimerLabelString(playerController.player.currentTime)
+        slider.value = Float(playerController.player.currentTime)
+    }
 }
 
 
@@ -133,7 +188,7 @@ class PlayerUpperView : UIView {
 extension PlayerUpperView {
     private func setLayout() {
         
-        [sliderContainer, upperControllerSV, scrollView, timerLabel].forEach{
+        [sliderContainer, upperControllerSV, scrollView, currentIndicator, timerLabel].forEach{
             addSubview($0)
         }
         
@@ -160,21 +215,27 @@ extension PlayerUpperView {
             $0.top.equalTo(slider.snp.bottom).offset(5)
         }
 
-//
         upperControllerSV.snp.makeConstraints{
             $0.top.equalTo(sliderContainer.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-//
+        
         scrollView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(upperControllerSV.snp.bottom).offset(20)
             $0.bottom.equalTo(timerLabel.snp.top).offset(-20)
         }
-//
+        
+        currentIndicator.snp.makeConstraints{
+            $0.bottom.top.equalTo(scrollView)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(1)
+        }
+        
         timerLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.bottom.equalToSuperview()
+            $0.width.equalTo(195)
             $0.height.equalTo(60)
         }
     }

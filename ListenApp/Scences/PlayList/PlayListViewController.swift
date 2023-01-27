@@ -132,7 +132,7 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
                                                   currentTime: 0.0,
                                                   AudioExtension: item.AudioExtension)
                 playerController.isNewAudio = true
-                playerController.configurePlayer()
+                playerController.configurePlayer(url : item.url)
             }
             
             let playerVC = NewPlayerVIewController()

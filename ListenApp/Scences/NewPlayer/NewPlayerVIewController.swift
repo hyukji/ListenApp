@@ -20,6 +20,11 @@ class NewPlayerVIewController : UIViewController {
         setLayout()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        guard let timer = playerUpperView.timer else { return }
+        if timer.isValid { timer.invalidate() }
+    }
+    
     // go back rootViewVC(PlayListVC or SettingVC)
     @objc func backToRootVC() {
         tabBarController?.tabBar.isHidden = false

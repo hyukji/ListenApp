@@ -29,28 +29,17 @@ class PlayerController {
     private init() { }
     
     
-    func configurePlayer() {
+    func configurePlayer(url : URL) {
         if !isNewAudio { return }
         if status == .play { stopPlayer() }
         
-        let url = getDocumentFileURL()
         do {
             isNewAudio = false
             player = try AVAudioPlayer(contentsOf: url)
-//            playPlayer()
+            playPlayer()
         } catch {
             print("Error: Audio File missing.")
         }
-    }
-    
-    func getDocumentFileURL() -> URL {
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        
-        let title = audio?.title ?? ""
-        let finalURL = documentsURL.appendingPathComponent("\(title).mp3")
-        
-        return finalURL
     }
     
     func playPlayer() {

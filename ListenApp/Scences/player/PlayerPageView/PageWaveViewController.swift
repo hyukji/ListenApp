@@ -13,7 +13,7 @@ class PageWaveViewController : UIViewController {
     let ImagelengthPerSec = 10.0
     
     let playerController = PlayerController.playerController
-    private let waveformImageDrawer = WaveformImageDrawer()
+//    private let waveformImageDrawer = WaveformImageDrawer()
     
     lazy var currentTimeLabel : UILabel = {
         let label = UILabel()

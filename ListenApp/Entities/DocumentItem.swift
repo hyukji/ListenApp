@@ -17,7 +17,7 @@ struct DocumentItem {
     let url : URL
     let creationDate : Date
     let size : UInt64
-    let Audioextension : String?
+    let AudioExtension : String?
     let type : DocumentItemType
 }
 

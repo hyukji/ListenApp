@@ -86,7 +86,7 @@ class PlayListViewController : UIViewController {
     @objc func PushPlayerVC(_ sender: UITapGestureRecognizer) {
         if playerController.audio == nil { return }
         
-        let playerVC = PlayerViewController()
+        let playerVC = NewPlayerVIewController()
         navigationController?.pushViewController(playerVC, animated: true)
     }
 
@@ -130,12 +130,12 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
                                                   mainImage: UIImage(),
                                                   title: item.title,
                                                   currentTime: 0.0,
-                                                  Audioextension: item.Audioextension)
+                                                  AudioExtension: item.AudioExtension)
                 playerController.isNewAudio = true
                 playerController.configurePlayer()
             }
             
-            let playerVC = PlayerViewController()
+            let playerVC = NewPlayerVIewController()
             navigationController?.pushViewController(playerVC, animated: true)
         }
         else {

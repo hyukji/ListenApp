@@ -19,7 +19,9 @@ class PlayerController {
     static let playerController = PlayerController()
     
     var player : AVAudioPlayer!
-    var audio : NowAudio?
+    var audio : AudioData?
+    var url : URL?
+    
     var status : PlayerStatus = .pause
     
     var timeInterval = 5.0

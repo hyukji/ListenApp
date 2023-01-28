@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DSWaveformImage
 
 class PlayerUpperView : UIView {
     let playerController = PlayerController.playerController
@@ -13,9 +14,6 @@ class PlayerUpperView : UIView {
     
     private var slider : UISlider = {
         let slider = UISlider()
-        
-        slider.value = 50
-        
         slider.tintColor = .tintColor
 //        slider.transform = CGAffineTransform(scaleX: 1, y: 1.5)
         slider.setThumbImage(UIImage(), for: .normal)
@@ -72,15 +70,34 @@ class PlayerUpperView : UIView {
     }()
     
     
+    lazy var leftView = UIView()
+    lazy var rightView = UIView()
+    lazy var imageView : UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = playerController.audio!.waveImage
+        imageView.contentMode = .scaleAspectFill
+
+        return imageView
+    }()
+    
+    lazy var contentStackView : UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stackView
+    }()
+    
+    
     lazy var scrollView : UIScrollView = {
         let scrollView = UIScrollView()
-//
-//        scrollView.delegate = self
-//        scrollView.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.alwaysBounceHorizontal = true
-//        scrollView.showsHorizontalScrollIndicator = false
-//
-        scrollView.backgroundColor = .brown
+        scrollView.delegate = self
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.alwaysBounceHorizontal = true
+        scrollView.showsHorizontalScrollIndicator = false
+        
+        scrollView.backgroundColor = .systemGray5
+        
         return scrollView
     }()
     
@@ -160,13 +177,54 @@ extension PlayerUpperView {
         }
     }
     
-    // 0.01초마다 업데이트
+    // 0.01초마다 업데이트 시간 label들과 scrollView위치이동
     @objc func updatePlayTime() {
         currentTimeLabel.text = playerController.player.currentTime.toString()
         timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
         slider.value = Float(playerController.player.currentTime)
+        
+        let nx = playerController.player.currentTime * 5
+        scrollView.contentOffset = CGPointMake(nx, 0);
     }
 }
+
+
+// 스크롤 동작 인식
+extension PlayerUpperView : UIScrollViewDelegate {
+    // 드래그 시작할 때 재생중이라면 플레이어 잠시 멈춤
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if playerController.status == .play {
+            playerController.intermitPlayer()
+        }
+    }
+    
+    // 드래그 끝날 때 끄는 동작 없고 플레이어 잠시 멈춤이라면 재생
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate == false && playerController.status == .intermit {
+            playerController.playPlayer()
+        }
+    }
+    
+    //드래그에 따라 시간 이동
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if let timer = timer { if timer.isValid { return }}
+        
+        let x = Double(scrollView.contentOffset.x)
+        playerController.changePlayerTime(changedTime : TimeInterval(x / 5))
+    }
+    
+    // 끄는 동작 끝날 때 플레이어 잠시 멈춤이라면 재생
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if playerController.status == .intermit {
+            playerController.playPlayer()
+        }
+    }
+    
+    
+    
+}
+
+
 
 
 // PlayerUpperView UI
@@ -205,11 +263,42 @@ extension PlayerUpperView {
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         
+        
+        scrollView.addSubview(contentStackView)
+        
         scrollView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(upperControllerSV.snp.bottom).offset(20)
             $0.bottom.equalTo(timerLabel.snp.top).offset(-20)
         }
+        
+        contentStackView.snp.makeConstraints{
+            $0.top.bottom.leading.trailing.height.equalTo(scrollView)
+        }
+        
+        [leftView, imageView, rightView].forEach{
+            contentStackView.addArrangedSubview($0)
+        }
+        
+        
+        leftView.backgroundColor = .systemGray6
+        
+        leftView.snp.makeConstraints{
+            $0.height.equalToSuperview()
+            $0.width.equalTo(scrollView).multipliedBy(0.5)
+        }
+        
+//        imageView.snp.makeConstraints{
+//            $0.height.equalToSuperview()
+//            $0.width.equalTo(scrollView)
+//        }
+        
+        rightView.snp.makeConstraints{
+            $0.height.equalToSuperview()
+            $0.width.equalTo(scrollView).multipliedBy(0.5)
+        }
+        
+        
         
         currentIndicator.snp.makeConstraints{
             $0.bottom.top.equalTo(scrollView)
@@ -220,7 +309,7 @@ extension PlayerUpperView {
         timerLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.bottom.equalToSuperview()
-            $0.width.equalTo(195)
+            $0.width.equalTo(197)
             $0.height.equalTo(60)
         }
     }

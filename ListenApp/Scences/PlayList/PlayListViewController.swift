@@ -11,13 +11,14 @@ import AVFoundation
 
 class PlayListViewController : UIViewController {
     var playList : [DocumentItem] = []
+    var audioList : [AudioData] = []
     let playerController = PlayerController.playerController
     var filemanager = MyFileManager()
     var webUploader = MyWebUploader()
     var url : URL!
     
     
-    private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.deletingPathExtension().lastPathComponent)
+    private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.lastPathComponent)
     
     private lazy var renameButton = UIButton()
     private lazy var moveButton = UIButton()
@@ -59,18 +60,21 @@ class PlayListViewController : UIViewController {
         setLayout()
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
-        
-//        playList = CoreDataFunc().fetchAudio()
+//        CoreDataFunc().resetAllRecords()
+        audioList = CoreDataFunc().fetchAudio()
+        print(audioList)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         refreshPlayListVC()
+//        CoreDataFunc().initializeSave(item: playList[1])
+//        print(playList[0])
     }
     
     func refreshPlayListVC() {
-        playList = filemanager.getAudioFileListFromDocument(url : url)
+        playList = filemanager.getAudioFileListFromDocument(folderurl: url)
         sortPlayList()
         tableView.reloadData()
     }
@@ -110,7 +114,7 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListTableViewCell", for: indexPath) as? PlayListTableViewCell else {return UITableViewCell()}
         
         cell.setLayout(item: playList[indexPath.row])
-        cell.tag = indexPath.row
+        cell.tag = indexPath.row            
         
         return cell
         

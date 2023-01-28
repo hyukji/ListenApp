@@ -126,12 +126,14 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         
         if item.type == .file {
             if playerController.audio?.title != item.title {
-                playerController.audio = NowAudio(waveImage: UIImage(),
-                                                  mainImage: UIImage(),
-                                                  title: item.title,
-                                                  currentTime: 0.0,
-                                                  AudioExtension: item.AudioExtension)
+                guard let idx = audioList.firstIndex(where: {$0.title == item.title && $0.folder == item.folder }) else {
+                    print("file is not exist")
+                    return
+                }
+                
                 playerController.isNewAudio = true
+                playerController.audio = audioList[idx]
+                playerController.url = item.url
                 playerController.configurePlayer(url : item.url)
             }
             

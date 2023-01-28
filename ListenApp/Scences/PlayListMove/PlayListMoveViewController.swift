@@ -42,7 +42,7 @@ class PlayListMoveViewController : UIViewController {
         super.viewDidLoad()
         setLayout()
         setFuncInHeaderBtn()
-        playList = filemanager.getAudioFileListFromDocument(url : url)
+        playList = filemanager.getAudioFileListFromDocument(folderurl : url)
         sortPlayList()
         checkCanMove()
     }
@@ -54,7 +54,7 @@ class PlayListMoveViewController : UIViewController {
     }
     
     func refreshPlayListVC() {
-        playList = filemanager.getAudioFileListFromDocument(url : url)
+        playList = filemanager.getAudioFileListFromDocument(folderurl : url)
         sortPlayList()
         tableView.reloadData()
     }

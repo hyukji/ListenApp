@@ -64,14 +64,14 @@ class MyFileManager {
     
         
     
-    func getAudioFileListFromDocument(url : URL) -> [DocumentItem] {
+    func getAudioFileListFromDocument(folderurl : URL) -> [DocumentItem] {
         let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
                 
         // [애플리케이션 폴더에 저장되어 있는 파일 리스트 확인]
         var list : [DocumentItem] = []
         var urls : [URL] = []
         do {
-            urls = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+            urls = try fileManager.contentsOfDirectory(at: folderurl, includingPropertiesForKeys: nil)
             
             for url in urls {
                 if url.deletingPathExtension().lastPathComponent == ".Trash" { continue }
@@ -79,6 +79,7 @@ class MyFileManager {
                 let attr = try fileManager.attributesOfItem(atPath: url.path) as NSDictionary
                 if url.hasDirectoryPath {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
+                                            folder : folderurl.lastPathComponent,
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             size : attr.fileSize(),
@@ -88,6 +89,7 @@ class MyFileManager {
                 }
                 else if allowedFileExtensions.contains(url.pathExtension) {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
+                                            folder : folderurl.lastPathComponent,
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             size : attr.fileSize(),

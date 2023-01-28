@@ -14,6 +14,7 @@ enum DocumentItemType : Comparable {
 
 struct DocumentItem {
     var title : String
+    var folder : String
     let url : URL
     let creationDate : Date
     let size : UInt64

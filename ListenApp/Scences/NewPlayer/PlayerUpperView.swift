@@ -121,27 +121,12 @@ class PlayerUpperView : UIView {
     
     
     func configureTimeAndView() {
-        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
-        DurationLabel.text = TimeIntervalToString(playerController.player.duration)
-        timerLabel.text = TimerLabelString(playerController.player.currentTime)
+        currentTimeLabel.text = playerController.player.currentTime.toString()
+        DurationLabel.text = playerController.player.duration.toString()
+        timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
         slider.minimumValue = 0
         slider.maximumValue = Float(playerController.player.duration)
         slider.value = Float(playerController.player.currentTime)
-    }
-    
-    func TimeIntervalToString(_ time:TimeInterval) -> String {
-        let min = Int(time/60)
-        let sec = Int(time.truncatingRemainder(dividingBy: 60))
-        let strTime = String(format: "%02d:%02d", min, sec)
-        return strTime
-    }
-    
-    func TimerLabelString(_ time:TimeInterval) -> String {
-        let min = Int(time/60)
-        let sec = Int(time.truncatingRemainder(dividingBy: 60))
-        let micro = (Int((time*100).truncatingRemainder(dividingBy: 100)))
-        let strTime = String(format: "%02d:%02d.%02d", min, sec, micro)
-        return strTime
     }
     
     
@@ -177,8 +162,8 @@ extension PlayerUpperView {
     
     // 0.01초마다 업데이트
     @objc func updatePlayTime() {
-        currentTimeLabel.text = TimeIntervalToString(playerController.player.currentTime)
-        timerLabel.text = TimerLabelString(playerController.player.currentTime)
+        currentTimeLabel.text = playerController.player.currentTime.toString()
+        timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
         slider.value = Float(playerController.player.currentTime)
     }
 }

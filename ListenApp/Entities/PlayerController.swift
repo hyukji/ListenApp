@@ -89,3 +89,22 @@ class PlayerController {
     }
     
 }
+
+
+
+extension TimeInterval {
+    // TimeInterval format to 00:00
+    func toString() -> String {
+        let min = Int(self/60)
+        let sec = Int(self.truncatingRemainder(dividingBy: 60))
+        return String(format: "%02d:%02d", min, sec)
+    }
+    
+    // TimeInterval format to 00:00.00
+    func toStringContainMilisec() -> String {
+        let min = Int(self/60)
+        let sec = Int(self.truncatingRemainder(dividingBy: 60))
+        let mili = (Int((self*100).truncatingRemainder(dividingBy: 100)))
+        return String(format: "%02d:%02d.%02d", min, sec, mili)
+    }
+}

@@ -95,7 +95,10 @@ class CoreDataFunc {
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
-        
+        print("fetch CoreData")
+        fetchedList.forEach {
+            print($0.title, $0.location)
+        }
         return fetchedList
     }
 //
@@ -162,4 +165,81 @@ class CoreDataFunc {
             }
         }
     
+    
+    
+    
+    
 }
+
+
+// CoreAudio 와 document 동기화 관련 functions
+extension CoreDataFunc {
+    // 전체 playList와 coreAduio 동기화
+    func synchronizeAudioListAndPlayList() {
+        let playList = MyFileManager().getAllAudioFileListFromDocument()
+        if delAudioDataIsnotInPlayList(playList: playList) || saveAudioDataIsnotInAudioList(playList: playList) {
+            audioList = fetchAudio()
+        }
+    }
+    
+    // 특정 location의 playList와 coreAduio 동기화
+    func synchronizeAudioListAndTargetPlayList(location : String, playList : [DocumentItem]) {
+        if delAudioDataIsnotInTargetPlayList(location : location, playList : playList) || saveAudioDataIsnotInAudioList(playList: playList) {
+            audioList = fetchAudio()
+        }
+    }
+    
+    // playlist에는 없는데 coreAduio에만 있는 데이터 삭제
+    private func delAudioDataIsnotInPlayList(playList : [DocumentItem]) -> Bool {
+        var isChanged = false
+        audioList.forEach { audio in
+            if !playList.contains(where: {
+                $0.type == .file &&
+                $0.title == audio.title &&
+                $0.audioExtension == audio.audioExtension &&
+                $0.creationDate == audio.creationDate
+            }) {
+                print("delete \(audio.title)")
+                deleteAudio(willdeleteAudio: audio)
+                isChanged = true
+            }
+        }
+        return isChanged
+    }
+    
+    
+    // 해당 playlist에는 없는데 coreAduio에만 있는 데이터 삭제
+    private func delAudioDataIsnotInTargetPlayList(location : String, playList : [DocumentItem]) -> Bool {
+        var isChanged = false
+        audioList.forEach { audio in
+            if audio.location == location {
+                if !playList.contains(where: {
+                    $0.type == .file &&
+                    $0.title == audio.title &&
+                    $0.audioExtension == audio.audioExtension &&
+                    $0.creationDate == audio.creationDate
+                }) {
+                    print("delete \(audio.title)")
+                    deleteAudio(willdeleteAudio: audio)
+                    isChanged = true
+                }
+            }
+        }
+        return isChanged
+    }
+    
+    // coreAduio 에는 없고 해당 playlist에만 있는 데이터를 coreAduio에 저장
+    private func saveAudioDataIsnotInAudioList(playList : [DocumentItem]) -> Bool{
+        var isChanged = false
+        playList.forEach { item in
+            if item.type == .file && !audioList.contains(where: { item.location == $0.location && item.title == $0.title }) {
+                print("should save \(item.title)")
+                initializeAnalysisSave(item: item)
+                isChanged = true
+            }
+        }
+        return isChanged
+    }
+    
+}
+

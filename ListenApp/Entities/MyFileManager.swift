@@ -9,10 +9,7 @@ import Foundation
 
 class MyFileManager {
     let fileManager = FileManager.default
-    
-    func getDocumentUrl() -> URL {
-        return fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
+    let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     
     func createForderInDocument(title : String, documentsURL : URL) {
         let directoryURL = documentsURL.appendingPathComponent(title)
@@ -64,14 +61,14 @@ class MyFileManager {
     
         
     
-    func getAudioFileListFromDocument(folderurl : URL) -> [DocumentItem] {
+    func getAudioFileListFromDocument(location : String) -> [DocumentItem] {
         let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
-                
-        // [애플리케이션 폴더에 저장되어 있는 파일 리스트 확인]
+        let directoryURL = documentURL.appending(path: location, directoryHint: .isDirectory)
+        
         var list : [DocumentItem] = []
         var urls : [URL] = []
         do {
-            urls = try fileManager.contentsOfDirectory(at: folderurl, includingPropertiesForKeys: nil)
+            urls = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
             
             for url in urls {
                 if url.deletingPathExtension().lastPathComponent == ".Trash" { continue }
@@ -79,21 +76,21 @@ class MyFileManager {
                 let attr = try fileManager.attributesOfItem(atPath: url.path) as NSDictionary
                 if url.hasDirectoryPath {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
-                                            folder : folderurl.lastPathComponent,
+                                            location : "\(location)/\(url.deletingPathExtension().lastPathComponent)",
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             size : attr.fileSize(),
-                                            AudioExtension: nil,
+                                            audioExtension: nil,
                                             type: .folder)
                     list.append(item)
                 }
                 else if allowedFileExtensions.contains(url.pathExtension) {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
-                                            folder : folderurl.lastPathComponent,
+                                            location : location,
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             size : attr.fileSize(),
-                                            AudioExtension: url.pathExtension,
+                                            audioExtension: url.pathExtension,
                                             type: .file)
                     list.append(item)
                     

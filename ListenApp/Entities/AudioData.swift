@@ -9,13 +9,9 @@ import UIKit
 
 struct AudioData {
     var title : String
-    var folder : String
+    var location : String
     let audioExtension : String
-    
-    let waveImage : UIImage
-    
-    let waveAnalysis : [Double]
-    
+    let waveAnalysis : [Float]
     var currentTime : TimeInterval
     let duration : TimeInterval
     let creationDate : Date

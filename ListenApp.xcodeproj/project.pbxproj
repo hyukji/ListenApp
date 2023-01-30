@@ -11,9 +11,7 @@
 		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
 		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
 		199BF314297AEDA600DAD3E1 /* DocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF313297AEDA600DAD3E1 /* DocumentItem.swift */; };
-		199F3AD629792045001C6A3B /* Audio+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */; };
 		199F3AD929792141001C6A3B /* CoreDataFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD829792141001C6A3B /* CoreDataFunction.swift */; };
-		199F3ADB29792643001C6A3B /* Audio+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3ADA29792643001C6A3B /* Audio+CoreDataProperties.swift */; };
 		19A62ED32976FB320040EC5D /* PageImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A62ED22976FB320040EC5D /* PageImageViewController.swift */; };
 		19A62ED52976FB830040EC5D /* PageWaveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A62ED42976FB830040EC5D /* PageWaveViewController.swift */; };
 		19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41EEB296FFEA200DC30C1 /* AppDelegate.swift */; };
@@ -50,9 +48,7 @@
 		199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebUploader.swift; sourceTree = "<group>"; };
 		199BF311297AEB4900DAD3E1 /* MyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFileManager.swift; sourceTree = "<group>"; };
 		199BF313297AEDA600DAD3E1 /* DocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentItem.swift; sourceTree = "<group>"; };
-		199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Audio+CoreDataClass.swift"; sourceTree = "<group>"; };
 		199F3AD829792141001C6A3B /* CoreDataFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFunction.swift; sourceTree = "<group>"; };
-		199F3ADA29792643001C6A3B /* Audio+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Audio+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		19A62ED22976FB320040EC5D /* PageImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageImageViewController.swift; sourceTree = "<group>"; };
 		19A62ED42976FB830040EC5D /* PageWaveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageWaveViewController.swift; sourceTree = "<group>"; };
 		19B41EE8296FFEA200DC30C1 /* ListenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ListenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,8 +101,6 @@
 			children = (
 				19B7B2182985443B009E2570 /* AudioData.xcdatamodeld */,
 				199F3AD829792141001C6A3B /* CoreDataFunction.swift */,
-				199F3AD429792045001C6A3B /* Audio+CoreDataClass.swift */,
-				199F3ADA29792643001C6A3B /* Audio+CoreDataProperties.swift */,
 				19B41EEA296FFEA200DC30C1 /* ListenApp */,
 				19B41EE9296FFEA200DC30C1 /* Products */,
 				B56D132C95873565FEEDE6D4 /* Pods */,
@@ -385,8 +379,6 @@
 				19B41F172970022E00DC30C1 /* PlayListHeaderView.swift in Sources */,
 				19B53E65298171CF00FED417 /* PlayListMoveViewController.swift in Sources */,
 				19B827372983F97400B2AB9C /* NewPlayerVIewController.swift in Sources */,
-				199F3ADB29792643001C6A3B /* Audio+CoreDataProperties.swift in Sources */,
-				199F3AD629792045001C6A3B /* Audio+CoreDataClass.swift in Sources */,
 				19B41EEE296FFEA200DC30C1 /* SceneDelegate.swift in Sources */,
 				19B53E63298003CA00FED417 /* CustomAlertViewController.swift in Sources */,
 				19B41F13297001EC00DC30C1 /* PageViewController.swift in Sources */,

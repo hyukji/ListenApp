@@ -13,6 +13,7 @@ class TabBarController: UITabBarController {
     private lazy var PlayListVC : UIViewController = {
         let rootViewController = PlayListViewController()
         rootViewController.url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        rootViewController.location = ""
         let viewController = UINavigationController(rootViewController: rootViewController)
         
         let tabBarItem = UITabBarItem(

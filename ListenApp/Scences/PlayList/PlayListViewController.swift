@@ -11,12 +11,15 @@ import AVFoundation
 
 class PlayListViewController : UIViewController {
     var playList : [DocumentItem] = []
-    var audioList : [AudioData] = []
+    
     let playerController = PlayerController.playerController
+    let CoreAudioData = CoreDataFunc.shared
+    
     var filemanager = MyFileManager()
     var webUploader = MyWebUploader()
-    var url : URL!
     
+    var url : URL!
+    var location : String!
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.lastPathComponent)
     
@@ -60,26 +63,33 @@ class PlayListViewController : UIViewController {
         setLayout()
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
-//        CoreDataFunc().resetAllRecords()
-        audioList = CoreDataFunc().fetchAudio()
-        print(audioList)
+//        CoreAudioData.resetAllRecords()
+        setPlayList()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         refreshPlayListVC()
-//        CoreDataFunc().initializeSave(item: playList[1])
-//        print(playList[0])
     }
     
-    func refreshPlayListVC() {
-        playList = filemanager.getAudioFileListFromDocument(folderurl: url)
-        sortPlayList()
+    // 맨 처음 viewload할때 playlist값 set
+    func setPlayList() {
+        playList = sortPlayList(targetList: filemanager.getAudioFileListFromDocument(location: location))
         tableView.reloadData()
     }
     
-    
+    // Document에서 파일 가져온 후 기존 playList랑 다르다면 playList 및 audioList 업데이트
+    func refreshPlayListVC() {
+        var newPlayList = filemanager.getAudioFileListFromDocument(location: location)
+        newPlayList = sortPlayList(targetList: newPlayList)
+        
+        if playList != newPlayList {
+            print("playList has some changed")
+            playList = newPlayList
+            CoreAudioData.synchronizeAudioListAndTargetPlayList(location: location, playList: playList)
+            tableView.reloadData()
+        }
+    }
     
     // when NowPlayeringView was tapped, push PlayerVC to navigation
     private func addActionToNowPlayingView() {
@@ -130,13 +140,13 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         
         if item.type == .file {
             if playerController.audio?.title != item.title {
-                guard let idx = audioList.firstIndex(where: {$0.title == item.title && $0.folder == item.folder }) else {
-                    print("file is not exist")
+                guard let idx = CoreAudioData.audioList.firstIndex(where: {$0.title == item.title && $0.location == item.location }) else {
+                    print("This audio is not exist in CoreData")
                     return
                 }
                 
                 playerController.isNewAudio = true
-                playerController.audio = audioList[idx]
+                playerController.audio = CoreAudioData.audioList[idx]
                 playerController.url = item.url
                 playerController.configurePlayer(url : item.url)
             }
@@ -147,6 +157,7 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         else {
             let playListVC = PlayListViewController()
             playListVC.url = item.url
+            playListVC.location = item.location
             navigationController?.pushViewController(playListVC, animated: true)
         }
         
@@ -218,7 +229,8 @@ extension PlayListViewController {
     
     @objc func tapMoveButton(){
         let PlayListMoveVC = PlayListMoveViewController()
-        PlayListMoveVC.url = filemanager.getDocumentUrl()
+        PlayListMoveVC.url = filemanager.documentURL
+        PlayListMoveVC.location = ""
         
         let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
         var cannotMoveUrls : [URL] = [self.url]
@@ -411,31 +423,33 @@ extension PlayListViewController {
         self.selectedSort = selectedSort
         header.editBtn.menu = self.createMenus(selectedSort: self.selectedSort, sortOrder: self.sortOrder)
         
-        sortPlayList()
+        self.playList = sortPlayList(targetList : self.playList)
         self.tableView.reloadData()
     }
     
-    func sortPlayList() {
+    func sortPlayList(targetList : [DocumentItem]) -> [DocumentItem] {
         let isAscending = self.sortOrder == .orderedAscending ? true : false
+        var list = targetList
         
         switch self.selectedSort {
         case .name:
-            self.playList.sort{
+            list.sort{
                 return ($0.title < $1.title) == isAscending
             }
         case .category:
-            self.playList.sort{
+            list.sort{
                 return ($0.type < $1.type) == isAscending
             }
         case .date:
-            self.playList.sort{
+            list.sort{
                 return ($0.creationDate < $1.creationDate) == isAscending
             }
         case .size:
-            self.playList.sort{
+            list.sort{
                 return ($0.size < $1.size) == isAscending
             }
         }
+        return list
     
     }
 }

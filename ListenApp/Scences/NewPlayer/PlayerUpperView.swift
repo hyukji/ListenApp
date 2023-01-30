@@ -74,7 +74,7 @@ class PlayerUpperView : UIView {
     lazy var rightView = UIView()
     lazy var imageView : UIImageView = {
         let imageView = UIImageView()
-        imageView.image = playerController.audio!.waveImage
+//        imageView.image = playerController.audio!.waveImage
         imageView.contentMode = .scaleAspectFill
 
         return imageView
@@ -126,6 +126,7 @@ class PlayerUpperView : UIView {
         configureTimeAndView()
         addNotificationObserver()
         adminTimer()
+        setWaveImage()
     }
     
     required init?(coder: NSCoder) {
@@ -146,6 +147,25 @@ class PlayerUpperView : UIView {
         slider.value = Float(playerController.player.currentTime)
     }
     
+    
+    func setWaveImage() {
+        let waveformImageDrawer = WaveformImageDrawer()
+        
+        waveformImageDrawer.waveformImage(
+            fromAudioAt: playerController.url!,
+            with: .init(
+                size : CGSize(width: 500, height: 1000),
+                style: .striped(.init(color: .label)),
+                dampening: nil,
+                scale: 1,
+                verticalScalingFactor: 0.5 )) { image in
+            // need to jump back to main queue
+            DispatchQueue.main.async {
+                print("image complete")
+                self.imageView.image = image
+            }
+        }
+    }
     
 }
 

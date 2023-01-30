@@ -105,6 +105,61 @@ class MyFileManager {
         
     }
     
+    // document에 존재하는 모든 파일 가져오기
+    func getAllAudioFileListFromDocument() -> [DocumentItem] {
+        let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
+        
+        var Filelist : [DocumentItem] = []
+        var FolderList : [DocumentItem] =
+        [
+            DocumentItem(
+                title: "Documents",
+                location: "",
+                url: documentURL,
+                creationDate: Date(),
+                size: 0,
+                audioExtension: nil,
+                type: .folder)
+        ]
+        
+        do {
+            while FolderList.count > 0 {
+                guard let item = FolderList.popLast() else { return Filelist }
+                let urls = try fileManager.contentsOfDirectory(at: item.url, includingPropertiesForKeys: nil)
+                for url in urls {
+                    if url.deletingPathExtension().lastPathComponent == ".Trash" { continue }
+                    let attr = try fileManager.attributesOfItem(atPath: url.path) as NSDictionary
+                    if url.hasDirectoryPath {
+                        let folderItem = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
+                                                location : "\(item.location)/\(url.deletingPathExtension().lastPathComponent)",
+                                                      url: url,
+                                                creationDate : attr.fileCreationDate() ?? Date(),
+                                                size : attr.fileSize(),
+                                                audioExtension: nil,
+                                                type: .folder)
+                        FolderList.append(folderItem)
+                    }
+                    else if allowedFileExtensions.contains(url.pathExtension) {
+                        let fileItem = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
+                                                    location : item.location,
+                                                    url: url,
+                                                    creationDate : attr.fileCreationDate() ?? Date(),
+                                                    size : attr.fileSize(),
+                                                    audioExtension: url.pathExtension,
+                                                    type: .file)
+                        Filelist.append(fileItem)
+                    }
+                }
+            }
+        }
+        catch {
+            print("[Error] : \(error.localizedDescription)")
+        }
+        
+        return Filelist
+    }
+    
+    
     
     
     

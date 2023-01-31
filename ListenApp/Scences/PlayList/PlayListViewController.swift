@@ -141,20 +141,20 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         let item = playList[indexPath.row]
         
         if item.type == .file {
-            if playerController.audio?.title != item.title {
-                guard let idx = CoreAudioData.audioList.firstIndex(where: {$0.title == item.title && $0.location == item.location }) else {
-                    print("This audio is not exist in CoreData")
-                    return
-                }
-                
-                playerController.isNewAudio = true
-                playerController.audio = CoreAudioData.audioList[idx]
-                playerController.url = item.url
-                playerController.configurePlayer(url : item.url)
-            }
-            
-            let playerVC = NewPlayerVIewController()
-            navigationController?.pushViewController(playerVC, animated: true)
+//            if playerController.audio?.title != item.title {
+//                guard let idx = CoreAudioData.audioList.firstIndex(where: {$0.title == item.title && $0.location == item.location }) else {
+//                    print("This audio is not exist in CoreData")
+//                    return
+//                }
+//
+//                playerController.isNewAudio = true
+//                playerController.audio = CoreAudioData.audioList[idx]
+//                playerController.url = item.url
+//                playerController.configurePlayer(url : item.url)
+//            }
+//
+//            let playerVC = NewPlayerVIewController()
+//            navigationController?.pushViewController(playerVC, animated: true)
         }
         else {
             let playListVC = PlayListViewController()
@@ -463,7 +463,7 @@ extension PlayListViewController : CustomAlertDelegate {
         let indexPath = tableView.indexPathForSelectedRow ?? IndexPath()
         let item = self.playList[indexPath.row]
         
-        CoreAudioData.updateTitleOfSelectedDocumentItem(newtitle: newTitle, item: item)
+//        CoreAudioData.updateTitleOfSelectedDocumentItem(newtitle: newTitle, item: item)
         filemanager.renameFileInDocument(item : item, newTitle: newTitle, url: url)
         changeTableViewEditingAndLayout()
         setPlayList()

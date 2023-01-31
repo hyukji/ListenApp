@@ -46,7 +46,7 @@ class PlayerViewController : UIViewController {
 private extension PlayerViewController {
     func setNavigationBar() {
         
-        navigationItem.title = PlayerController.playerController.audio?.title
+        navigationItem.title = "예시1"
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backToRootVC))
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.horizontal.3"), style: .plain, target: self, action: #selector(tapPlayerSetting))

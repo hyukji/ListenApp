@@ -138,7 +138,7 @@ extension PlayListMoveViewController {
     }
     
     @objc func tapMoveBtn() {
-        CoreAudioData.updateLocationOfSelectedItem(location: location, selectedPlayList: selectedItems)
+//        CoreAudioData.updateLocationOfSelectedItem(location: location, selectedPlayList: selectedItems)
         filemanager.moveFileInDocument(selectedURLs: cannotMoveUrls, newUrl: url)
         self.delegate?.afterMoveAction(text : url.path)
         

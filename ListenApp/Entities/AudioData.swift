@@ -8,12 +8,8 @@
 import UIKit
 
 struct AudioData {
-    var title : String
-    var location : String
-    let audioExtension : String
-    let waveAnalysis : [Float]
-    var currentTime : TimeInterval
-    let duration : TimeInterval
+    let fileSystemFileNumber : Int
     let creationDate : Date
+    var currentTime : TimeInterval
+    let waveAnalysis : [Float]
 }
-

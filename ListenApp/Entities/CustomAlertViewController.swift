@@ -8,9 +8,10 @@
 import UIKit
 
 protocol CustomAlertDelegate : AnyObject {
-    func confirmRename(text : String)
+    func confirmRename(newTitle : String)
     func confirmNewFolder(text : String)
     func confirmAddWifiFile()
+    func confirmAddCableFile()
 }
 
 enum AlertType {
@@ -161,12 +162,14 @@ class CustomAlertViewController: UIViewController {
         switch alertCategory {
         case .rename:
             let text = textField.text ?? ""
-            self.delegate?.confirmRename(text: text)
+            self.delegate?.confirmRename(newTitle: text)
         case .newFolder:
             let text = textField.text ?? ""
             self.delegate?.confirmNewFolder(text: text)
         case .addWifiFile:
             self.delegate?.confirmAddWifiFile()
+        case .addCableFile:
+            self.delegate?.confirmAddCableFile()
         default:
             break
         }

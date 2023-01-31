@@ -35,9 +35,6 @@ class PageWaveViewController : UIViewController {
         imageView.image = UIImage(named: "MusicBasic")
         imageView.contentMode = .scaleToFill
         
-        imageView.image = playerController.audio?.waveImage
-        imageView.frame.size = playerController.audio?.waveImage.size ?? CGSize(width: 0, height: 0)
-        
         return imageView
     }()
     

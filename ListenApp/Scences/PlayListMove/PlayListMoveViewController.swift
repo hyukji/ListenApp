@@ -14,9 +14,15 @@ protocol AfterMoveActionProtocol : AnyObject {
 
 class PlayListMoveViewController : UIViewController {
     var playList : [DocumentItem] = []
+    
+    let CoreAudioData = CoreDataFunc.shared
     var filemanager = MyFileManager()
-    var selectedURLs : [URL] = []
+    
+    var cannotMoveUrls : [URL] = []
+    var selectedItems : [DocumentItem] = []
+    
     var url : URL!
+    var location : String!
     
     var sortOrder = ComparisonResult.orderedAscending
     var selectedSort = SelectedSort.category
@@ -42,19 +48,19 @@ class PlayListMoveViewController : UIViewController {
         super.viewDidLoad()
         setLayout()
         setFuncInHeaderBtn()
-        playList = filemanager.getAudioFileListFromDocument(folderurl : url)
+        playList = filemanager.getAudioFileListFromFolder(location: location)
         sortPlayList()
         checkCanMove()
     }
     
     func checkCanMove() {
-        if selectedURLs.contains(url) {
+        if cannotMoveUrls.contains(url) {
             header.moveBtn.isEnabled = false
         }
     }
     
     func refreshPlayListVC() {
-        playList = filemanager.getAudioFileListFromDocument(folderurl : url)
+        playList = filemanager.getAudioFileListFromFolder(location: location)
         sortPlayList()
         tableView.reloadData()
     }
@@ -79,7 +85,7 @@ extension PlayListMoveViewController : UITableViewDataSource, UITableViewDelegat
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListMoveTableViewCell", for: indexPath) as? PlayListMoveTableViewCell else {return UITableViewCell()}
         
         let item = playList[indexPath.row]
-        if selectedURLs.contains(item.url) {
+        if cannotMoveUrls.contains(item.url) {
             cell.isCanMoveFolder = false
         }
         cell.setLayout(item: item)
@@ -93,8 +99,9 @@ extension PlayListMoveViewController : UITableViewDataSource, UITableViewDelegat
         if item.type == .folder {
             let playListMoveVC = PlayListMoveViewController()
             playListMoveVC.delegate = self.delegate
+            playListMoveVC.cannotMoveUrls = cannotMoveUrls
             playListMoveVC.url = item.url
-            playListMoveVC.selectedURLs = selectedURLs
+            playListMoveVC.location = item.location
             
             navigationController?.pushViewController(playListMoveVC, animated: true)
         }
@@ -131,7 +138,8 @@ extension PlayListMoveViewController {
     }
     
     @objc func tapMoveBtn() {
-        filemanager.moveFileInDocument(selectedURLs: selectedURLs, newUrl: url)
+        CoreAudioData.updateLocationOfSelectedItem(location: location, selectedPlayList: selectedItems)
+        filemanager.moveFileInDocument(selectedURLs: cannotMoveUrls, newUrl: url)
         self.delegate?.afterMoveAction(text : url.path)
         
         self.dismiss(animated: true)
@@ -235,9 +243,9 @@ extension PlayListMoveViewController {
 
 
 extension PlayListMoveViewController : CustomAlertDelegate {
-    func confirmRename(text: String) {}
+    func confirmRename(newTitle : String) {}
     func confirmAddWifiFile() {}
-    
+    func confirmAddCableFile() {}
     func confirmNewFolder(text: String) {
         self.filemanager.createForderInDocument(title: text, documentsURL: self.url)
         refreshPlayListVC()

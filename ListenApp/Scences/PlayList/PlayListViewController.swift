@@ -74,19 +74,21 @@ class PlayListViewController : UIViewController {
     
     // 맨 처음 viewload할때 playlist값 set
     func setPlayList() {
-        playList = sortPlayList(targetList: filemanager.getAudioFileListFromDocument(location: location))
+        print("set")
+        playList = sortPlayList(targetList: filemanager.getAudioFileListFromFolder(location: location))
         tableView.reloadData()
     }
     
     // Document에서 파일 가져온 후 기존 playList랑 다르다면 playList 및 audioList 업데이트
     func refreshPlayListVC() {
-        var newPlayList = filemanager.getAudioFileListFromDocument(location: location)
+        print("refresh")
+        var newPlayList = filemanager.getAudioFileListFromFolder(location: location)
         newPlayList = sortPlayList(targetList: newPlayList)
         
         if playList != newPlayList {
             print("playList has some changed")
             playList = newPlayList
-            CoreAudioData.synchronizeAudioListAndTargetPlayList(location: location, playList: playList)
+            CoreAudioData.synchronizeAudioListAndPlayList()
             tableView.reloadData()
         }
     }
@@ -234,11 +236,13 @@ extension PlayListViewController {
         
         let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
         var cannotMoveUrls : [URL] = [self.url]
+        var selectedItems : [DocumentItem] = []
         for indexPath in selectedIndexPath {
             cannotMoveUrls.append(self.playList[indexPath.row].url)
+            selectedItems.append(self.playList[indexPath.row])
         }
-        
-        PlayListMoveVC.selectedURLs = cannotMoveUrls
+        PlayListMoveVC.cannotMoveUrls = cannotMoveUrls
+        PlayListMoveVC.selectedItems = selectedItems
         PlayListMoveVC.delegate = self
         
         let navigationContoller = UINavigationController(rootViewController: PlayListMoveVC)
@@ -254,12 +258,11 @@ extension PlayListViewController {
         }
         
         filemanager.deleteFilesInDocument(items: selectedItems)
-        refreshPlayListVC()
-        changeTableViewEditingAndLayout()
+        CoreAudioData.synchronizeAudioListAndPlayList()
+        setPlayList()
         
+        changeTableViewEditingAndLayout()
     }
-    
-    
     
     func changeEditingFooterButtonStatus() {
         let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
@@ -456,23 +459,30 @@ extension PlayListViewController {
 
 
 extension PlayListViewController : CustomAlertDelegate {
-    func confirmRename(text: String) {
+    func confirmRename(newTitle : String) {
         let indexPath = tableView.indexPathForSelectedRow ?? IndexPath()
         let item = self.playList[indexPath.row]
         
-        filemanager.renameFileInDocument(item : item, newTitle: text, url: url)
+        CoreAudioData.updateTitleOfSelectedDocumentItem(newtitle: newTitle, item: item)
+        filemanager.renameFileInDocument(item : item, newTitle: newTitle, url: url)
         changeTableViewEditingAndLayout()
-        refreshPlayListVC()
+        setPlayList()
     }
     
     func confirmNewFolder(text: String) {
         self.filemanager.createForderInDocument(title: text, documentsURL: self.url)
-        refreshPlayListVC()
+        setPlayList()
     }
     
     func confirmAddWifiFile() {
         webUploader.stopWebUploader()
-        refreshPlayListVC()
+        CoreAudioData.synchronizeAudioListAndPlayList()
+        setPlayList()
+    }
+    
+    func confirmAddCableFile() {
+        CoreAudioData.synchronizeAudioListAndPlayList()
+        setPlayList()
     }
     
 }

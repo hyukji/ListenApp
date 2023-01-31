@@ -49,6 +49,7 @@ class MyFileManager {
         
         URLs.forEach{
             let originPath = $0.path
+            print(originPath)
             let newPath = newUrl.path + "/\($0.lastPathComponent)"
             
             do {
@@ -61,7 +62,7 @@ class MyFileManager {
     
         
     
-    func getAudioFileListFromDocument(location : String) -> [DocumentItem] {
+    func getAudioFileListFromFolder(location : String) -> [DocumentItem] {
         let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
         let directoryURL = documentURL.appending(path: location, directoryHint: .isDirectory)
         
@@ -105,14 +106,10 @@ class MyFileManager {
         
     }
     
+    
     // document에 존재하는 모든 파일 가져오기
     func getAllAudioFileListFromDocument() -> [DocumentItem] {
-        let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
-        
-        var Filelist : [DocumentItem] = []
-        var FolderList : [DocumentItem] =
-        [
-            DocumentItem(
+        let documentItem = DocumentItem(
                 title: "Documents",
                 location: "",
                 url: documentURL,
@@ -120,7 +117,17 @@ class MyFileManager {
                 size: 0,
                 audioExtension: nil,
                 type: .folder)
-        ]
+        
+        return getAllAudioFileListFromFolder(folderItem: documentItem)
+    }
+    
+    
+    // document에 존재하는 모든 파일 가져오기
+    func getAllAudioFileListFromFolder(folderItem : DocumentItem) -> [DocumentItem] {
+        let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
+        
+        var Filelist : [DocumentItem] = []
+        var FolderList : [DocumentItem] = [folderItem]
         
         do {
             while FolderList.count > 0 {
@@ -158,7 +165,6 @@ class MyFileManager {
         
         return Filelist
     }
-    
     
     
     

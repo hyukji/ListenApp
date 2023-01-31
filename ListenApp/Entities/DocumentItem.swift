@@ -17,6 +17,7 @@ struct DocumentItem : Equatable {
     var location : String
     let url : URL
     let creationDate : Date
+    let fileSystemFileNumber : Int
     let size : UInt64
     let audioExtension : String?
     let type : DocumentItemType

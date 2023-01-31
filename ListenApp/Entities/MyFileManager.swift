@@ -80,6 +80,7 @@ class MyFileManager {
                                             location : "\(location)/\(url.deletingPathExtension().lastPathComponent)",
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
+                                            fileSystemFileNumber: attr.fileSystemFileNumber(),
                                             size : attr.fileSize(),
                                             audioExtension: nil,
                                             type: .folder)
@@ -90,6 +91,7 @@ class MyFileManager {
                                             location : location,
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
+                                            fileSystemFileNumber: attr.fileSystemFileNumber(),
                                             size : attr.fileSize(),
                                             audioExtension: url.pathExtension,
                                             type: .file)
@@ -114,6 +116,7 @@ class MyFileManager {
                 location: "",
                 url: documentURL,
                 creationDate: Date(),
+                fileSystemFileNumber: 0,
                 size: 0,
                 audioExtension: nil,
                 type: .folder)
@@ -141,6 +144,7 @@ class MyFileManager {
                                                 location : "\(item.location)/\(url.deletingPathExtension().lastPathComponent)",
                                                       url: url,
                                                 creationDate : attr.fileCreationDate() ?? Date(),
+                                                fileSystemFileNumber: attr.fileSystemFileNumber(),
                                                 size : attr.fileSize(),
                                                 audioExtension: nil,
                                                 type: .folder)
@@ -151,6 +155,7 @@ class MyFileManager {
                                                     location : item.location,
                                                     url: url,
                                                     creationDate : attr.fileCreationDate() ?? Date(),
+                                                    fileSystemFileNumber: attr.fileSystemFileNumber(),
                                                     size : attr.fileSize(),
                                                     audioExtension: url.pathExtension,
                                                     type: .file)

@@ -14,7 +14,6 @@ enum DocumentItemType : Comparable {
 
 struct DocumentItem : Equatable {
     var title : String
-    var location : String
     let url : URL
     let creationDate : Date
     let fileSystemFileNumber : Int
@@ -22,21 +21,19 @@ struct DocumentItem : Equatable {
     let audioExtension : String?
     let type : DocumentItemType
     
-    static func == (lhs: DocumentItem, rhs: DocumentItem) -> Bool {
-        return (lhs.title == rhs.title
-                && lhs.location == rhs.location
-                && lhs.creationDate == rhs.creationDate
-                && lhs.size == rhs.size
-                && lhs.audioExtension == rhs.audioExtension)
-    }
-    
-    static func != (lhs: DocumentItem, rhs: DocumentItem) -> Bool {
-        return (lhs.title != rhs.title
-                || lhs.location != rhs.location
-                || lhs.creationDate != rhs.creationDate
-                || lhs.size != rhs.size
-                || lhs.audioExtension != rhs.audioExtension)
-    }
+//    static func == (lhs: DocumentItem, rhs: DocumentItem) -> Bool {
+//        return (lhs.title == rhs.title
+//                && lhs.creationDate == rhs.creationDate
+//                && lhs.size == rhs.size
+//                && lhs.audioExtension == rhs.audioExtension)
+//    }
+//
+//    static func != (lhs: DocumentItem, rhs: DocumentItem) -> Bool {
+//        return (lhs.title != rhs.title
+//                || lhs.creationDate != rhs.creationDate
+//                || lhs.size != rhs.size
+//                || lhs.audioExtension != rhs.audioExtension)
+//    }
 }
 
 

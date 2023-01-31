@@ -19,7 +19,6 @@ class PlayListViewController : UIViewController {
     var webUploader = MyWebUploader()
     
     var url : URL!
-    var location : String!
     
     private lazy var header = PlayListHeaderView(frame: .zero, headerTitle: url.lastPathComponent)
     
@@ -75,14 +74,14 @@ class PlayListViewController : UIViewController {
     // 맨 처음 viewload할때 playlist값 set
     func setPlayList() {
         print("set")
-        playList = sortPlayList(targetList: filemanager.getAudioFileListFromFolder(location: location))
+        playList = sortPlayList(targetList: filemanager.getAudioFileListFromFolder(directoryURL: url))
         tableView.reloadData()
     }
     
     // Document에서 파일 가져온 후 기존 playList랑 다르다면 playList 및 audioList 업데이트
     func refreshPlayListVC() {
         print("refresh")
-        var newPlayList = filemanager.getAudioFileListFromFolder(location: location)
+        var newPlayList = filemanager.getAudioFileListFromFolder(directoryURL: url)
         newPlayList = sortPlayList(targetList: newPlayList)
         
         if playList != newPlayList {
@@ -159,7 +158,6 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         else {
             let playListVC = PlayListViewController()
             playListVC.url = item.url
-            playListVC.location = item.location
             navigationController?.pushViewController(playListVC, animated: true)
         }
         
@@ -232,7 +230,6 @@ extension PlayListViewController {
     @objc func tapMoveButton(){
         let PlayListMoveVC = PlayListMoveViewController()
         PlayListMoveVC.url = filemanager.documentURL
-        PlayListMoveVC.location = ""
         
         let selectedIndexPath = tableView.indexPathsForSelectedRows ?? []
         var cannotMoveUrls : [URL] = [self.url]

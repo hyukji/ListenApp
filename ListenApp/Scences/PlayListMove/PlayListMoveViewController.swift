@@ -22,7 +22,6 @@ class PlayListMoveViewController : UIViewController {
     var selectedItems : [DocumentItem] = []
     
     var url : URL!
-    var location : String!
     
     var sortOrder = ComparisonResult.orderedAscending
     var selectedSort = SelectedSort.category
@@ -48,7 +47,7 @@ class PlayListMoveViewController : UIViewController {
         super.viewDidLoad()
         setLayout()
         setFuncInHeaderBtn()
-        playList = filemanager.getAudioFileListFromFolder(location: location)
+        playList = filemanager.getAudioFileListFromFolder(directoryURL: url)
         sortPlayList()
         checkCanMove()
     }
@@ -60,7 +59,7 @@ class PlayListMoveViewController : UIViewController {
     }
     
     func refreshPlayListVC() {
-        playList = filemanager.getAudioFileListFromFolder(location: location)
+        playList = filemanager.getAudioFileListFromFolder(directoryURL: url)
         sortPlayList()
         tableView.reloadData()
     }
@@ -101,7 +100,6 @@ extension PlayListMoveViewController : UITableViewDataSource, UITableViewDelegat
             playListMoveVC.delegate = self.delegate
             playListMoveVC.cannotMoveUrls = cannotMoveUrls
             playListMoveVC.url = item.url
-            playListMoveVC.location = item.location
             
             navigationController?.pushViewController(playListMoveVC, animated: true)
         }

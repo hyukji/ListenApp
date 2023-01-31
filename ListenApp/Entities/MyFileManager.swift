@@ -62,9 +62,8 @@ class MyFileManager {
     
         
     
-    func getAudioFileListFromFolder(location : String) -> [DocumentItem] {
+    func getAudioFileListFromFolder(directoryURL : URL) -> [DocumentItem] {
         let allowedFileExtensions = ["mp3", "aac", "m4a", "wav"]
-        let directoryURL = documentURL.appending(path: location, directoryHint: .isDirectory)
         
         var list : [DocumentItem] = []
         var urls : [URL] = []
@@ -77,7 +76,6 @@ class MyFileManager {
                 let attr = try fileManager.attributesOfItem(atPath: url.path) as NSDictionary
                 if url.hasDirectoryPath {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
-                                            location : "\(location)/\(url.deletingPathExtension().lastPathComponent)",
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             fileSystemFileNumber: attr.fileSystemFileNumber(),
@@ -88,7 +86,6 @@ class MyFileManager {
                 }
                 else if allowedFileExtensions.contains(url.pathExtension) {
                     let item = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
-                                            location : location,
                                             url: url,
                                             creationDate : attr.fileCreationDate() ?? Date(),
                                             fileSystemFileNumber: attr.fileSystemFileNumber(),
@@ -113,7 +110,6 @@ class MyFileManager {
     func getAllAudioFileListFromDocument() -> [DocumentItem] {
         let documentItem = DocumentItem(
                 title: "Documents",
-                location: "",
                 url: documentURL,
                 creationDate: Date(),
                 fileSystemFileNumber: 0,
@@ -141,7 +137,6 @@ class MyFileManager {
                     let attr = try fileManager.attributesOfItem(atPath: url.path) as NSDictionary
                     if url.hasDirectoryPath {
                         let folderItem = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
-                                                location : "\(item.location)/\(url.deletingPathExtension().lastPathComponent)",
                                                       url: url,
                                                 creationDate : attr.fileCreationDate() ?? Date(),
                                                 fileSystemFileNumber: attr.fileSystemFileNumber(),
@@ -152,7 +147,6 @@ class MyFileManager {
                     }
                     else if allowedFileExtensions.contains(url.pathExtension) {
                         let fileItem = DocumentItem(title: url.deletingPathExtension().lastPathComponent,
-                                                    location : item.location,
                                                     url: url,
                                                     creationDate : attr.fileCreationDate() ?? Date(),
                                                     fileSystemFileNumber: attr.fileSystemFileNumber(),

@@ -73,7 +73,9 @@ class PlayListViewController : UIViewController {
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
 //        CoreAudioData.resetAllRecords()
-        reflashPlayList()
+        if url == filemanager.documentURL {
+            reflashPlayList()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

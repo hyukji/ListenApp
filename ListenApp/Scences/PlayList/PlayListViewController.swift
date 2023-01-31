@@ -54,7 +54,7 @@ class PlayListViewController : UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.refreshControl = refreshController
-        tableView.refreshControl?.addTarget(self, action: #selector(pullToRefresh(_:)), for: .valueChanged)
+        tableView.refreshControl?.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         
         tableView.register(PlayListTableViewCell.self, forCellReuseIdentifier: "PlayListTableViewCell")
         
@@ -73,12 +73,12 @@ class PlayListViewController : UIViewController {
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
 //        CoreAudioData.resetAllRecords()
-        setPlayList()
+        reflashPlayList()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadPlayList()
+        setPlayList()
     }
     
     // 맨 처음 viewload할때 playlist값 set
@@ -88,23 +88,22 @@ class PlayListViewController : UIViewController {
         tableView.reloadData()
     }
     
-    // Document에서 파일 가져와 업데이트
-    func reloadPlayList() {
-        print("reload PlayList")
-        playList = sortPlayList(targetList: filemanager.getAudioFileListFromFolder(directoryURL: url))
-        tableView.reloadData()
+    // refreshControl를 이용한 synchronizeAudioListAndPlayList
+    func reflashPlayList() {
+        tableView.refreshControl?.beginRefreshing()
+        pullToRefresh()
     }
     
     //
-    @objc func pullToRefresh(_ sender: Any) {
+    @objc func pullToRefresh() {
         CoreAudioData.synchronizeAudioListAndPlayList {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 print("refreshController")
                 self.refreshController.endRefreshing()
                 
             }
         }
-        reloadPlayList()
+        setPlayList()
     }
     
     // when NowPlayeringView was tapped, push PlayerVC to navigation
@@ -392,7 +391,7 @@ extension PlayListViewController {
             let customAlerVC = CustomAlertViewController()
             customAlerVC.alertCategory = .addCableFile
             
-//            customAlerVC.delegate = self
+            customAlerVC.delegate = self
             
             customAlerVC.modalPresentationStyle = .overFullScreen
             customAlerVC.modalTransitionStyle = .crossDissolve
@@ -487,13 +486,12 @@ extension PlayListViewController : CustomAlertDelegate {
     
     func confirmAddWifiFile() {
         webUploader.stopWebUploader()
-        CoreAudioData.synchronizeAudioListAndPlayList(completionHandler: {})
-        setPlayList()
+        reflashPlayList()
     }
     
     func confirmAddCableFile() {
-        CoreAudioData.synchronizeAudioListAndPlayList(completionHandler: {})
-        setPlayList()
+        print("confirm")
+        reflashPlayList()
     }
     
 }
@@ -502,7 +500,7 @@ extension PlayListViewController : CustomAlertDelegate {
 extension PlayListViewController : AfterMoveActionProtocol {
     func afterMoveAction(text : String) {
         self.changeTableViewEditingAndLayout()
-        self.reloadPlayList()
+        self.setPlayList()
     }
 }
 

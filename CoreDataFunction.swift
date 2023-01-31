@@ -89,10 +89,10 @@ class CoreDataFunc {
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
-//        print("fetch CoreData")
-//        fetchedList.forEach {
-//            print($0.fileSystemFileNumber)
-//        }
+        print("fetch CoreData")
+        fetchedList.forEach {
+            print($0.fileSystemFileNumber)
+        }
         return fetchedList
     }
 
@@ -297,11 +297,14 @@ class CoreDataFunc {
 // CoreAudio 와 document 동기화 관련 functions
 extension CoreDataFunc {
     // 전체 playList와 coreAduio 동기화
-    func synchronizeAudioListAndPlayList() {
+    func synchronizeAudioListAndPlayList(completionHandler : @escaping () -> Void) {
         let playList = MyFileManager().getAllAudioFileListFromDocument()
-//        print("sync")
-        delAudioDataIsnotInPlayList(playList: playList)
-        saveAudioDataIsnotInAudioList(playList: playList)
+        DispatchQueue.global().async() {
+            self.delAudioDataIsnotInPlayList(playList: playList)
+            self.saveAudioDataIsnotInAudioList(playList: playList)
+            completionHandler()
+        }
+        
     }
 //
 //    // 특정 location의 playList와 coreAduio 동기화

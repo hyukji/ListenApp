@@ -38,6 +38,14 @@ class PlayListViewController : UIViewController {
     }()
     
     private lazy var nowPlayingView = NowPlayingView() // nowPlayingView를 UIButton으로 하려고 했지만, 버튼 크기 유지하면서 내부 요소들을 정렬할 수 가 없어 UIView에 UITapGestureRecognizer를 사용해 구현함
+    
+    private let refreshController : UIRefreshControl = {
+        let refreshController = UIRefreshControl()
+        refreshController.attributedTitle = NSAttributedString(string: "음성 파일의 파형을 분석중입니다...")
+        
+        return refreshController
+    }()
+    
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
 //        tableView.rowHeight = 80
@@ -45,6 +53,8 @@ class PlayListViewController : UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.refreshControl = refreshController
+        tableView.refreshControl?.addTarget(self, action: #selector(pullToRefresh(_:)), for: .valueChanged)
         
         tableView.register(PlayListTableViewCell.self, forCellReuseIdentifier: "PlayListTableViewCell")
         
@@ -68,7 +78,7 @@ class PlayListViewController : UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        refreshPlayListVC()
+        reloadPlayList()
     }
     
     // 맨 처음 viewload할때 playlist값 set
@@ -78,18 +88,23 @@ class PlayListViewController : UIViewController {
         tableView.reloadData()
     }
     
-    // Document에서 파일 가져온 후 기존 playList랑 다르다면 playList 및 audioList 업데이트
-    func refreshPlayListVC() {
-        print("refresh")
-        var newPlayList = filemanager.getAudioFileListFromFolder(directoryURL: url)
-        newPlayList = sortPlayList(targetList: newPlayList)
-        
-        if playList != newPlayList {
-            print("playList has some changed")
-            playList = newPlayList
-            CoreAudioData.synchronizeAudioListAndPlayList()
-            tableView.reloadData()
+    // Document에서 파일 가져와 업데이트
+    func reloadPlayList() {
+        print("reload PlayList")
+        playList = sortPlayList(targetList: filemanager.getAudioFileListFromFolder(directoryURL: url))
+        tableView.reloadData()
+    }
+    
+    //
+    @objc func pullToRefresh(_ sender: Any) {
+        CoreAudioData.synchronizeAudioListAndPlayList {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                print("refreshController")
+                self.refreshController.endRefreshing()
+                
+            }
         }
+        reloadPlayList()
     }
     
     // when NowPlayeringView was tapped, push PlayerVC to navigation
@@ -255,7 +270,6 @@ extension PlayListViewController {
         }
         
         filemanager.deleteFilesInDocument(items: selectedItems)
-        CoreAudioData.synchronizeAudioListAndPlayList()
         setPlayList()
         
         changeTableViewEditingAndLayout()
@@ -473,12 +487,12 @@ extension PlayListViewController : CustomAlertDelegate {
     
     func confirmAddWifiFile() {
         webUploader.stopWebUploader()
-        CoreAudioData.synchronizeAudioListAndPlayList()
+        CoreAudioData.synchronizeAudioListAndPlayList(completionHandler: {})
         setPlayList()
     }
     
     func confirmAddCableFile() {
-        CoreAudioData.synchronizeAudioListAndPlayList()
+        CoreAudioData.synchronizeAudioListAndPlayList(completionHandler: {})
         setPlayList()
     }
     
@@ -488,7 +502,7 @@ extension PlayListViewController : CustomAlertDelegate {
 extension PlayListViewController : AfterMoveActionProtocol {
     func afterMoveAction(text : String) {
         self.changeTableViewEditingAndLayout()
-        self.refreshPlayListVC()
+        self.reloadPlayList()
     }
 }
 

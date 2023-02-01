@@ -12,6 +12,7 @@ import DSWaveformImage
 
 class CoreDataFunc {
     static let shared = CoreDataFunc()
+    static var shouldUpdateCount = 0
     
     var appDelegate : AppDelegate!
     var context : NSManagedObjectContext!
@@ -24,25 +25,6 @@ class CoreDataFunc {
         audioList = fetchAudio()
     }
     
-    func saveItemListwithInitializeAnalysis(itemList : [DocumentItem]) {
-        for item in itemList{
-            guard let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: item.url) else {return}
-            let duration = 1 * 60
-            let width = duration * 10
-            let count = Int(width * 3 / 2)
-            waveformAnalyzer.samples(count: count) { samples in
-                let audio = AudioData(
-                    fileSystemFileNumber: item.fileSystemFileNumber,
-                    creationDate : item.creationDate,
-                    currentTime: 0.0,
-                    waveAnalysis: samples ?? [0.0]
-                )
-                
-                self.saveAudio(audioData: audio)
-            }
-        }
-        audioList = fetchAudio()
-    }
     
     func saveAudio(audioData : AudioData) {
         let entity = NSEntityDescription.entity(forEntityName: "Audio", in: self.context)
@@ -95,156 +77,11 @@ class CoreDataFunc {
         }
         return fetchedList
     }
-
-//
-//
-//    // title이 같은 데이터 찾아서 해당 데이터 업데이트
-//    func updateTitleOfSelectedDocumentItem(newtitle: String, item : DocumentItem) {
-//        print("newTitie", newtitle)
-//        print("should change Item : \(item.title), \(item.location)")
-//        if item.type == .folder {
-//            var newFolderLocationComponents = item.location.components(separatedBy: "/")
-//            newFolderLocationComponents[newFolderLocationComponents.count-1] = newtitle
-//            let newFolderLocation = newFolderLocationComponents.joined(separator: "/")
-//            print("newFolderLocation",newFolderLocation)
-//
-//            let fileList = MyFileManager().getAllAudioFileListFromFolder(folderItem: item)
-//            for fileItem in fileList {
-//                var newFileLocationComponents = fileItem.location.components(separatedBy: item.title)
-//                newFileLocationComponents[0] = "\(newFolderLocation)"
-//                let newFileLocation = newFileLocationComponents.joined(separator: "")
-//
-//                print("change location \(fileItem.location) to \(newFileLocation)")
-//
-//                print("fileItem", fileItem.title, fileItem.location)
-//
-//
-//                let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
-//                fetchRequest.predicate = NSPredicate(
-//                    format: "title == %@ && location == %@", fileItem.title, fileItem.location
-//                )
-//                do {
-//                    let result = try context.fetch(fetchRequest)
-//                    if result.count > 0 {
-//                        print("file rename0")
-//                        let audio = result[0]
-//                        audio.setValue(newFileLocation, forKey: "location")}
-//                    else {
-//                    print("************** 폴더 이름 변환 -> 파일 위치 변환 실패******************")
-//                    }
-//                } catch {
-//                    print(error)
-//                }
-//            }
-//        }
-//        else if item.type == .file {
-//            print(item.title, item.location)
-//            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
-//            fetchRequest.predicate = NSPredicate(
-//                format: "title == %@ && location == %@", item.title, item.location
-//            )
-//            do {
-//                let result = try context.fetch(fetchRequest)
-//                if result.count > 0 {
-//                    let audio = result[0]
-//                    audio.setValue(newtitle, forKey: "title")
-//                } else {
-//                    print("************** 파일 이름 변환 실패******************")
-//                }
-//
-//            } catch {
-//                print(error)
-//            }
-//        }
-//
-//        do {
-//            try context.save()
-//            audioList = fetchAudio()
-//        } catch {
-//            print(error)
-//        }
-//
-//    }
-//
-//
-//    func updateLocationOfSelectedItem(location: String, selectedPlayList : [DocumentItem]) {
-//        for shouldUpdateItem in selectedPlayList {
-//            if shouldUpdateItem.type == .file {
-//                let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
-//                fetchRequest.predicate = NSPredicate(
-//                    format: "title == %@ && location == %@", shouldUpdateItem.title, shouldUpdateItem.location
-//                )
-//                do {
-//                    let result = try context.fetch(fetchRequest)
-//                    let audio = result[0]
-//                    audio.setValue(location, forKey: "location")
-//                } catch {
-//                    print(error)
-//                }
-//            }
-//            else {
-//                let fileList = MyFileManager().getAllAudioFileListFromFolder(folderItem: shouldUpdateItem)
-//                for fileItem in fileList {
-//                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
-//                    fetchRequest.predicate = NSPredicate(
-//                        format: "title == %@ && location == %@", fileItem.title, fileItem.location
-//                    )
-//
-//                    var newFileLocationComponents = fileItem.location.components(separatedBy: shouldUpdateItem.title)
-//                    newFileLocationComponents[0] = "\(location)/"
-//                    let newFileLocation = newFileLocationComponents.joined(separator: shouldUpdateItem.title)
-//
-//                    print("change location \(fileItem.location) to \(newFileLocation)")
-//                    do {
-//                        let result = try context.fetch(fetchRequest)
-//                        let audio = result[0]
-//                        audio.setValue(newFileLocation, forKey: "location")
-//                    } catch {
-//                        print(error)
-//                    }
-//                }
-//            }
-//        }
-//
-//        do {
-//            try context.save()
-//            print("updateLocationOfSelectedItem")
-//            audioList = fetchAudio()
-//        } catch {
-//            print(error)
-//        }
-//    }
-//
-//
-//
-//    // 특정 [documentItem]을 CoreData에서 삭제
-//    func deleteSelectedPlayList(selectedPlayList : [DocumentItem]) {
-//        selectedPlayList.forEach{
-//            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
-//            fetchRequest.predicate = NSPredicate(
-//                format: "title == %@ && location == %@", $0.title, $0.location
-//            )
-//
-//            do {
-//                let result = try context.fetch(fetchRequest)
-//                for obj in result {
-//                    context.delete(obj)
-//                }
-//            } catch {
-//                print(error)
-//            }
-//        }
-//
-//        do {
-//            try context.save()
-//            print("delete")
-//            audioList = fetchAudio()
-//        } catch {
-//            print(error)
-//        }
-//    }
-//
-//    // 특정 audio들 CoreData에서 삭제
+    
+    
+    
+    
+   // 특정 audioList를 CoreData에서 삭제
     func deleteSelectedAudioList(selectedAudioList : [AudioData]) {
         selectedAudioList.forEach{
             let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
@@ -265,54 +102,43 @@ class CoreDataFunc {
         do {
             try context.save()
             print("delete")
-            audioList = fetchAudio()
         } catch {
             print(error)
         }
     }
 
-//    func resetAllRecords() // entity = Your_Entity_Name
-//        {
-//            let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Audio")
-//            let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
-//            do
-//            {
-//                try context.execute(deleteRequest)
-//                try context.save()
-//                print("deleteall")
-//            }
-//            catch
-//            {
-//                print ("There was an error")
-//            }
-//        }
-//
-//
-//
-//
-//
+    func resetAllRecords() // entity = Your_Entity_Name
+        {
+            let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Audio")
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+            do
+            {
+                try context.execute(deleteRequest)
+                try context.save()
+                print("deleteall")
+            }
+            catch
+            {
+                print ("There was an error")
+            }
+        }
 }
-//
-//
+
+
 // CoreAudio 와 document 동기화 관련 functions
 extension CoreDataFunc {
     // 전체 playList와 coreAduio 동기화
-    func synchronizeAudioListAndPlayList(completionHandler : @escaping () -> Void) {
+    func synchronizeAudioListAndPlayList(checkUpdateHandler : @escaping () -> Void) {
         let playList = MyFileManager().getAllAudioFileListFromDocument()
-        DispatchQueue.global().async() {
-            self.delAudioDataIsnotInPlayList(playList: playList)
-            self.saveAudioDataIsnotInAudioList(playList: playList)
-            completionHandler()
-        }
+        self.delAudioDataIsnotInPlayList(playList: playList)
+        let shouldSaveList = self.saveAudioDataIsnotInAudioList(playList: playList)
         
+        CoreDataFunc.shouldUpdateCount = shouldSaveList.count
+        checkUpdateHandler()
+        
+        self.getAndupdateWaveAnalysis(itemList: shouldSaveList, checkUpdateHandler: checkUpdateHandler)
     }
-//
-//    // 특정 location의 playList와 coreAduio 동기화
-//    func synchronizeAudioListAndTargetPlayList(location : String, playList : [DocumentItem]) {
-//        delAudioDataIsnotInTargetPlayList(location : location, playList : playList)
-//        saveAudioDataIsnotInAudioList(playList: playList)
-//    }
-
+    
     // playlist에는 없는데 coreAduio에만 있는 데이터 삭제
     private func delAudioDataIsnotInPlayList(playList : [DocumentItem]) {
         var shouldDeleteAudioList : [AudioData] = []
@@ -325,37 +151,37 @@ extension CoreDataFunc {
                 shouldDeleteAudioList.append(audio)
             }
         }
-
+        
         if shouldDeleteAudioList.count > 0 {
-            print("shouldDeleteAudioList")
             shouldDeleteAudioList.forEach{
-                print($0.fileSystemFileNumber, $0.creationDate)
+                let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
+                fetchRequest.predicate = NSPredicate(
+                    format: "fileSystemFileNumber == %d && creationDate == %@", $0.fileSystemFileNumber, $0.creationDate as NSDate
+                )
+                
+                do {
+                    let result = try context.fetch(fetchRequest)
+                    for obj in result {
+                        context.delete(obj)
+                        print("delete \($0.fileSystemFileNumber)")
+                    }
+                } catch {
+                    print(error)
+                }
             }
-            deleteSelectedAudioList(selectedAudioList: shouldDeleteAudioList)
+            
+            do {
+                try context.save()
+                //            audioList = fetchAudio()
+            } catch {
+                print(error)
+            }
         }
+        
     }
 
-
-    // 해당 playlist에는 없는데 coreAduio에만 있는 데이터 삭제
-//    private func delAudioDataIsnotInTargetPlayList(location : String, playList : [DocumentItem]) {
-//        var shouldDeleteAudioList : [AudioData] = []
-//        audioList.forEach { audio in
-//            if audio.location == location {
-//                if !playList.contains(where: {
-//                    $0.type == .file &&
-//                    $0.title == audio.title &&
-//                    $0.audioExtension == audio.audioExtension &&
-//                    $0.creationDate == audio.creationDate
-//                }) {
-//                    shouldDeleteAudioList.append(audio)
-//                }
-//            }
-//        }
-//        if shouldDeleteAudioList.count > 0 { deleteSelectedAudioList(selectedAudioList: shouldDeleteAudioList) }
-//    }
-
     // coreAduio 에는 없고 해당 playlist에만 있는 데이터를 coreAduio에 저장
-    private func saveAudioDataIsnotInAudioList(playList : [DocumentItem]) {
+    private func saveAudioDataIsnotInAudioList(playList : [DocumentItem]) -> [DocumentItem] {
         var shouldSaveList : [DocumentItem] = []
         playList.forEach { item in
             if item.type == .file
@@ -367,9 +193,77 @@ extension CoreDataFunc {
                 shouldSaveList.append(item)
             }
         }
-        saveItemListwithInitializeAnalysis(itemList: shouldSaveList)
+        
+        shouldSaveList.forEach{ item in
+            let audio = AudioData(
+                fileSystemFileNumber: item.fileSystemFileNumber,
+                creationDate : item.creationDate,
+                currentTime: 0.0,
+                waveAnalysis: [0.0]
+            )
+            
+            self.saveAudio(audioData: audio)
+        }
+        
+        return shouldSaveList
+    }
+    
+    
+    func getAndupdateWaveAnalysis(itemList : [DocumentItem], checkUpdateHandler : @escaping () -> Void) {
+        itemList.forEach { item in
+            guard let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: item.url) else {return}
+            let duration = 1 * 60
+            let width = duration * 10
+            let count = Int(width * 3 / 2)
+            waveformAnalyzer.samples(count: count) { samples in
+                let waveAnalysis = samples ?? [0.0]
+                let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
+                fetchRequest.predicate = NSPredicate(
+                    format: "fileSystemFileNumber == %d && creationDate == %@", item.fileSystemFileNumber, item.creationDate as NSDate
+                )
+                do {
+                    let result = try self.context.fetch(fetchRequest)
+                    if result.count > 0 {
+                        let audio = result[0]
+                        audio.setValue(waveAnalysis, forKey: "waveAnalysis")
+                    }
+                } catch {
+                    print(error)
+                }
+                
+                do {
+                    try self.context.save()
+                    print("update \(item.fileSystemFileNumber)")
+                    CoreDataFunc.shouldUpdateCount -= 1
+                    checkUpdateHandler()
+                } catch {
+                    print(error)
+                }
+            }
+        }
         
     }
     
+    
+//
+//    func saveItemListwithInitializeAnalysis(itemList : [DocumentItem]) {
+//        for item in itemList{
+//            guard let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: item.url) else {return}
+//            let duration = 1 * 60
+//            let width = duration * 10
+//            let count = Int(width * 3 / 2)
+//            waveformAnalyzer.samples(count: count) { samples in
+//                let audio = AudioData(
+//                    fileSystemFileNumber: item.fileSystemFileNumber,
+//                    creationDate : item.creationDate,
+//                    currentTime: 0.0,
+//                    waveAnalysis: samples ?? [0.0]
+//                )
+//
+//                self.saveAudio(audioData: audio)
+//            }
+//        }
+//        //        audioList = fetchAudio()
+//    }
 }
 

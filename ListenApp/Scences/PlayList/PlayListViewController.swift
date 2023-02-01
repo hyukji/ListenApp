@@ -85,7 +85,6 @@ class PlayListViewController : UIViewController {
     
     // 맨 처음 viewload할때 playlist값 set
     func setPlayList() {
-        print("set")
         playList = sortPlayList(targetList: filemanager.getAudioFileListFromFolder(directoryURL: url))
         tableView.reloadData()
     }
@@ -99,10 +98,12 @@ class PlayListViewController : UIViewController {
     //
     @objc func pullToRefresh() {
         CoreAudioData.synchronizeAudioListAndPlayList {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                print("refreshController")
-                self.refreshController.endRefreshing()
-                
+            if CoreDataFunc.shouldUpdateCount == 0{
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    print("refreshController")
+                    self.CoreAudioData.audioList = self.CoreAudioData.fetchAudio()
+                    self.refreshController.endRefreshing()
+                }
             }
         }
         setPlayList()

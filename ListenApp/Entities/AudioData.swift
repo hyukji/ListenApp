@@ -12,4 +12,5 @@ struct AudioData {
     let creationDate : Date
     var currentTime : TimeInterval
     let waveAnalysis : [Float]
+    let duration : Double
 }

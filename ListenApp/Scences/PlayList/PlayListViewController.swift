@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import AVFoundation
 
 class PlayListViewController : UIViewController {
     var playList : [DocumentItem] = []
@@ -69,10 +68,10 @@ class PlayListViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        CoreAudioData.resetAllRecords()
         setLayout()
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
-//        CoreAudioData.resetAllRecords()
         if url == filemanager.documentURL {
             reflashPlayList()
         }
@@ -91,15 +90,23 @@ class PlayListViewController : UIViewController {
     
     // refreshControl를 이용한 synchronizeAudioListAndPlayList
     func reflashPlayList() {
-        tableView.refreshControl?.beginRefreshing()
-        pullToRefresh()
+        if !refreshController.isRefreshing{
+            tableView.refreshControl?.beginRefreshing()
+            pullToRefresh()
+        }
     }
     
-    //
+    // 동기화 후에 waveAnalysis update 다 되면 저장 후 audioList fetch 및 정상화
     @objc func pullToRefresh() {
         CoreAudioData.synchronizeAudioListAndPlayList {
-            if CoreDataFunc.shouldUpdateCount == 0{
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if CoreDataFunc.shouldUpdateCount == 0 {
+                DispatchQueue.main.async {
+                    do {
+                        try self.CoreAudioData.context.save()
+                    } catch {
+                        print(error)
+                    }
+                    
                     print("refreshController")
                     self.CoreAudioData.audioList = self.CoreAudioData.fetchAudio()
                     self.refreshController.endRefreshing()

@@ -16,7 +16,6 @@ class NewPlayerVIewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setNavigationBar()
         setLayout()
     }
     
@@ -42,11 +41,9 @@ class NewPlayerVIewController : UIViewController {
 
 
 // UI Design
-private extension NewPlayerVIewController {
-    func setNavigationBar() {
-        
-//        navigationItem.title = PlayerController.playerController.audio?.title
-        navigationItem.title = "예시"
+extension NewPlayerVIewController {
+    func setNavigationBar(title : String) {
+        navigationItem.title = title
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backToRootVC))
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.horizontal.3"), style: .plain, target: self, action: #selector(tapPlayerSetting))
@@ -55,7 +52,7 @@ private extension NewPlayerVIewController {
         navigationItem.rightBarButtonItem?.tintColor = .label
     }
     
-    func setLayout() {
+    private func setLayout() {
         tabBarController?.tabBar.isHidden = true
         tabBarController?.tabBar.isTranslucent = true
         

@@ -157,20 +157,25 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
         let item = playList[indexPath.row]
         
         if item.type == .file {
-//            if playerController.audio?.title != item.title {
-//                guard let idx = CoreAudioData.audioList.firstIndex(where: {$0.title == item.title && $0.location == item.location }) else {
-//                    print("This audio is not exist in CoreData")
-//                    return
-//                }
-//
-//                playerController.isNewAudio = true
-//                playerController.audio = CoreAudioData.audioList[idx]
-//                playerController.url = item.url
-//                playerController.configurePlayer(url : item.url)
-//            }
-//
-//            let playerVC = NewPlayerVIewController()
-//            navigationController?.pushViewController(playerVC, animated: true)
+            // 현재 재생하는 오디오 파일과 다를 경우
+            if playerController.audio?.fileSystemFileNumber != item.fileSystemFileNumber {
+                // 해당 오디오 파일이 존재하는 지 확인
+                guard let idx = CoreAudioData.audioList.firstIndex(where: { $0.fileSystemFileNumber == item.fileSystemFileNumber && $0.creationDate == item.creationDate })
+                else {
+                    print("This audio is not exist in CoreData")
+                    reflashPlayList()
+                    return
+                }
+
+                playerController.isNewAudio = true
+                playerController.audio = CoreAudioData.audioList[idx]
+                playerController.url = item.url
+                playerController.configurePlayer(url : item.url)
+            }
+
+            let playerVC = NewPlayerVIewController()
+            playerVC.setNavigationBar(title: item.title)
+            navigationController?.pushViewController(playerVC, animated: true)
         }
         else {
             let playListVC = PlayListViewController()

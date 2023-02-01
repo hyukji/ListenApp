@@ -12,6 +12,8 @@ class PlayerUpperView : UIView {
     let playerController = PlayerController.playerController
     var timer : Timer?
     
+    let changedAmountPerSec = 65.0
+    
     private var slider : UISlider = {
         let slider = UISlider()
         slider.tintColor = .tintColor
@@ -52,7 +54,7 @@ class PlayerUpperView : UIView {
         let speedButton = UIButton()
         let abRepeatButton = UIButton()
         
-        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25), scale: .default)
+        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
         let speedTitle = UILabel()
         
         waveRepeatButton.setImage(UIImage(systemName: "repeat.1", withConfiguration: repeatImageConfig), for: .normal)
@@ -75,7 +77,7 @@ class PlayerUpperView : UIView {
     lazy var imageView : UIImageView = {
         let imageView = UIImageView()
 //        imageView.image = playerController.audio!.waveImage
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleToFill
 
         return imageView
     }()
@@ -150,21 +152,20 @@ class PlayerUpperView : UIView {
     
     func setWaveImage() {
         let waveformImageDrawer = WaveformImageDrawer()
+        guard let waveAnalysis = playerController.audio?.waveAnalysis as? [Float] else { return }
+        let target = Array(waveAnalysis[...10000])
+        let width = target.count
+        let height = Int(UIScreen.main.bounds.size.height) - 360
         
-        waveformImageDrawer.waveformImage(
-            fromAudioAt: playerController.url!,
-            with: .init(
-                size : CGSize(width: 500, height: 1000),
-                style: .striped(.init(color: .label)),
-                dampening: nil,
-                scale: 1,
-                verticalScalingFactor: 0.5 )) { image in
-            // need to jump back to main queue
-            DispatchQueue.main.async {
-                print("image complete")
-                self.imageView.image = image
-            }
-        }
+        let image = waveformImageDrawer.waveformImage(from: target, with: .init(
+            size : CGSize(width: width, height: height),
+            style: .striped(.init(color: .label)),
+            dampening: nil,
+            scale: 1,
+            verticalScalingFactor: 0.5 ))
+        
+        print("image complete")
+        self.imageView.image = image
     }
     
 }
@@ -173,7 +174,6 @@ class PlayerUpperView : UIView {
 extension PlayerUpperView {
     // playerController 에서 status가 변할 때마다 noti를 보낸다.
     func addNotificationObserver() {
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(adminTimer),
@@ -203,7 +203,7 @@ extension PlayerUpperView {
         timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
         slider.value = Float(playerController.player.currentTime)
         
-        let nx = playerController.player.currentTime * 5
+        let nx = playerController.player.currentTime * changedAmountPerSec
         scrollView.contentOffset = CGPointMake(nx, 0);
     }
 }
@@ -230,7 +230,7 @@ extension PlayerUpperView : UIScrollViewDelegate {
         if let timer = timer { if timer.isValid { return }}
         
         let x = Double(scrollView.contentOffset.x)
-        playerController.changePlayerTime(changedTime : TimeInterval(x / 5))
+        playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec))
     }
     
     // 끄는 동작 끝날 때 플레이어 잠시 멈춤이라면 재생
@@ -254,7 +254,6 @@ extension PlayerUpperView {
         [sliderContainer, upperControllerSV, scrollView, currentIndicator, timerLabel].forEach{
             addSubview($0)
         }
-        
         
         [slider, currentTimeLabel, DurationLabel].forEach{
             sliderContainer.addSubview($0)

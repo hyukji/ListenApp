@@ -8,7 +8,7 @@
 import UIKit
 
 protocol AfterMoveActionProtocol : AnyObject {
-    func afterMoveAction(text : String)
+    func afterMoveAction()
 }
 
 
@@ -19,7 +19,6 @@ class PlayListMoveViewController : UIViewController {
     var filemanager = MyFileManager()
     
     var cannotMoveUrls : [URL] = []
-    var selectedItems : [DocumentItem] = []
     
     var url : URL!
     
@@ -136,9 +135,8 @@ extension PlayListMoveViewController {
     }
     
     @objc func tapMoveBtn() {
-//        CoreAudioData.updateLocationOfSelectedItem(location: location, selectedPlayList: selectedItems)
         filemanager.moveFileInDocument(selectedURLs: cannotMoveUrls, newUrl: url)
-        self.delegate?.afterMoveAction(text : url.path)
+        self.delegate?.afterMoveAction()
         
         self.dismiss(animated: true)
     }

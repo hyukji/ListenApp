@@ -256,7 +256,6 @@ extension PlayListViewController {
             selectedItems.append(self.playList[indexPath.row])
         }
         PlayListMoveVC.cannotMoveUrls = cannotMoveUrls
-        PlayListMoveVC.selectedItems = selectedItems
         PlayListMoveVC.delegate = self
         
         let navigationContoller = UINavigationController(rootViewController: PlayListMoveVC)
@@ -476,7 +475,6 @@ extension PlayListViewController : CustomAlertDelegate {
         let indexPath = tableView.indexPathForSelectedRow ?? IndexPath()
         let item = self.playList[indexPath.row]
         
-//        CoreAudioData.updateTitleOfSelectedDocumentItem(newtitle: newTitle, item: item)
         filemanager.renameFileInDocument(item : item, newTitle: newTitle, url: url)
         changeTableViewEditingAndLayout()
         setPlayList()
@@ -493,15 +491,14 @@ extension PlayListViewController : CustomAlertDelegate {
     }
     
     func confirmAddCableFile() {
-        print("confirm")
         reflashPlayList()
     }
     
 }
 
-
+// after tap moveBtn in PlayListMoveVC
 extension PlayListViewController : AfterMoveActionProtocol {
-    func afterMoveAction(text : String) {
+    func afterMoveAction() {
         self.changeTableViewEditingAndLayout()
         self.setPlayList()
     }

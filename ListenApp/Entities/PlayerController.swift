@@ -38,7 +38,6 @@ class PlayerController {
         do {
             isNewAudio = false
             player = try AVAudioPlayer(contentsOf: url)
-            playPlayer()
         } catch {
             print("Error: Audio File missing.")
         }

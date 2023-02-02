@@ -359,58 +359,17 @@ extension PlayListViewController {
         header.editBtn.showsMenuAsPrimaryAction = true
         
     }
+}
+
+extension PlayListViewController {
     
     // menu 목록들: adminDocumentMenu, newFileMenu, sortingMenu
     func createMenus(selectedSort : SelectedSort, sortOrder : ComparisonResult) -> UIMenu {
-        let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { _ in
-            self.tableView.allowsMultipleSelectionDuringEditing = true
-            
-            //PlayList menu's "selection uiaction" has 'perform(afterdelay)' for removing [ASSERT] about hiding editBtn when it's menu is working
-            self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.1)
-            self.changeEditingFooterButtonStatus()
-        })
-        let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: {_ in
-            let customAlerVC = CustomAlertViewController()
-            
-            customAlerVC.alertCategory = .newFolder
-            
-            // 새로운 폴더 라는 이름을 가진 파일 or 폴더 가 있다면 1을 추가
-            var defaultName = "새로운 폴더"
-            while self.playList.contains(where: {$0.title == defaultName}) {
-                defaultName += "1"
-            }
-            customAlerVC.defaultName = defaultName
-
-            customAlerVC.delegate = self
-            
-            customAlerVC.modalPresentationStyle = .overFullScreen
-            customAlerVC.modalTransitionStyle = .crossDissolve
-            self.present(customAlerVC, animated: true, completion: nil)
-        })
+        let select = UIAction(title: "선택", image: UIImage(systemName: "checkmark.circle"), handler: { adminAction in self.tapAdminMenu(adminAction: adminAction)})
+        let newFolder = UIAction(title: "새로운 폴더", image: UIImage(systemName: "folder.badge.plus"), handler: { adminAction in self.tapAdminMenu(adminAction: adminAction)})
         
-        let wifi = UIAction(title: "와이파이 파일 추가", image: UIImage(systemName: "wifi"), handler: { _ in
-            let customAlerVC = CustomAlertViewController()
-            customAlerVC.alertCategory = .addWifiFile
-            
-            customAlerVC.IPaddress = self.webUploader.initWebUploader()
-            customAlerVC.delegate = self
-            
-            customAlerVC.modalPresentationStyle = .overFullScreen
-            customAlerVC.modalTransitionStyle = .crossDissolve
-            self.present(customAlerVC, animated: true, completion: nil)
-            
-            
-        })
-        let cable = UIAction(title: "USB 파일 추가", image: UIImage(systemName: "cable.connector.horizontal"), handler: { _ in
-            let customAlerVC = CustomAlertViewController()
-            customAlerVC.alertCategory = .addCableFile
-            
-            customAlerVC.delegate = self
-            
-            customAlerVC.modalPresentationStyle = .overFullScreen
-            customAlerVC.modalTransitionStyle = .crossDissolve
-            self.present(customAlerVC, animated: true, completion: nil)
-        })
+        let wifi = UIAction(title: "와이파이 파일 추가", image: UIImage(systemName: "wifi"), handler: { newFileAction in self.tapNewFileMenu(newFileAction: newFileAction)})
+        let cable = UIAction(title: "USB 파일 추가", image: UIImage(systemName: "cable.connector.horizontal"), handler: { newFileAction in self.tapNewFileMenu(newFileAction: newFileAction)})
         
         let adminDocumentMenu = UIMenu(title: "", options: .displayInline, children: [select, newFolder])
         let newFileMenu = UIMenu(title: "", options: .displayInline, children: [wifi, cable])
@@ -441,6 +400,65 @@ extension PlayListViewController {
         }
                 
         return UIMenu(title: "", options: .displayInline, children: [name, category, date, size])
+    }
+    
+    func tapAdminMenu(adminAction : UIAction){
+        switch adminAction.title {
+        case "선택":
+            self.tableView.allowsMultipleSelectionDuringEditing = true
+            //PlayList menu's "selection uiaction" has 'perform(afterdelay)' for removing [ASSERT] about hiding editBtn when it's menu is working
+            self.perform(#selector(self.changeTableViewEditingAndLayout), with: nil, afterDelay: 0.1)
+//            self.changeTableViewEditingAndLayout()
+            self.changeEditingFooterButtonStatus()
+        case "새로운 폴더":
+            let customAlerVC = CustomAlertViewController()
+            
+            customAlerVC.alertCategory = .newFolder
+            
+            // 새로운 폴더 라는 이름을 가진 파일 or 폴더 가 있다면 1을 추가
+            var defaultName = "새로운 폴더"
+            while self.playList.contains(where: {$0.title == defaultName}) {
+                defaultName += "1"
+            }
+            customAlerVC.defaultName = defaultName
+
+            customAlerVC.delegate = self
+            
+            customAlerVC.modalPresentationStyle = .overFullScreen
+            customAlerVC.modalTransitionStyle = .crossDissolve
+            self.present(customAlerVC, animated: true, completion: nil)
+        default:
+            return
+        }
+    }
+    
+    func tapNewFileMenu(newFileAction : UIAction){
+        switch newFileAction.title {
+        case "와이파이 파일 추가":
+            let customAlerVC = CustomAlertViewController()
+            customAlerVC.alertCategory = .addWifiFile
+            
+            customAlerVC.IPaddress = self.webUploader.initWebUploader()
+            customAlerVC.delegate = self
+            
+            customAlerVC.modalPresentationStyle = .overFullScreen
+            customAlerVC.modalTransitionStyle = .crossDissolve
+            
+            self.present(customAlerVC, animated: true, completion: nil)
+        case "USB 파일 추가":
+            let customAlerVC = CustomAlertViewController()
+            customAlerVC.alertCategory = .addCableFile
+            
+            customAlerVC.delegate = self
+            
+            customAlerVC.modalPresentationStyle = .overFullScreen
+            customAlerVC.modalTransitionStyle = .crossDissolve
+            
+            self.present(customAlerVC, animated: true, completion: nil)
+        default:
+            return
+        }
+        
     }
     
     func tapSortMenu(selectedSort : SelectedSort) {

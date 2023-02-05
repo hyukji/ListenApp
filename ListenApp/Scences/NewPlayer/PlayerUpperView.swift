@@ -14,7 +14,7 @@ class PlayerUpperView : UIView {
     var timer : Timer?
     
     let changedAmountPerSec = 65.0
-    let waveImageSize = 500
+    let waveImageSize = 1000
     
     private var slider : UISlider = {
         let slider = UISlider()
@@ -138,6 +138,7 @@ class PlayerUpperView : UIView {
         slider.minimumValue = 0
         slider.maximumValue = Float(playerController.player.duration)
         slider.value = Float(playerController.player.currentTime)
+        slider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
     }
     
     func configureWaveImgView() {
@@ -250,7 +251,7 @@ extension PlayerUpperView {
         }
     }
     
-    // 0.01초마다 업데이트 시간 label들과 scrollView위치이동
+    // 0.01초마다 업데이트, player currentTime에 맞추어 시간 label들과 scrollView위치이동
     @objc func updatePlayTime() {
         currentTimeLabel.text = playerController.player.currentTime.toString()
         timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
@@ -261,6 +262,31 @@ extension PlayerUpperView {
     }
 }
 
+// slider 동작 인식
+extension PlayerUpperView {
+    @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .began:
+                // 슬라이더 드래그 시작할 때 재생중이라면 플레이어 잠시 멈춤
+                if playerController.status == .play {
+                    playerController.intermitPlayer()
+                }
+            case .moved:
+                // 슬라이더 드래그 중에 value에 맞추어 player 시간 업데이트
+                if let timer = timer { if timer.isValid { return }}
+                playerController.changePlayerTime(changedTime : Double(slider.value))
+            case .ended:
+                // 슬라이더 드래그 끝날 때 플레이어 잠시 멈춤이라면 재생
+                if playerController.status == .intermit {
+                    playerController.playPlayer()
+                }
+            default:
+                break
+            }
+        }
+    }
+}
 
 // 스크롤 동작 인식
 extension PlayerUpperView : UIScrollViewDelegate {
@@ -271,19 +297,19 @@ extension PlayerUpperView : UIScrollViewDelegate {
         }
     }
     
-    // 드래그 끝날 때 끄는 동작 없고 플레이어 잠시 멈춤이라면 재생
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if decelerate == false && playerController.status == .intermit {
-            playerController.playPlayer()
-        }
-    }
-    
-    //드래그에 따라 시간 이동
+    // 드래그에 따라 시간 이동, 시간 흐름에 따른 자동 스크롤이면 return
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let timer = timer { if timer.isValid { return }}
         
         let x = Double(scrollView.contentOffset.x)
         playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec))
+    }
+    
+    // 드래그 끝날 때 끄는 동작 없고 플레이어 잠시 멈춤이라면 재생
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate == false && playerController.status == .intermit {
+            playerController.playPlayer()
+        }
     }
     
     // 끄는 동작 끝날 때 플레이어 잠시 멈춤이라면 재생

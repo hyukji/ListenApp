@@ -100,13 +100,13 @@ class PlayListViewController : UIViewController {
     @objc func pullToRefresh() {
         CoreAudioData.synchronizeAudioListAndPlayList {
             if CoreDataFunc.shouldUpdateCount == 0 {
-                DispatchQueue.main.async {
-                    do {
-                        try self.CoreAudioData.context.save()
-                    } catch {
-                        print(error)
-                    }
-                    
+                do {
+                    try self.CoreAudioData.context.save()
+                } catch {
+                    print(error)
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     print("refreshController")
                     self.CoreAudioData.audioList = self.CoreAudioData.fetchAudio()
                     self.refreshController.endRefreshing()

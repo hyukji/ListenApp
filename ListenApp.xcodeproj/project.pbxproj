@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19015321298FD2D800BDB429 /* StackViewSubViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19015320298FD2D800BDB429 /* StackViewSubViews.swift */; };
 		193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193FAB6B29759C3500385BD4 /* PlayerController.swift */; };
 		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
 		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
@@ -38,6 +39,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		19015320298FD2D800BDB429 /* StackViewSubViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewSubViews.swift; sourceTree = "<group>"; };
 		193FAB6B29759C3500385BD4 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebUploader.swift; sourceTree = "<group>"; };
 		199BF311297AEB4900DAD3E1 /* MyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFileManager.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				199BF313297AEDA600DAD3E1 /* DocumentItem.swift */,
 				19BAE878297BB2DD0074A5F2 /* PlayListMenu.swift */,
 				19B53E62298003CA00FED417 /* CustomAlertViewController.swift */,
+				19015320298FD2D800BDB429 /* StackViewSubViews.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				19B53E6A298179D600FED417 /* PlayListMoveHeader.swift in Sources */,
 				199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */,
 				19B41F1B2970025700DC30C1 /* PlayListViewController.swift in Sources */,
+				19015321298FD2D800BDB429 /* StackViewSubViews.swift in Sources */,
 				19B41F172970022E00DC30C1 /* PlayListHeaderView.swift in Sources */,
 				19B53E65298171CF00FED417 /* PlayListMoveViewController.swift in Sources */,
 				19B827372983F97400B2AB9C /* NewPlayerVIewController.swift in Sources */,

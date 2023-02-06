@@ -10,11 +10,14 @@ import DSWaveformImage
 
 class PlayerUpperView : UIView {
     let playerController = PlayerController.playerController
-    let audio = PlayerController.playerController.audio!
+    var audio = PlayerController.playerController.audio!
     var timer : Timer?
     
     let changedAmountPerSec = 65.0
     let waveImageSize = 1000
+    
+    var nowImageIdx = 0
+    var maxImageIdx = 0
     
     private var slider : UISlider = {
         let slider = UISlider()
@@ -142,26 +145,30 @@ class PlayerUpperView : UIView {
     }
     
     func configureWaveImgView() {
-        let idx = Int(audio.currentTime * changedAmountPerSec / Double(waveImageSize))
-        let maxIdx = audio.waveAnalysis.count / waveImageSize
-        var waveImageIdxList : [Int] = []
+        print(audio.waveAnalysis.count)
+        print(audio.duration, audio.duration * 65)
+        nowImageIdx = Int(audio.currentTime * changedAmountPerSec / Double(waveImageSize))
+        maxImageIdx = audio.waveAnalysis.count / waveImageSize
         
-        if maxIdx < 1 {
-            waveImageIdxList = [-1, 0]
+        var waveImageIdxList : [Int] = []
+
+        if maxImageIdx < 3 {
+            waveImageIdxList = [-2]
         }
         else{
-            switch idx{
+            switch nowImageIdx{
             case 0:
-                waveImageIdxList = [-1, 0, 1]
-            case maxIdx:
-                waveImageIdxList = [maxIdx - 1, maxIdx, -1]
+                waveImageIdxList = [-1, 0, 1, 2, -1]
+            case maxImageIdx:
+                waveImageIdxList = [-1, maxImageIdx - 2, maxImageIdx - 1, maxImageIdx, -1]
             default:
-                waveImageIdxList = [idx - 1, idx, idx + 1]
+                waveImageIdxList = [-1, nowImageIdx - 1, nowImageIdx, nowImageIdx + 1, -1]
             }
         }
-        print("idx \(idx), maxidx \(maxIdx)")
-        print(waveImageIdxList)
         
+        print("idx \(nowImageIdx), maxidx \(maxImageIdx)")
+        print(waveImageIdxList)
+
         setImgOnScrollSV(waveImageIdxList: waveImageIdxList)
     }
 }
@@ -173,22 +180,24 @@ extension PlayerUpperView {
     // int 배열에 맞추어 waveImage 생성 후 scrollStackView에 추가
     func setImgOnScrollSV(waveImageIdxList : [Int]) {
         waveImageIdxList.forEach{
-            let waveImgView = UIImageView()
-            waveImgView.contentMode = .scaleToFill
             switch $0{
             case -1:
-                waveImgView.image = drawEmptyIamge()
+                scrollStackView.addArrangedSubview(drawEmptyIamge())
+            case -2:
+                scrollStackView.addArrangedSubview(drawEntireWaveImage())
             default:
-                waveImgView.image = drawWaveImage(idx : $0)
+                scrollStackView.addArrangedSubview(drawWaveImage(idx : $0))
             }
-            scrollStackView.addArrangedSubview(waveImgView)
         }
     }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
-    func drawWaveImage(idx : Int) -> UIImage {
+    func drawEntireWaveImage() -> UIImageView {
+        let waveImgView = UIImageView()
+        waveImgView.contentMode = .scaleToFill
+        
         let waveformImageDrawer = WaveformImageDrawer()
-        let target = Array(audio.waveAnalysis[idx*waveImageSize...(idx+1)*waveImageSize])
+        let target = audio.waveAnalysis
         let width = target.count
         let height = Int(UIScreen.main.bounds.size.height) - 345
         
@@ -199,11 +208,39 @@ extension PlayerUpperView {
             scale: 1,
             verticalScalingFactor: 0.5 )
         )
-        return image ?? UIImage()
+        waveImgView.image = image ?? UIImage()
+        waveImgView.tag = -2
+        return waveImgView
+    }
+    
+    // int에 맞추어 waveAnalysis의 구간을 설정해 draw
+    func drawWaveImage(idx : Int) -> UIImageView {
+        let waveImgView = UIImageView()
+        waveImgView.contentMode = .scaleToFill
+        
+        let waveformImageDrawer = WaveformImageDrawer()
+        let target = Array(audio.waveAnalysis[idx*waveImageSize..<(idx+1)*waveImageSize])
+        print("draw \(idx) target \(idx*waveImageSize) .. \((idx+1)*waveImageSize)")
+        let width = target.count
+        let height = Int(UIScreen.main.bounds.size.height) - 345
+        
+        let image = waveformImageDrawer.waveformImage(from: target, with: .init(
+            size : CGSize(width: width, height: height),
+            style: .striped(.init(color: .label)),
+            dampening: nil,
+            scale: 1,
+            verticalScalingFactor: 0.5 )
+        )
+        waveImgView.image = image ?? UIImage()
+        waveImgView.tag = idx
+        return waveImgView
     }
     
     // 전체 width의 절반에 맞추어 빈 이미지 생성
-    func drawEmptyIamge() -> UIImage {
+    func drawEmptyIamge() -> UIImageView {
+        let waveImgView = UIImageView()
+        waveImgView.contentMode = .scaleToFill
+        
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
         
@@ -213,11 +250,15 @@ extension PlayerUpperView {
         
         let renderer = UIGraphicsImageRenderer(size: size, format: format)
         
-        return renderer.image { renderContext in
+        let image =  renderer.image { renderContext in
             let context = renderContext.cgContext
             context.setFillColor(UIColor.systemGray6.cgColor)
             context.fill(CGRect(origin: CGPoint.zero, size: size))
         }
+        
+        waveImgView.image = image
+        waveImgView.tag = -1
+        return waveImgView
     }
     
 }
@@ -257,10 +298,79 @@ extension PlayerUpperView {
         timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
         slider.value = Float(playerController.player.currentTime)
         
-        let nx = playerController.player.currentTime * changedAmountPerSec
-        scrollView.contentOffset = CGPointMake(nx, 0);
+        let targetAnalysis = Double(playerController.player.currentTime * changedAmountPerSec)
+        let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
+//        let moveInTargetImage = Int(targetAnalysis) % waveImageSize
+        let nx = (newImageIdx == 0) ? targetAnalysis : targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize)
+        
+//        print("ori \(targetAnalysis), moveInTarget : \(nx)")
+        // 같은 이미지 내에서의 nx 위치 조정
+        if newImageIdx != nowImageIdx {
+            // 패치 저장된 내용 사용하기
+            if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx < nowImageIdx {
+                print("previou")
+                print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
+                audio.currentTime = playerController.player.currentTime
+                prefetchPrevious(newImageIdx : newImageIdx)
+                print("ori \(targetAnalysis) new \(nx)")
+            }
+            else if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx > nowImageIdx {
+                print("next")
+                print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
+                audio.currentTime = playerController.player.currentTime
+                prefetchNext(newImageIdx : newImageIdx)
+                print("ori \(targetAnalysis) new \(nx)")
+            }
+            // slider or 새로 오디오 재생
+            else {
+                print("reset")
+                print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
+                scrollStackView.removeFullySubviews()
+                audio.currentTime = playerController.player.currentTime
+                configureWaveImgView()
+                print("ori \(targetAnalysis) new \(nx)")
+            }
+        }
+        
+        scrollView.contentOffset = CGPointMake(nx, 0)
+        nowImageIdx = newImageIdx
+        
     }
+    
+    func prefetchPrevious(newImageIdx : Int) {
+        if newImageIdx == 0 && nowImageIdx == 1 { return }
+        
+        let diff = abs(newImageIdx - nowImageIdx)
+        for i in 0..<diff {
+            print("i \(i) newImageIdx \(newImageIdx)")
+            scrollStackView.popWaveImg()
+            scrollStackView.appendLeftWaveImg(view : drawWaveImage(idx: scrollStackView.firstViewTag() - 1 ))
+        }
+        
+        print("prefetchPrevious")
+        scrollStackView.arrangedSubviews.forEach{
+            print($0.tag)
+        }
+    }
+        
+    func prefetchNext(newImageIdx : Int) {
+        if newImageIdx == 1 { return }
+        let diff = abs(newImageIdx - nowImageIdx)
+        for i in 0..<diff {
+            print("i \(i) newImageIdx \(newImageIdx)")
+            scrollStackView.popLeftWaveImg()
+            scrollStackView.appendWaveImg(view : drawWaveImage(idx: scrollStackView.lastViewTag() + 1 ))
+        }
+        
+        
+        print("prefetchNext")
+        scrollStackView.arrangedSubviews.forEach{
+            print($0.tag, $0.intrinsicContentSize)
+        }
+    }
+    
 }
+
 
 // slider 동작 인식
 extension PlayerUpperView {
@@ -302,7 +412,10 @@ extension PlayerUpperView : UIScrollViewDelegate {
         if let timer = timer { if timer.isValid { return }}
         
         let x = Double(scrollView.contentOffset.x)
-        playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec))
+        if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
+        else {
+            let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
+            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec)) }
     }
     
     // 드래그 끝날 때 끄는 동작 없고 플레이어 잠시 멈춤이라면 재생
@@ -318,11 +431,7 @@ extension PlayerUpperView : UIScrollViewDelegate {
             playerController.playPlayer()
         }
     }
-    
-    
-    
 }
-
 
 
 

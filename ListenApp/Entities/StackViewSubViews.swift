@@ -20,20 +20,26 @@ extension UIStackView {
 
     func popWaveImg() {
         let cnt = arrangedSubviews.count
-        removeFully(view : arrangedSubviews[cnt-2])
+        let view = arrangedSubviews[cnt-2]
+//        setCustomSpacing(0, after: view)
+        removeFully(view : view)
     }
     
     func popLeftWaveImg() {
-        removeFully(view : arrangedSubviews[1])
+        let view = arrangedSubviews[1]
+//        setCustomSpacing(0, after: view)
+        removeFully(view : view)
     }
     
     func appendWaveImg(view : UIImageView) {
         let cnt = arrangedSubviews.count
         insertArrangedSubview(view, at: cnt-1)
+        setCustomSpacing(4, after: view)
     }
     
     func appendLeftWaveImg(view : UIImageView) {
         insertArrangedSubview(view, at: 1)
+        setCustomSpacing(4, after: view)
     }
 
     func removeFully(view: UIView) {
@@ -44,6 +50,12 @@ extension UIStackView {
     func removeFullySubviews() {
         arrangedSubviews.forEach{
             removeFully(view: $0)
+        }
+    }
+    
+    func checkSubViews() {
+        arrangedSubviews.forEach{
+            print($0.tag, $0.intrinsicContentSize)
         }
     }
     

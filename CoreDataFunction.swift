@@ -233,7 +233,7 @@ extension CoreDataFunc {
                 if result.count > 0 {
                     let audio = result[0]
                     let duration = audio.value(forKey: "duration") as! Double
-                    let count = Int(duration * 65)
+                    let count = Int(duration * 100)
                     waveformAnalyzer.samples(count: count) { samples in
                         let waveAnalysis = samples ?? [0.0]
                         audio.setValue(waveAnalysis, forKey: "waveAnalysis")

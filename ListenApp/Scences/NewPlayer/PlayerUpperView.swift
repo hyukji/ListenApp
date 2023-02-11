@@ -13,8 +13,8 @@ class PlayerUpperView : UIView {
     var audio = PlayerController.playerController.audio!
     var timer : Timer?
     
-    let changedAmountPerSec = 65.0
-    let waveImageSize = 500
+    let changedAmountPerSec = 100.0
+    let waveImageSize = 1000
     
     var nowImageIdx = 0
     var maxImageIdx = 0
@@ -147,7 +147,7 @@ class PlayerUpperView : UIView {
     
     func configureWaveImgView() {
         print(audio.waveAnalysis.count)
-        print(audio.duration, audio.duration * 65)
+        print(audio.duration, audio.duration * changedAmountPerSec)
         nowImageIdx = Int(audio.currentTime * changedAmountPerSec / Double(waveImageSize))
         maxImageIdx = audio.waveAnalysis.count / waveImageSize
         
@@ -185,8 +185,8 @@ extension PlayerUpperView {
             switch $0{
             case -1:
                 scrollStackView.addArrangedSubview(drawEmptyIamge())
-            case -2:
-                scrollStackView.addArrangedSubview(drawEntireWaveImage())
+//            case -2:
+//                scrollStackView.addArrangedSubview(drawEntireWaveImage())
             default:
                 scrollStackView.appendWaveImg(view: drawWaveImage(idx : $0))
             }
@@ -195,26 +195,26 @@ extension PlayerUpperView {
     }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
-    func drawEntireWaveImage() -> UIImageView {
-        let waveImgView = UIImageView()
-        waveImgView.contentMode = .scaleToFill
-        
-        let waveformImageDrawer = WaveformImageDrawer()
-        let target = audio.waveAnalysis
-        let width = target.count
-        let height = Int(UIScreen.main.bounds.size.height) - 345
-        
-        let image = waveformImageDrawer.waveformImage(from: target, with: .init(
-            size : CGSize(width: width, height: height),
-            style: .striped(.init(color: .label)),
-            dampening: nil,
-            scale: 1,
-            verticalScalingFactor: 0.5 )
-        )
-        waveImgView.image = image ?? UIImage()
-        waveImgView.tag = -2
-        return waveImgView
-    }
+//    func drawEntireWaveImage() -> UIImageView {
+//        let waveImgView = UIImageView()
+//        waveImgView.contentMode = .scaleToFill
+//
+//        let waveformImageDrawer = WaveformImageDrawer()
+//        let target = audio.waveAnalysis
+//        let width = target.count
+//        let height = Int(UIScreen.main.bounds.size.height) - 345
+//
+//        let image = waveformImageDrawer.waveformImage(from: target, with: .init(
+//            size : CGSize(width: width, height: height),
+//            style: .striped(.init(color: .label)),
+//            dampening: nil,
+//            scale: 1,
+//            verticalScalingFactor: 0.5 )
+//        )
+//        waveImgView.image = image ?? UIImage()
+//        waveImgView.tag = -2
+//        return waveImgView
+//    }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
     func drawWaveImage(idx : Int) -> UIImageView {
@@ -222,15 +222,17 @@ extension PlayerUpperView {
         waveImgView.contentMode = .scaleToFill
         
         let waveformImageDrawer = WaveformImageDrawer()
-        let target = Array(audio.waveAnalysis[idx*waveImageSize..<(idx+1)*waveImageSize])
-        print("draw \(idx) target \(idx*waveImageSize) .. \((idx+1)*waveImageSize)")
-        let scale = 1
-        let width = target.count / scale
+        
         let height = Int(UIScreen.main.bounds.size.height) - 345
+        let scale = 1
+        let count = waveImageSize * Int(scale)
+        let target = Array(audio.waveAnalysis[idx*count..<(idx+1)*count])
+        
+        print("draw \(idx) target \(idx*count) ..< \((idx+1)*count)", target.count)
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
-            size : CGSize(width: width, height: height),
-            style: .striped(.init(color: .label)),
+            size : CGSize(width: waveImageSize, height: height),
+            style: .striped(.init(color: .label, width: 1, spacing: 5)),
             dampening: nil,
             scale: CGFloat(scale),
             verticalScalingFactor: 0.5 )
@@ -313,14 +315,12 @@ extension PlayerUpperView {
                 print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 audio.currentTime = playerController.player.currentTime
                 prefetchPrevious(newImageIdx : newImageIdx)
-//                print("ori \(targetAnalysis) new \(nx)")
             }
             else if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx > nowImageIdx {
                 print("next")
                 print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 audio.currentTime = playerController.player.currentTime
                 prefetchNext(newImageIdx : newImageIdx)
-//                print("ori \(targetAnalysis) new \(nx)")
             }
             // slider or 새로 오디오 재생
             else {
@@ -329,7 +329,6 @@ extension PlayerUpperView {
                 scrollStackView.removeFullySubviews()
                 audio.currentTime = playerController.player.currentTime
                 configureWaveImgView()
-//                print("ori \(targetAnalysis) new \(nx)")
             }
             
             nowImageIdx = newImageIdx
@@ -434,7 +433,6 @@ extension PlayerUpperView : UIScrollViewDelegate {
         var newImageIdx = nowImageIdx
         let waveSize = Double(waveImageSize)
         
-        print("x", x)
         if nowImageIdx == 0 {
             updateTimeLabel(time: TimeInterval(x / changedAmountPerSec))
             
@@ -455,7 +453,6 @@ extension PlayerUpperView : UIScrollViewDelegate {
                 newImageIdx += 1
             }
         }
-        print("nx", x)
         updateScrollStackView(newImageIdx: newImageIdx, nx: x)
     }
     

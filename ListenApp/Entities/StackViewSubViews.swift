@@ -34,12 +34,12 @@ extension UIStackView {
     func appendWaveImg(view : UIImageView) {
         let cnt = arrangedSubviews.count
         insertArrangedSubview(view, at: cnt-1)
-        setCustomSpacing(4, after: view)
+//        setCustomSpacing(2, after: view)
     }
     
     func appendLeftWaveImg(view : UIImageView) {
         insertArrangedSubview(view, at: 1)
-        setCustomSpacing(4, after: view)
+//        setCustomSpacing(2, after: view)
     }
 
     func removeFully(view: UIView) {

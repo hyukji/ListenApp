@@ -14,7 +14,7 @@ class PlayerUpperView : UIView {
     var timer : Timer?
     
     let changedAmountPerSec = 65.0
-    let waveImageSize = 1000
+    let waveImageSize = 500
     
     var nowImageIdx = 0
     var maxImageIdx = 0
@@ -92,6 +92,7 @@ class PlayerUpperView : UIView {
         scrollView.showsHorizontalScrollIndicator = false
         
         scrollView.backgroundColor = .systemGray5
+        scrollView.decelerationRate = .fast
         
         return scrollView
     }()
@@ -158,17 +159,18 @@ class PlayerUpperView : UIView {
         else{
             switch nowImageIdx{
             case 0:
-                waveImageIdxList = [-1, 0, 1, 2, -1]
+                waveImageIdxList = [0, 1, 2]
             case maxImageIdx:
-                waveImageIdxList = [-1, maxImageIdx - 2, maxImageIdx - 1, maxImageIdx, -1]
+                waveImageIdxList = [maxImageIdx - 2, maxImageIdx - 1, maxImageIdx]
             default:
-                waveImageIdxList = [-1, nowImageIdx - 1, nowImageIdx, nowImageIdx + 1, -1]
+                waveImageIdxList = [nowImageIdx - 1, nowImageIdx, nowImageIdx + 1]
             }
         }
         
         print("idx \(nowImageIdx), maxidx \(maxImageIdx)")
         print(waveImageIdxList)
-
+        
+        setImgOnScrollSV(waveImageIdxList: [-1, -1])
         setImgOnScrollSV(waveImageIdxList: waveImageIdxList)
     }
 }
@@ -186,9 +188,10 @@ extension PlayerUpperView {
             case -2:
                 scrollStackView.addArrangedSubview(drawEntireWaveImage())
             default:
-                scrollStackView.addArrangedSubview(drawWaveImage(idx : $0))
+                scrollStackView.appendWaveImg(view: drawWaveImage(idx : $0))
             }
         }
+        scrollStackView.checkSubViews()
     }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
@@ -221,14 +224,15 @@ extension PlayerUpperView {
         let waveformImageDrawer = WaveformImageDrawer()
         let target = Array(audio.waveAnalysis[idx*waveImageSize..<(idx+1)*waveImageSize])
         print("draw \(idx) target \(idx*waveImageSize) .. \((idx+1)*waveImageSize)")
-        let width = target.count
+        let scale = 1
+        let width = target.count / scale
         let height = Int(UIScreen.main.bounds.size.height) - 345
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
             size : CGSize(width: width, height: height),
             style: .striped(.init(color: .label)),
             dampening: nil,
-            scale: 1,
+            scale: CGFloat(scale),
             verticalScalingFactor: 0.5 )
         )
         waveImgView.image = image ?? UIImage()
@@ -292,19 +296,16 @@ extension PlayerUpperView {
         }
     }
     
-    // 0.01초마다 업데이트, player currentTime에 맞추어 시간 label들과 scrollView위치이동
-    @objc func updatePlayTime() {
-        currentTimeLabel.text = playerController.player.currentTime.toString()
-        timerLabel.text = playerController.player.currentTime.toStringContainMilisec()
-        slider.value = Float(playerController.player.currentTime)
-        
-        let targetAnalysis = Double(playerController.player.currentTime * changedAmountPerSec)
-        let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
-//        let moveInTargetImage = Int(targetAnalysis) % waveImageSize
-        let nx = (newImageIdx == 0) ? targetAnalysis : targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize)
-        
-//        print("ori \(targetAnalysis), moveInTarget : \(nx)")
-        // 같은 이미지 내에서의 nx 위치 조정
+    
+    // 시간 라벨들 업데이트 함수
+    private func updateTimeLabel(time : TimeInterval) {
+        currentTimeLabel.text = time.toString()
+        timerLabel.text = time.toStringContainMilisec()
+        slider.value = Float(time)
+    }
+    
+    // scrollView의 x좌표 이동시 scrollStackView의 waveimage 관리
+    private func updateScrollStackView(newImageIdx : Int, nx : Double){
         if newImageIdx != nowImageIdx {
             // 패치 저장된 내용 사용하기
             if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx < nowImageIdx {
@@ -312,14 +313,14 @@ extension PlayerUpperView {
                 print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 audio.currentTime = playerController.player.currentTime
                 prefetchPrevious(newImageIdx : newImageIdx)
-                print("ori \(targetAnalysis) new \(nx)")
+//                print("ori \(targetAnalysis) new \(nx)")
             }
             else if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx > nowImageIdx {
                 print("next")
                 print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 audio.currentTime = playerController.player.currentTime
                 prefetchNext(newImageIdx : newImageIdx)
-                print("ori \(targetAnalysis) new \(nx)")
+//                print("ori \(targetAnalysis) new \(nx)")
             }
             // slider or 새로 오디오 재생
             else {
@@ -328,12 +329,26 @@ extension PlayerUpperView {
                 scrollStackView.removeFullySubviews()
                 audio.currentTime = playerController.player.currentTime
                 configureWaveImgView()
-                print("ori \(targetAnalysis) new \(nx)")
+//                print("ori \(targetAnalysis) new \(nx)")
             }
+            
+            nowImageIdx = newImageIdx
         }
+    }
+    
+    // player currentTime에 맞추어 시간 label들 관리 및 scrollView 위치이동
+    @objc func updatePlayTime() {
+        updateTimeLabel(time: playerController.player.currentTime)
         
+        let targetAnalysis = Double(playerController.player.currentTime * changedAmountPerSec)
+        let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
+        let nx = (newImageIdx == 0) ? targetAnalysis : (targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize) + 4.0)
+        
+        // nx에 따른 scrollStackView 관리
+        updateScrollStackView(newImageIdx: newImageIdx, nx: nx)
+        
+        // scrollView 좌표 업데이트
         scrollView.contentOffset = CGPointMake(nx, 0)
-        nowImageIdx = newImageIdx
         
     }
     
@@ -354,14 +369,15 @@ extension PlayerUpperView {
     }
         
     func prefetchNext(newImageIdx : Int) {
+        print("prefetch")
         if newImageIdx == 1 { return }
+        print("isnot 1")
         let diff = abs(newImageIdx - nowImageIdx)
         for i in 0..<diff {
             print("i \(i) newImageIdx \(newImageIdx)")
             scrollStackView.popLeftWaveImg()
             scrollStackView.appendWaveImg(view : drawWaveImage(idx: scrollStackView.lastViewTag() + 1 ))
         }
-        
         
         print("prefetchNext")
         scrollStackView.arrangedSubviews.forEach{
@@ -385,9 +401,11 @@ extension PlayerUpperView {
             case .moved:
                 // 슬라이더 드래그 중에 value에 맞추어 player 시간 업데이트
                 if let timer = timer { if timer.isValid { return }}
-                playerController.changePlayerTime(changedTime : Double(slider.value))
+//                playerController.changePlayerTime(changedTime : Double(slider.value))
             case .ended:
                 // 슬라이더 드래그 끝날 때 플레이어 잠시 멈춤이라면 재생
+                if let timer = timer { if timer.isValid { return }}
+                playerController.changePlayerTime(changedTime : Double(slider.value))
                 if playerController.status == .intermit {
                     playerController.playPlayer()
                 }
@@ -400,6 +418,7 @@ extension PlayerUpperView {
 
 // 스크롤 동작 인식
 extension PlayerUpperView : UIScrollViewDelegate {
+    
     // 드래그 시작할 때 재생중이라면 플레이어 잠시 멈춤
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if playerController.status == .play {
@@ -407,26 +426,72 @@ extension PlayerUpperView : UIScrollViewDelegate {
         }
     }
     
-    // 드래그에 따라 시간 이동, 시간 흐름에 따른 자동 스크롤이면 return
+    // 드래그에 위치에 따라 시간 라벨들 업데이트 및 waveStackView 업데이트
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let timer = timer { if timer.isValid { return }}
+        
+        var x = Double(scrollView.contentOffset.x)
+        var newImageIdx = nowImageIdx
+        let waveSize = Double(waveImageSize)
+        
+        print("x", x)
+        if nowImageIdx == 0 {
+            updateTimeLabel(time: TimeInterval(x / changedAmountPerSec))
+            
+            if x > waveSize {
+                newImageIdx += 1
+            }
+        }
+        else {
+            let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
+            updateTimeLabel(time: TimeInterval(totalWidth / changedAmountPerSec))
+            
+            if x < waveSize {
+                x += waveSize
+                newImageIdx -= 1
+            }
+            else if x > waveSize * 2 {
+                x -= waveSize
+                newImageIdx += 1
+            }
+        }
+        print("nx", x)
+        updateScrollStackView(newImageIdx: newImageIdx, nx: x)
+    }
+    
+    // 드래그 끝날 때 끄는 동작 없다면 플레이어 시간 업데이트
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate == false {
+            let x = Double(scrollView.contentOffset.x)
+            if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
+            else {
+                let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
+                playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
+            }
+            
+            updatePlayTime()
+            
+            // 잠시 멈춤이라면 재생
+            if playerController.status == .intermit {
+                playerController.playPlayer()
+            }
+            
+        }
+    }
+    
+    // 끄는 동작 끝날 때 플레이어 시간 업데이트
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         let x = Double(scrollView.contentOffset.x)
         if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
         else {
             let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec)) }
-    }
-    
-    // 드래그 끝날 때 끄는 동작 없고 플레이어 잠시 멈춤이라면 재생
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if decelerate == false && playerController.status == .intermit {
-            playerController.playPlayer()
+            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
         }
-    }
-    
-    // 끄는 동작 끝날 때 플레이어 잠시 멈춤이라면 재생
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        
+        updatePlayTime()
+        
+        // 잠시 멈춤이라면 재생
         if playerController.status == .intermit {
             playerController.playPlayer()
         }

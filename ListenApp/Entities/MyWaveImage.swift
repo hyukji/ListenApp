@@ -201,11 +201,12 @@ enum Waveform {
 
 
 class MyWaveformImageDrawer {
+    let audio = PlayerController.playerController.audio!
     private var lastOffset = 0
     
-    public func waveformImage(from samples: [Float], with configuration: Waveform.Configuration) -> UIImage? {
-        guard samples.count > 0, samples.count == Int(configuration.size.width * configuration.scale) else {
-            print("ERROR: samples: \(samples.count) != \(configuration.size.width) * \(configuration.scale)")
+    public func waveformImage(from range: Range<Int>, with configuration: Waveform.Configuration) -> UIImage? {
+        guard range.count > 0, range.count == Int(configuration.size.width * configuration.scale) else {
+            print("ERROR: samples: \(range.count) != \(configuration.size.width) * \(configuration.scale)")
             return nil
         }
 
@@ -215,17 +216,17 @@ class MyWaveformImageDrawer {
 //        let dampenedSamples = configuration.shouldDampen ? dampen(samples, with: configuration) : samples
 
         return renderer.image { renderContext in
-            draw(on: renderContext.cgContext, from: samples, with: configuration)
+            draw(on: renderContext.cgContext, from: range, with: configuration)
         }
     }
     
-    private func draw(on context: CGContext, from samples: [Float], with configuration: Waveform.Configuration) {
+    private func draw(on context: CGContext, from range: Range<Int>, with configuration: Waveform.Configuration) {
         context.setAllowsAntialiasing(configuration.shouldAntialias)
         context.setShouldAntialias(configuration.shouldAntialias)
 
         drawBackground(on: context, with: configuration)
         drawSection(on: context, with: configuration)
-        drawGraph(from: samples, on: context, with: configuration)
+        drawGraph(from: range, on: context, with: configuration)
     }
     
     
@@ -241,7 +242,7 @@ class MyWaveformImageDrawer {
 //        path.move(to: CGPoint(x: xPos, y: drawingAmplitudeUp))
 //        path.addLine(to: CGPoint(x: xPos, y: drawingAmplitudeDown))
         
-        let rectangle = CGRect(x: 5, y: configuration.size.height * 0.05, width: 500, height: configuration.size.height * 0.9)
+        let rectangle = CGRect(x: Float64(audio.sectionStart[0]), y: configuration.size.height * 0.05, width: Double(audio.sectionEnd[0] - audio.sectionStart[0]), height: configuration.size.height * 0.9)
     
         context.setFillColor(UIColor.yellow.cgColor)
         context.setLineWidth(0)
@@ -261,9 +262,10 @@ class MyWaveformImageDrawer {
 //        context.strokePath()
     }
     
-    private func drawGraph(from samples: [Float],
+    private func drawGraph(from range: Range<Int>,
                            on context: CGContext,
                            with configuration: Waveform.Configuration) {
+        let samples = audio.waveAnalysis[range]
         let graphRect = CGRect(origin: CGPoint.zero, size: configuration.size)
         let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * graphRect.size.height
         let drawMappingFactor = graphRect.size.height * configuration.verticalScalingFactor

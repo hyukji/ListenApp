@@ -226,7 +226,7 @@ extension PlayerUpperView {
         let height = Int(UIScreen.main.bounds.size.height) - 345
         let scale = 1
         let count = waveImageSize * Int(scale)
-        let target = Array(audio.waveAnalysis[idx*count..<(idx+1)*count])
+        let target = idx*count..<(idx+1)*count
         
         print("draw \(idx) target \(idx*count) ..< \((idx+1)*count)", target.count)
         

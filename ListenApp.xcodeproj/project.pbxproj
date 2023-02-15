@@ -91,8 +91,6 @@
 		19B41EDF296FFEA200DC30C1 = {
 			isa = PBXGroup;
 			children = (
-				19B7B2182985443B009E2570 /* AudioData.xcdatamodeld */,
-				199F3AD829792141001C6A3B /* CoreDataFunction.swift */,
 				19B41EEA296FFEA200DC30C1 /* ListenApp */,
 				19B41EE9296FFEA200DC30C1 /* Products */,
 				B56D132C95873565FEEDE6D4 /* Pods */,
@@ -115,6 +113,7 @@
 				19B41EED296FFEA200DC30C1 /* SceneDelegate.swift */,
 				19B41EF4296FFEA300DC30C1 /* Assets.xcassets */,
 				19B41EF9296FFEA300DC30C1 /* Info.plist */,
+				19B9F733299D051500721CEE /* CoreData */,
 				19B41F23297046A600DC30C1 /* Entities */,
 				19B41F22297002C400DC30C1 /* Scences */,
 			);
@@ -187,6 +186,15 @@
 				19B8273A2983F9D700B2AB9C /* PlayerLowerView.swift */,
 			);
 			path = NewPlayer;
+			sourceTree = "<group>";
+		};
+		19B9F733299D051500721CEE /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				19B7B2182985443B009E2570 /* AudioData.xcdatamodeld */,
+				199F3AD829792141001C6A3B /* CoreDataFunction.swift */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 		B56D132C95873565FEEDE6D4 /* Pods */ = {
@@ -593,8 +601,7 @@
 				19B7B2192985443B009E2570 /* AudioData.xcdatamodel */,
 			);
 			currentVersion = 19B7B2192985443B009E2570 /* AudioData.xcdatamodel */;
-			name = AudioData.xcdatamodeld;
-			path = ListenApp/AudioData.xcdatamodeld;
+			path = AudioData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

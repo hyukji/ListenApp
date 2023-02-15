@@ -28,6 +28,11 @@ class CoreDataFunc {
     
     
     func saveAudio(audioData : AudioData) {
+        guard let sectionEntity = NSEntityDescription.entity(forEntityName: "Section", in: self.context) else {return}
+        let section = NSManagedObject(entity: sectionEntity, insertInto: context)
+        section.setValue(audioData.sectionStart, forKey: "sectionStart")
+        section.setValue(audioData.sectionEnd, forKey: "sectionEnd")
+        
         let entity = NSEntityDescription.entity(forEntityName: "Audio", in: self.context)
         if let entity = entity {
             let audio = NSManagedObject(entity: entity, insertInto: context)
@@ -35,8 +40,9 @@ class CoreDataFunc {
             audio.setValue(audioData.fileSystemFileNumber, forKey: "fileSystemFileNumber")
             audio.setValue(audioData.creationDate, forKey: "creationDate")
             audio.setValue(audioData.currentTime, forKey: "currentTime")
-            audio.setValue(audioData.waveAnalysis, forKey: "waveAnalysis")
             audio.setValue(audioData.duration, forKey: "duration")
+            audio.setValue(audioData.waveAnalysis, forKey: "waveAnalysis")
+            audio.setValue(section, forKey: "section")
 
             do {
                 try context.save()
@@ -55,20 +61,25 @@ class CoreDataFunc {
         do {
             let resultList = try context.fetch(fetchRequest)
             for data in resultList {
-                
                 let fileSystemFileNumber = data.value(forKey: "fileSystemFileNumber") as! Int
                 let waveAnalysis = data.value(forKey: "waveAnalysis") as? [Float] ?? []
                 let currentTime = data.value(forKey: "currentTime") as! Double
                 let duration = data.value(forKey: "duration") as! Double
                 let creationDate = data.value(forKey: "creationDate") as! Date
                 
+                let waveSection = data.value(forKey: "section") as! NSManagedObject
+                let sectionStart = waveSection.value(forKey: "sectionStart") as! [Int]
+                let sectionEnd = waveSection.value(forKey: "sectionEnd") as! [Int]
+                
                 fetchedList.append(
                     AudioData(
                         fileSystemFileNumber : fileSystemFileNumber,
                         creationDate: creationDate,
                         currentTime: currentTime,
+                        duration: duration,
                         waveAnalysis: waveAnalysis,
-                        duration: duration
+                        sectionStart: sectionStart,
+                        sectionEnd : sectionEnd
                     )
                 )
             }
@@ -76,8 +87,9 @@ class CoreDataFunc {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
         print("fetch CoreData")
+        
         fetchedList.forEach {
-            print("\($0.fileSystemFileNumber) waveAnalysis.count = \($0.waveAnalysis.count)")
+            print("\($0.fileSystemFileNumber) waveAnalysis.count = \($0.waveAnalysis.count), section.count = \($0.sectionStart.count)")
         }
         return fetchedList
     }
@@ -111,21 +123,22 @@ class CoreDataFunc {
         }
     }
 
-    func resetAllRecords() // entity = Your_Entity_Name
+    func resetAllRecords() {
+        let audioDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Audio")
+        let audioDeleteRequest = NSBatchDeleteRequest(fetchRequest: audioDeleteFetch)
+        
+        do
         {
-            let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Audio")
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
-            do
-            {
-                try context.execute(deleteRequest)
-                try context.save()
-                print("deleteall")
-            }
-            catch
-            {
-                print ("There was an error")
-            }
+            try context.execute(audioDeleteRequest)
+            try context.save()
+            print("deleteall")
         }
+        catch
+        {
+            print ("There was an error")
+        }
+        
+    }
 }
 
 
@@ -134,7 +147,7 @@ extension CoreDataFunc {
     // 전체 playList와 coreAduio 동기화
     func synchronizeAudioListAndPlayList(checkUpdateHandler : @escaping () -> Void) {
         let playList = MyFileManager().getAllAudioFileListFromDocument()
-        self.delAudioDataIsnotInPlayList(playList: playList)
+//        self.delAudioDataIsnotInPlayList(playList: playList)
         let shouldSaveList = self.saveAudioDataIsnotInAudioList(playList: playList)
         
         CoreDataFunc.shouldUpdateCount = shouldSaveList.count
@@ -205,8 +218,10 @@ extension CoreDataFunc {
                     fileSystemFileNumber: item.fileSystemFileNumber,
                     creationDate : item.creationDate,
                     currentTime: 0.0,
+                    duration: player.duration,
                     waveAnalysis: [0.0],
-                    duration: player.duration
+                    sectionStart: [0],
+                    sectionEnd: [0]
                 )
                 
                 self.saveAudio(audioData: audio)
@@ -236,7 +251,9 @@ extension CoreDataFunc {
                     let count = Int(duration * 100)
                     waveformAnalyzer.samples(count: count) { samples in
                         let waveAnalysis = samples ?? [0.0]
+                        let analysis = self.saveAnalysisSection(samples: waveAnalysis)
                         audio.setValue(waveAnalysis, forKey: "waveAnalysis")
+                        audio.setValue(analysis, forKey: "section")
                         print("update", item.fileSystemFileNumber)
                         CoreDataFunc.shouldUpdateCount -= 1
                         checkUpdateHandler()
@@ -246,6 +263,42 @@ extension CoreDataFunc {
                 print(error)
             }
         }
+    }
+    
+    func saveAnalysisSection(samples : [Float]) -> NSManagedObject {
+        guard let entity = NSEntityDescription.entity(forEntityName: "Section", in: self.context) else { return NSManagedObject() }
+        
+        var isSilence = true
+        var cnt = 0
+        var sectionStart : [Int] = []
+        var sectionEnd : [Int] = []
+        
+        for (idx, data) in samples.enumerated() {
+            // 무음이다가 소리가 들린다면
+            if (isSilence && data < 0.7) {
+                isSilence = false
+                sectionStart.append(idx)
+            }
+            // 소리가 들리다가 특정 횟수 이상 끊긴다면
+            else if (!isSilence && data > 0.7) {
+                cnt += 1
+                if cnt > 9 {
+                    isSilence = true
+                    sectionEnd.append(idx)
+                    cnt = 0
+                }
+            }
+        }
+        
+        let analysis = NSManagedObject(entity: entity, insertInto: context)
+        analysis.setValue(sectionStart, forKey: "sectionStart")
+        analysis.setValue(sectionEnd, forKey: "sectionEnd")
+        print("sectionStart saved! \(sectionStart.count)")
+        print("sectionEnd saved! \(sectionStart.count)")
+
+    
+        return analysis
+        
     }
     
     

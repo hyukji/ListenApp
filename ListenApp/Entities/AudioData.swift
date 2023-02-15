@@ -11,6 +11,8 @@ struct AudioData {
     let fileSystemFileNumber : Int
     let creationDate : Date
     var currentTime : TimeInterval
-    let waveAnalysis : [Float]
     let duration : Double
+    let waveAnalysis : [Float]
+    let sectionStart : [Int]
+    let sectionEnd : [Int]
 }

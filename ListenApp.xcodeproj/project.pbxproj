@@ -13,6 +13,7 @@
 		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
 		199BF314297AEDA600DAD3E1 /* DocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF313297AEDA600DAD3E1 /* DocumentItem.swift */; };
 		199F3AD929792141001C6A3B /* CoreDataFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD829792141001C6A3B /* CoreDataFunction.swift */; };
+		19A615D5299BAB1B00766660 /* MyWaveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A615D4299BAB1B00766660 /* MyWaveImage.swift */; };
 		19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41EEB296FFEA200DC30C1 /* AppDelegate.swift */; };
 		19B41EEE296FFEA200DC30C1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41EED296FFEA200DC30C1 /* SceneDelegate.swift */; };
 		19B41EF5296FFEA300DC30C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19B41EF4296FFEA300DC30C1 /* Assets.xcassets */; };
@@ -45,6 +46,7 @@
 		199BF311297AEB4900DAD3E1 /* MyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFileManager.swift; sourceTree = "<group>"; };
 		199BF313297AEDA600DAD3E1 /* DocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentItem.swift; sourceTree = "<group>"; };
 		199F3AD829792141001C6A3B /* CoreDataFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFunction.swift; sourceTree = "<group>"; };
+		19A615D4299BAB1B00766660 /* MyWaveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWaveImage.swift; sourceTree = "<group>"; };
 		19B41EE8296FFEA200DC30C1 /* ListenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ListenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19B41EEB296FFEA200DC30C1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		19B41EED296FFEA200DC30C1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				19BAE878297BB2DD0074A5F2 /* PlayListMenu.swift */,
 				19B53E62298003CA00FED417 /* CustomAlertViewController.swift */,
 				19015320298FD2D800BDB429 /* StackViewSubViews.swift */,
+				19A615D4299BAB1B00766660 /* MyWaveImage.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19A615D5299BAB1B00766660 /* MyWaveImage.swift in Sources */,
 				19B41F192970023D00DC30C1 /* PlayListTableViewCell.swift in Sources */,
 				19B8273B2983F9D700B2AB9C /* PlayerLowerView.swift in Sources */,
 				19B827392983F9CD00B2AB9C /* PlayerUpperView.swift in Sources */,

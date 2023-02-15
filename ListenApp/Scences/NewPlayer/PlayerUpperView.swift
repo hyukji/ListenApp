@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import DSWaveformImage
+//import DSWaveformImage
 
 class PlayerUpperView : UIView {
     let playerController = PlayerController.playerController
@@ -221,7 +221,7 @@ extension PlayerUpperView {
         let waveImgView = UIImageView()
         waveImgView.contentMode = .scaleToFill
         
-        let waveformImageDrawer = WaveformImageDrawer()
+        let waveformImageDrawer = MyWaveformImageDrawer()
         
         let height = Int(UIScreen.main.bounds.size.height) - 345
         let scale = 1
@@ -232,7 +232,7 @@ extension PlayerUpperView {
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
             size : CGSize(width: waveImageSize, height: height),
-            style: .striped(.init(color: .label, width: 1, spacing: 5)),
+            stripeConfig: .init(color: .label, width: 1, spacing: 5),
             dampening: nil,
             scale: CGFloat(scale),
             verticalScalingFactor: 0.5 )

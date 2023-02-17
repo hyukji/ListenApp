@@ -13,7 +13,7 @@ class PlayerUpperView : UIView {
     var audio = PlayerController.playerController.audio!
     var timer : Timer?
     
-    let changedAmountPerSec = 100.0
+    let changedAmountPerSec = PlayerController.playerController.changedAmountPerSec
     let waveImageSize = 1000
     
     var nowImageIdx = 0
@@ -167,8 +167,6 @@ class PlayerUpperView : UIView {
             }
         }
         
-        print("idx \(nowImageIdx), maxidx \(maxImageIdx)")
-        print(waveImageIdxList)
         
         setImgOnScrollSV(waveImageIdxList: [-1, -1])
         setImgOnScrollSV(waveImageIdxList: waveImageIdxList)
@@ -311,21 +309,15 @@ extension PlayerUpperView {
         if newImageIdx != nowImageIdx {
             // 패치 저장된 내용 사용하기
             if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx < nowImageIdx {
-                print("previou")
-                print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 audio.currentTime = playerController.player.currentTime
                 prefetchPrevious(newImageIdx : newImageIdx)
             }
             else if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx > nowImageIdx {
-                print("next")
-                print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 audio.currentTime = playerController.player.currentTime
                 prefetchNext(newImageIdx : newImageIdx)
             }
             // slider or 새로 오디오 재생
             else {
-                print("reset")
-                print("nowImageIdx \(nowImageIdx) newImageIdx \(newImageIdx)")
                 scrollStackView.removeFullySubviews()
                 audio.currentTime = playerController.player.currentTime
                 configureWaveImgView()
@@ -355,33 +347,20 @@ extension PlayerUpperView {
         if newImageIdx == 0 && nowImageIdx == 1 { return }
         
         let diff = abs(newImageIdx - nowImageIdx)
-        for i in 0..<diff {
-            print("i \(i) newImageIdx \(newImageIdx)")
+        for _ in 0..<diff {
             scrollStackView.popWaveImg()
             scrollStackView.appendLeftWaveImg(view : drawWaveImage(idx: scrollStackView.firstViewTag() - 1 ))
-        }
-        
-        print("prefetchPrevious")
-        scrollStackView.arrangedSubviews.forEach{
-            print($0.tag)
         }
     }
         
     func prefetchNext(newImageIdx : Int) {
-        print("prefetch")
         if newImageIdx == 1 { return }
-        print("isnot 1")
         let diff = abs(newImageIdx - nowImageIdx)
-        for i in 0..<diff {
-            print("i \(i) newImageIdx \(newImageIdx)")
+        for _ in 0..<diff {
             scrollStackView.popLeftWaveImg()
             scrollStackView.appendWaveImg(view : drawWaveImage(idx: scrollStackView.lastViewTag() + 1 ))
         }
         
-        print("prefetchNext")
-        scrollStackView.arrangedSubviews.forEach{
-            print($0.tag, $0.intrinsicContentSize)
-        }
     }
     
 }

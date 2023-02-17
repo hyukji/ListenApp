@@ -383,7 +383,7 @@ extension PlayerUpperView {
             case .ended:
                 // 슬라이더 드래그 끝날 때 플레이어 잠시 멈춤이라면 재생
                 if let timer = timer { if timer.isValid { return }}
-                playerController.changePlayerTime(changedTime : Double(slider.value))
+                playerController.changePlayerTime(changedTime : Double(slider.value), notiForUpdate: true)
                 if playerController.status == .intermit {
                     playerController.playPlayer()
                 }
@@ -439,10 +439,10 @@ extension PlayerUpperView : UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate == false {
             let x = Double(scrollView.contentOffset.x)
-            if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
+            if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec), notiForUpdate: false) }
             else {
                 let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-                playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
+                playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec), notiForUpdate: false)
             }
             
             updatePlayTime()
@@ -457,12 +457,11 @@ extension PlayerUpperView : UIScrollViewDelegate {
     
     // 끄는 동작 끝날 때 플레이어 시간 업데이트
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        
         let x = Double(scrollView.contentOffset.x)
-        if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
+        if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec), notiForUpdate: false) }
         else {
             let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
+            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec), notiForUpdate: false)
         }
         
         updatePlayTime()

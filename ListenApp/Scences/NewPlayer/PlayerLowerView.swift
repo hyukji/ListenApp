@@ -131,15 +131,15 @@ extension PlayerLowerView {
     @objc private func tapSecondBackButton() {
         let changedTime = playerController.player.currentTime - playerController.timeInterval
         
-        if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
-        else { playerController.changePlayerTime(changedTime: changedTime) }
+        if changedTime < 0 { playerController.changePlayerTime(changedTime: 0, notiForUpdate: true) }
+        else { playerController.changePlayerTime(changedTime: changedTime, notiForUpdate: true) }
     }
     
     @objc private func tapSecondFrontButton() {
         let changedTime = playerController.player.currentTime + playerController.timeInterval
         
-        if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
-        else { playerController.changePlayerTime(changedTime: changedTime) }
+        if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration, notiForUpdate: true) }
+        else { playerController.changePlayerTime(changedTime: changedTime, notiForUpdate: true) }
     }
     
     private func getSection() -> Int {
@@ -164,7 +164,7 @@ extension PlayerLowerView {
             sectionStart = audio.sectionStart[section-1]
         }
         
-        playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
+        playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec, notiForUpdate: true)
         
     }
     
@@ -172,7 +172,7 @@ extension PlayerLowerView {
         let nextSection = getSection() + 1
         if nextSection != audio.sectionStart.count {
             let sectionStart = audio.sectionStart[nextSection+1]
-            playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
+            playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec, notiForUpdate: true)
         }
     }
     

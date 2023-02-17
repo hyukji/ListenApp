@@ -280,9 +280,9 @@ extension CoreDataFunc {
                 sectionStart.append(idx)
             }
             // 소리가 들리다가 특정 횟수 이상 끊긴다면
-            else if (!isSilence && data > 0.7) {
+            else if (!isSilence && data > 0.75) {
                 cnt += 1
-                if cnt > 9 {
+                if cnt > 15 {
                     isSilence = true
                     sectionEnd.append(idx)
                     cnt = 0

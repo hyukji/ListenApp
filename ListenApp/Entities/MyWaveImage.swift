@@ -225,7 +225,7 @@ class MyWaveformImageDrawer {
         context.setShouldAntialias(configuration.shouldAntialias)
 
         drawBackground(on: context, with: configuration)
-        drawSection(on: context, with: configuration)
+        drawSection(from: range, on: context, with: configuration)
         drawGraph(from: range, on: context, with: configuration)
     }
     
@@ -236,20 +236,61 @@ class MyWaveformImageDrawer {
     }
     
     
-    private func drawSection(on context: CGContext, with configuration: Waveform.Configuration) {
+    private func drawSection(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
+        let path = CGMutablePath()
+        var section = 0
         
-//        let path = CGMutablePath()
-//        path.move(to: CGPoint(x: xPos, y: drawingAmplitudeUp))
-//        path.addLine(to: CGPoint(x: xPos, y: drawingAmplitudeDown))
+        while section <= audio.sectionStart.count {
+            if range.lowerBound < audio.sectionEnd[section] {
+                let xPos = Double(audio.sectionStart[section] - range.lowerBound)
+                let rectWidth = Double(audio.sectionEnd[section] - audio.sectionStart[section])
+                
+                if range.upperBound < audio.sectionEnd[section] {
+                    if audio.sectionStart[section] < range.upperBound {
+                        // 이미지 끝이 섹션의 중간부분임
+                        path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+                        let rectangle = CGRect(
+                            x: xPos,
+                            y: configuration.size.height * 0.05,
+                            width: Double(range.upperBound - audio.sectionStart[section]),
+                            height: configuration.size.height * 0.9)
+                        path.addRect(rectangle)
+                    }
+                    break
+                }
+                
+                if audio.sectionStart[section] < range.lowerBound {
+                    // 이미지 시작이 섹션의 중간부분임
+                    path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+                    let rectangle = CGRect(
+                        x: 0,
+                        y: configuration.size.height * 0.05,
+                        width: Double(audio.sectionEnd[section] - range.lowerBound),
+                        height: configuration.size.height * 0.9)
+                    path.addRect(rectangle)
+                }
+                else{
+                    // 온전한 섹션파트 그리기
+                    path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+                    let rectangle = CGRect(
+                        x: xPos,
+                        y: configuration.size.height * 0.05,
+                        width: rectWidth,
+                        height: configuration.size.height * 0.9)
+                    path.addRect(rectangle)
+                }
+                
+            }
+            
+            section += 1
+        }
         
-        let rectangle = CGRect(x: Float64(audio.sectionStart[0]), y: configuration.size.height * 0.05, width: Double(audio.sectionEnd[0] - audio.sectionStart[0]), height: configuration.size.height * 0.9)
-    
+        context.addPath(path)
+        
         context.setFillColor(UIColor.yellow.cgColor)
         context.setLineWidth(0)
         context.setAlpha(0.4)
         
-        
-        context.addRect(rectangle)
         context.drawPath(using: .fillStroke)
         
 //        context.addPath(path)
@@ -307,6 +348,7 @@ class MyWaveformImageDrawer {
     
     private func stripeBucket(_ configuration: Waveform.Configuration) -> Int {
         let stripeConfig = configuration.stripeConfig
-        return Int(stripeConfig.width + stripeConfig.spacing) * Int(configuration.scale)
+//        return Int(stripeConfig.width + stripeConfig.spacing) * Int(configuration.scale)
+        return Int(stripeConfig.width) * Int(configuration.scale)
     }
 }

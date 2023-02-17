@@ -159,7 +159,7 @@ extension PlayerLowerView {
         let section = getSection()
         var sectionStart = audio.sectionStart[section]
         
-        if playerController.player.currentTime - (Double(sectionStart) / playerController.changedAmountPerSec) < 0.5
+        if playerController.player.currentTime - (Double(sectionStart) / playerController.changedAmountPerSec) < 0.2
             && section != 0 {
             sectionStart = audio.sectionStart[section-1]
         }
@@ -171,7 +171,7 @@ extension PlayerLowerView {
     @objc private func tapWaveFrontButton() {
         let nextSection = getSection() + 1
         if nextSection != audio.sectionStart.count {
-            let sectionStart = audio.sectionStart[nextSection+1]
+            let sectionStart = audio.sectionStart[nextSection]
             playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec, notiForUpdate: true)
         }
     }

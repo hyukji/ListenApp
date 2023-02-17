@@ -27,6 +27,7 @@ class PlayerController {
     var timeInterval = 5.0
     var isNewAudio = false
     
+    let changedAmountPerSec = 100.0
     
     private init() { }
     

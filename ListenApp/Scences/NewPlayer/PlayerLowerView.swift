@@ -9,6 +9,7 @@ import UIKit
 
 class PlayerLowerView : UIView {
     let playerController = PlayerController.playerController
+    let audio = PlayerController.playerController.audio!
     
     lazy var normalControllerSV : UIStackView = {
         let stackView = UIStackView()
@@ -57,8 +58,8 @@ class PlayerLowerView : UIView {
         waveBackButton.setImage(UIImage(systemName: "gobackward", withConfiguration: waveImageConfig), for: .normal)
         waveFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: waveImageConfig), for: .normal)
         
-//        waveBackButton.addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
-//        waveFrontButton.addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
+        waveBackButton.addTarget(self, action: #selector(tapWaveBackButton), for: .touchUpInside)
+        waveFrontButton.addTarget(self, action: #selector(tapWaveFrontButton), for: .touchUpInside)
         
         [waveBackButton, waveFrontButton].forEach{
             stackView.addArrangedSubview($0)
@@ -129,22 +130,52 @@ extension PlayerLowerView {
     
     @objc private func tapSecondBackButton() {
         let changedTime = playerController.player.currentTime - playerController.timeInterval
-        playerController.changePlayerTime(changedTime: changedTime)
         
+        if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
+        else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
     @objc private func tapSecondFrontButton() {
         let changedTime = playerController.player.currentTime + playerController.timeInterval
-        playerController.changePlayerTime(changedTime: changedTime)
+        
+        if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
+        else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
-    @objc private func waveBackButton() {
+    private func getSection() -> Int {
+        let x = playerController.player.currentTime * playerController.changedAmountPerSec
+        var section = 0
+        while (section <= audio.sectionStart.count) {
+            if x < Double(audio.sectionStart[section]){
+                break
+            }
+            section += 1
+                
+        }
+        return section - 1
+    }
+    
+    @objc private func tapWaveBackButton() {
+        let section = getSection()
+        var sectionStart = audio.sectionStart[section]
+        
+        if playerController.player.currentTime - (Double(sectionStart) / playerController.changedAmountPerSec) < 0.5
+            && section != 0 {
+            sectionStart = audio.sectionStart[section-1]
+        }
+        
+        playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
         
     }
     
-    @objc private func waveFrontButton() {
-        
+    @objc private func tapWaveFrontButton() {
+        let nextSection = getSection() + 1
+        if nextSection != audio.sectionStart.count {
+            let sectionStart = audio.sectionStart[nextSection+1]
+            playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
+        }
     }
+    
 }
 
 

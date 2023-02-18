@@ -46,6 +46,9 @@ class PlayerUpperView : UIView {
     
     private lazy var sliderContainer = UIView()
     
+    
+    let abRepeatButton = UIButton()
+    
     lazy var upperControllerSV : UIStackView = {
         let stackView = UIStackView()
         
@@ -57,7 +60,6 @@ class PlayerUpperView : UIView {
         
         let waveRepeatButton = UIButton()
         let speedButton = UIButton()
-        let abRepeatButton = UIButton()
         
         let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
         let speedTitle = UILabel()
@@ -150,8 +152,6 @@ class PlayerUpperView : UIView {
     }
     
     func configureWaveImgView() {
-        print(audio.waveAnalysis.count)
-        print(audio.duration, audio.duration * changedAmountPerSec)
         nowImageIdx = Int(audio.currentTime * changedAmountPerSec / Double(waveImageSize))
         maxImageIdx = audio.waveAnalysis.count / waveImageSize
         
@@ -174,6 +174,40 @@ class PlayerUpperView : UIView {
         
         setImgOnScrollSV(waveImageIdxList: [-1, -1])
         setImgOnScrollSV(waveImageIdxList: waveImageIdxList)
+    }
+}
+
+// repeat button functions
+extension PlayerUpperView {
+    
+    @objc private func tapABRepeatButton() {
+        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
+        
+        if playerController.positionA == nil {
+            // A위치 설정
+            playerController.positionA = Int(scrollView.contentOffset.x)
+            abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
+            abRepeatButton.tintColor = .red
+        } else if playerController.positionB == nil {
+            // B위치 설정 및 반복 설정
+            playerController.positionB = Int(scrollView.contentOffset.x)
+            playerController.player.currentTime = Double(playerController.positionA!) / changedAmountPerSec
+            abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
+            abRepeatButton.tintColor = .blue
+            playerController.shouldABRepeat = true
+        } else {
+            // 설정 초기화
+            playerController.positionA = nil
+            playerController.positionB = nil
+            abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
+            abRepeatButton.tintColor = .label
+            playerController.shouldABRepeat = false
+        }
+        
+        // wave image업데이트
+        scrollStackView.removeFullySubviews()
+        audio.currentTime = playerController.player.currentTime
+        configureWaveImgView()
     }
 }
 

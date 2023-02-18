@@ -29,6 +29,10 @@ class PlayerController {
     
     let changedAmountPerSec = 100.0
     
+    var shouldABRepeat = false
+    var positionA : Int?
+    var positionB : Int?
+    
     private init() { }
     
     

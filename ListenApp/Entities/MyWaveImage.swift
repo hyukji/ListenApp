@@ -138,19 +138,6 @@ enum Waveform {
             dampening != nil
         }
 
-        @available(*, deprecated, message: "paddingFactor has been replaced by scalingFactor")
-        public init(size: CGSize = .zero,
-                    backgroundColor: UIColor = UIColor.clear,
-                    stripeConfig: StripeConfig = .init(color: .label),
-                    position: Position = .middle,
-                    scale: CGFloat = UIScreen.main.scale,
-                    paddingFactor: CGFloat?,
-                    shouldAntialias: Bool = false) {
-            self.init(
-                size: size, backgroundColor: backgroundColor, stripeConfig: stripeConfig, position: position, scale: scale,
-                verticalScalingFactor: 1 / (paddingFactor ?? 1), shouldAntialias: shouldAntialias
-            )
-        }
 
         public init(size: CGSize = .zero,
                     backgroundColor: UIColor = UIColor.clear,
@@ -172,28 +159,6 @@ enum Waveform {
             self.scale = scale
             self.verticalScalingFactor = verticalScalingFactor
             self.shouldAntialias = shouldAntialias
-        }
-
-        /// Build a new `Waveform.Configuration` with only the given parameters replaced.
-        public func with(size: CGSize? = nil,
-                         backgroundColor: UIColor? = nil,
-                         stripeConfig: StripeConfig? = nil,
-                         dampening: Dampening? = nil,
-                         position: Position? = nil,
-                         scale: CGFloat? = nil,
-                         verticalScalingFactor: CGFloat? = nil,
-                         shouldAntialias: Bool? = nil
-        ) -> Configuration {
-            Configuration(
-                size: size ?? self.size,
-                backgroundColor: backgroundColor ?? self.backgroundColor,
-                stripeConfig: stripeConfig ?? self.stripeConfig,
-                dampening: dampening ?? self.dampening,
-                position: position ?? self.position,
-                scale: scale ?? self.scale,
-                verticalScalingFactor: verticalScalingFactor ?? self.verticalScalingFactor,
-                shouldAntialias: shouldAntialias ?? self.shouldAntialias
-            )
         }
     }
 
@@ -227,8 +192,34 @@ class MyWaveformImageDrawer {
         drawBackground(on: context, with: configuration)
         drawSection(from: range, on: context, with: configuration)
         drawGraph(from: range, on: context, with: configuration)
+        drawABIndicator(from: range, on: context, with: configuration)
     }
     
+    private func drawABIndicator(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
+        if let positionA = PlayerController.playerController.positionA {
+            let xPos = Double(positionA - range.lowerBound)
+            
+            context.move(to: CGPoint(x: xPos, y: 0))
+            context.addLine(to: CGPoint(x: xPos, y: configuration.size.height))
+            context.setStrokeColor(UIColor.blue.cgColor)
+            context.setAlpha(1.0)
+            context.strokePath()
+            
+            print(positionA)
+        }
+        if let positionB = PlayerController.playerController.positionB {
+            let xPos = Double(positionB - range.lowerBound)
+            
+            context.move(to: CGPoint(x: xPos, y: 0))
+            context.addLine(to: CGPoint(x: xPos, y: configuration.size.height))
+            context.setAlpha(1.0)
+            context.setStrokeColor(UIColor.red.cgColor)
+            context.strokePath()
+            
+            print(positionB)
+        }
+        
+    }
     
     private func drawBackground(on context: CGContext, with configuration: Waveform.Configuration) {
         context.setFillColor(configuration.backgroundColor.cgColor)
@@ -292,15 +283,6 @@ class MyWaveformImageDrawer {
         context.setAlpha(0.4)
         
         context.drawPath(using: .fillStroke)
-        
-//        context.addPath(path)
-//        context.setShouldAntialias(configuration.shouldAntialias)
-//
-//        let config = configuration.stripeConfig
-//        context.setLineWidth(configuration.stripeConfig.width)
-//        context.setLineCap(config.lineCap)
-//        context.setStrokeColor(config.color.cgColor)
-//        context.strokePath()
     }
     
     private func drawGraph(from range: Range<Int>,

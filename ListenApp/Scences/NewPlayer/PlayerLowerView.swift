@@ -131,15 +131,15 @@ extension PlayerLowerView {
     @objc private func tapSecondBackButton() {
         let changedTime = playerController.player.currentTime - playerController.timeInterval
         
-        if changedTime < 0 { playerController.changePlayerTime(changedTime: 0, notiForUpdate: true) }
-        else { playerController.changePlayerTime(changedTime: changedTime, notiForUpdate: true) }
+        if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
+        else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
     @objc private func tapSecondFrontButton() {
         let changedTime = playerController.player.currentTime + playerController.timeInterval
         
-        if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration, notiForUpdate: true) }
-        else { playerController.changePlayerTime(changedTime: changedTime, notiForUpdate: true) }
+        if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
+        else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
     private func getSection() -> Int {
@@ -159,20 +159,19 @@ extension PlayerLowerView {
         let section = getSection()
         var sectionStart = audio.sectionStart[section]
         
-        if playerController.player.currentTime - (Double(sectionStart) / playerController.changedAmountPerSec) < 0.2
+        if playerController.player.currentTime - (Double(sectionStart-1) / playerController.changedAmountPerSec) < 0.2
             && section != 0 {
             sectionStart = audio.sectionStart[section-1]
         }
         
-        playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec, notiForUpdate: true)
-        
+        playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
     }
     
     @objc private func tapWaveFrontButton() {
         let nextSection = getSection() + 1
         if nextSection != audio.sectionStart.count {
             let sectionStart = audio.sectionStart[nextSection]
-            playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec, notiForUpdate: true)
+            playerController.changePlayerTime(changedTime: Double(sectionStart-1) / playerController.changedAmountPerSec)
         }
     }
     

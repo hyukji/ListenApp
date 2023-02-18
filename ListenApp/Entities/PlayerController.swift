@@ -77,11 +77,9 @@ class PlayerController {
         NotificateTo()
     }
     
-    func changePlayerTime(changedTime : TimeInterval, notiForUpdate : Bool) {
+    func changePlayerTime(changedTime : TimeInterval) {
         player.currentTime = changedTime
-        if notiForUpdate {
-            NotificateTo()
-        }
+        NotificateTo()
     }
     
     func NotificateTo() {

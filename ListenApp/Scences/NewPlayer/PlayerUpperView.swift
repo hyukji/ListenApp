@@ -64,6 +64,10 @@ class PlayerUpperView : UIView {
         
         waveRepeatButton.setImage(UIImage(systemName: "repeat.1", withConfiguration: repeatImageConfig), for: .normal)
         abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
+        
+//        waveRepeatButton.addTarget(self, action: #selector(<#T##@objc method#>), for: .touchUpInside)
+        abRepeatButton.addTarget(self, action: #selector(tapABRepeatButton), for: .touchUpInside)
+        
         speedButton.setTitle("1.0x", for: .normal)
         speedButton.setTitleColor(.label, for: .normal)
         speedButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .regular)
@@ -383,7 +387,7 @@ extension PlayerUpperView {
             case .ended:
                 // 슬라이더 드래그 끝날 때 플레이어 잠시 멈춤이라면 재생
                 if let timer = timer { if timer.isValid { return }}
-                playerController.changePlayerTime(changedTime : Double(slider.value), notiForUpdate: true)
+                playerController.changePlayerTime(changedTime : Double(slider.value))
                 if playerController.status == .intermit {
                     playerController.playPlayer()
                 }
@@ -439,13 +443,11 @@ extension PlayerUpperView : UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate == false {
             let x = Double(scrollView.contentOffset.x)
-            if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec), notiForUpdate: false) }
+            if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
             else {
                 let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-                playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec), notiForUpdate: false)
+                playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
             }
-            
-            updatePlayTime()
             
             // 잠시 멈춤이라면 재생
             if playerController.status == .intermit {
@@ -458,13 +460,11 @@ extension PlayerUpperView : UIScrollViewDelegate {
     // 끄는 동작 끝날 때 플레이어 시간 업데이트
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let x = Double(scrollView.contentOffset.x)
-        if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec), notiForUpdate: false) }
+        if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec))}
         else {
             let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec), notiForUpdate: false)
+            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
         }
-        
-        updatePlayTime()
         
         // 잠시 멈춤이라면 재생
         if playerController.status == .intermit {

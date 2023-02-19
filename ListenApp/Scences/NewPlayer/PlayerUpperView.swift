@@ -97,7 +97,7 @@ class PlayerUpperView : UIView {
         scrollView.alwaysBounceHorizontal = true
         scrollView.showsHorizontalScrollIndicator = false
         
-        scrollView.backgroundColor = .systemGray5
+//        scrollView.backgroundColor = .systemGray5
         scrollView.decelerationRate = .fast
         
         return scrollView
@@ -268,6 +268,7 @@ extension PlayerUpperView {
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
             size : CGSize(width: waveImageSize, height: height),
+            backgroundColor: UIColor.systemGray5,
             stripeConfig: .init(color: .label, width: 1, spacing: 5),
             dampening: nil,
             scale: CGFloat(scale),
@@ -283,21 +284,20 @@ extension PlayerUpperView {
         let waveImgView = UIImageView()
         waveImgView.contentMode = .scaleToFill
         
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
+        let waveformImageDrawer = MyWaveformImageDrawer()
         
         let width = Int(UIScreen.main.bounds.size.width / 2)
         let height = Int(UIScreen.main.bounds.size.height) - 345
-        let size = CGSize(width: width, height: height)
+        let scale = 1
         
-        let renderer = UIGraphicsImageRenderer(size: size, format: format)
-        
-        let image =  renderer.image { renderContext in
-            let context = renderContext.cgContext
-            context.setFillColor(UIColor.systemGray6.cgColor)
-            context.fill(CGRect(origin: CGPoint.zero, size: size))
-        }
-        
+        let image = waveformImageDrawer.drawEmptyImage(with: .init(
+            size : CGSize(width: width, height: height),
+            backgroundColor: UIColor.systemGray5,
+            stripeConfig: .init(color: .label, width: 1, spacing: 5),
+            dampening: nil,
+            scale: CGFloat(scale),
+            verticalScalingFactor: 0.5 )
+        )
         waveImgView.image = image
         waveImgView.tag = -1
         return waveImgView
@@ -557,7 +557,8 @@ extension PlayerUpperView {
         }
         
         currentIndicator.snp.makeConstraints{
-            $0.bottom.top.equalTo(scrollView)
+            $0.top.equalTo(scrollView).inset(14)
+            $0.bottom.equalTo(scrollView).inset(14)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(1)
         }

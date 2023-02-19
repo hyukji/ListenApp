@@ -185,6 +185,18 @@ class MyWaveformImageDrawer {
         }
     }
     
+    public func drawEmptyImage(with configuration: Waveform.Configuration) -> UIImage? {
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = configuration.scale
+        let renderer = UIGraphicsImageRenderer(size: configuration.size, format: format)
+//        let dampenedSamples = configuration.shouldDampen ? dampen(samples, with: configuration) : samples
+
+        return renderer.image { renderContext in
+            drawBackground(on: renderContext.cgContext, with: configuration)
+        }
+    }
+    
     private func draw(on context: CGContext, from range: Range<Int>, with configuration: Waveform.Configuration) {
         context.setAllowsAntialiasing(configuration.shouldAntialias)
         context.setShouldAntialias(configuration.shouldAntialias)
@@ -192,38 +204,26 @@ class MyWaveformImageDrawer {
         drawBackground(on: context, with: configuration)
         drawSection(from: range, on: context, with: configuration)
         drawGraph(from: range, on: context, with: configuration)
+        drawGraduation(from: range, on: context, with: configuration)
         drawABIndicator(from: range, on: context, with: configuration)
     }
     
     private func drawABIndicator(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
         if let positionA = PlayerController.playerController.positionA {
             let xPos = Double(positionA - range.lowerBound)
-            
-            context.move(to: CGPoint(x: xPos, y: 0))
-            context.addLine(to: CGPoint(x: xPos, y: configuration.size.height))
-            context.setStrokeColor(UIColor.blue.cgColor)
-            context.setAlpha(1.0)
-            context.strokePath()
-            
-            print(positionA)
+            drawIndicator(context: context, xPos: xPos, color : UIColor.red.cgColor, configuration: configuration)
         }
         if let positionB = PlayerController.playerController.positionB {
             let xPos = Double(positionB - range.lowerBound)
-            
-            context.move(to: CGPoint(x: xPos, y: 0))
-            context.addLine(to: CGPoint(x: xPos, y: configuration.size.height))
-            context.setAlpha(1.0)
-            context.setStrokeColor(UIColor.red.cgColor)
-            context.strokePath()
-            
-            print(positionB)
+            drawIndicator(context: context, xPos: xPos, color : UIColor.blue.cgColor, configuration: configuration)
         }
         
     }
     
     private func drawBackground(on context: CGContext, with configuration: Waveform.Configuration) {
         context.setFillColor(configuration.backgroundColor.cgColor)
-        context.fill(CGRect(origin: CGPoint.zero, size: configuration.size))
+        let size = CGSize(width: configuration.size.width, height: configuration.size.height - 60)
+        context.fill(CGRect(origin: CGPoint(x: 0, y: 20), size: size))
     }
     
     
@@ -242,9 +242,9 @@ class MyWaveformImageDrawer {
                         path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                         let rectangle = CGRect(
                             x: xPos,
-                            y: configuration.size.height * 0.05,
+                            y: 50,
                             width: Double(range.upperBound - audio.sectionStart[section]),
-                            height: configuration.size.height * 0.9)
+                            height: configuration.size.height - 120)
                         path.addRect(rectangle)
                     }
                     break
@@ -255,9 +255,9 @@ class MyWaveformImageDrawer {
                     path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                     let rectangle = CGRect(
                         x: 0,
-                        y: configuration.size.height * 0.05,
+                        y: 50,
                         width: Double(audio.sectionEnd[section] - range.lowerBound),
-                        height: configuration.size.height * 0.9)
+                        height: configuration.size.height - 120)
                     path.addRect(rectangle)
                 }
                 else{
@@ -265,9 +265,9 @@ class MyWaveformImageDrawer {
                     path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                     let rectangle = CGRect(
                         x: xPos,
-                        y: configuration.size.height * 0.05,
+                        y: 50,
                         width: rectWidth,
-                        height: configuration.size.height * 0.9)
+                        height: configuration.size.height - 120)
                     path.addRect(rectangle)
                 }
                 
@@ -289,8 +289,8 @@ class MyWaveformImageDrawer {
                            on context: CGContext,
                            with configuration: Waveform.Configuration) {
         let samples = audio.waveAnalysis[range]
-        let graphRect = CGRect(origin: CGPoint.zero, size: configuration.size)
-        let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * graphRect.size.height
+        let graphRect = CGRect(origin: CGPoint(x: 0, y: 0), size: configuration.size)
+        let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * graphRect.size.height - 10
         let drawMappingFactor = graphRect.size.height * configuration.verticalScalingFactor
         let minimumGraphAmplitude: CGFloat = 1 / configuration.scale // we want to see at least a 1px line for silence
 
@@ -327,6 +327,94 @@ class MyWaveformImageDrawer {
         context.strokePath()
     }
     
+    
+    private func drawGraduation(from range: Range<Int>,
+                                 on context: CGContext,
+                                 with configuration: Waveform.Configuration) {
+        
+        let path = CGMutablePath()
+        
+        for (x, t) in range.enumerated() {
+            // 눈금 그리기
+            if t % 100 == 0 {
+                path.move(to: CGPoint(x: x, y: Int(configuration.size.height) - 40))
+                path.addLine(to: CGPoint(x: x, y: Int(configuration.size.height) - 22))
+                
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = .left
+                
+                
+                let time = t / 100
+                let min = time / 60
+                let sec = time % 60
+                
+                let label = UILabel()
+                label.text = String(format: "%02d:%02d", min, sec)
+                label.font = .systemFont(ofSize: 15)
+                label.textColor = configuration.backgroundColor
+//                label.backgroundColor = .darkGray
+                
+                let labelRect = CGRect(x: x, y: Int(configuration.size.height) - 30, width: 50, height: 30)
+                label.drawText(in: labelRect)
+                print(t)
+            }
+            else if t % 25 == 0 {
+                path.move(to: CGPoint(x: x, y: Int(configuration.size.height) - 40))
+                path.addLine(to: CGPoint(x: x, y: Int(configuration.size.height) - 32))
+//                print(x)
+                
+            }
+        }
+        
+        context.addPath(path)
+        context.setAlpha(1.0)
+        context.setShouldAntialias(configuration.shouldAntialias)
+        
+        let config = configuration.stripeConfig
+        context.setLineWidth(1)
+        context.setLineCap(config.lineCap)
+        context.setStrokeColor(configuration.backgroundColor.cgColor)
+        context.strokePath()
+        
+    }
+    
+    private func drawIndicator(context: CGContext, xPos: Double, color : CGColor, configuration : Waveform.Configuration) {
+        let path = CGMutablePath()
+        let height = configuration.size.height
+        
+        path.move(to: CGPoint(x: xPos, y: 0))
+        path.addLine(to: CGPoint(x: xPos, y: height))
+        
+        context.addPath(path)
+        context.setAlpha(1.0)
+        context.setShouldAntialias(configuration.shouldAntialias)
+        
+        let config = configuration.stripeConfig
+        context.setLineWidth(configuration.stripeConfig.width)
+        context.setLineCap(config.lineCap)
+        context.setStrokeColor(color)
+        context.strokePath()
+        
+        let rect = CGRect(
+            x: xPos-8,
+            y: 0,
+            width: 16,
+            height: 20)
+        
+        let roundRect = UIBezierPath(roundedRect: rect, cornerRadius: 4)
+        context.addPath(roundRect.cgPath)
+        
+        context.setFillColor(color)
+        context.setLineWidth(0)
+        context.setAlpha(1)
+        
+        context.drawPath(using: .fillStroke)
+//
+//        let font = UIFont.systemFont(ofSize: 20)
+//        let string = NSAttributedString(string: "+", attributes: [NSAttributedString.Key.font: font])
+//        string.draw(at: CGPoint(x: xPos-5, y: 0))
+//
+    }
     
     private func stripeBucket(_ configuration: Waveform.Configuration) -> Int {
         let stripeConfig = configuration.stripeConfig

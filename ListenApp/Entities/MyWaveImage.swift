@@ -352,16 +352,13 @@ class MyWaveformImageDrawer {
                 label.text = String(format: "%02d:%02d", min, sec)
                 label.font = .systemFont(ofSize: 15)
                 label.textColor = UIColor.label
-//                label.backgroundColor = .darkGray
                 
                 let labelRect = CGRect(x: x, y: Int(configuration.size.height) - 30, width: 50, height: 30)
                 label.drawText(in: labelRect)
-                print(t)
             }
             else if t % 25 == 0 {
                 path.move(to: CGPoint(x: x, y: Int(configuration.size.height) - 40))
                 path.addLine(to: CGPoint(x: x, y: Int(configuration.size.height) - 32))
-//                print(x)
                 
             }
         }

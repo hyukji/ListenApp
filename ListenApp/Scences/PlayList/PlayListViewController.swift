@@ -106,7 +106,7 @@ class PlayListViewController : UIViewController {
                     print(error)
                 }
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     print("refreshController")
                     self.CoreAudioData.audioList = self.CoreAudioData.fetchAudio()
                     self.refreshController.endRefreshing()
@@ -158,6 +158,8 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ : UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
             changeEditingFooterButtonStatus()
+            return
+        } else if self.refreshController.isRefreshing {
             return
         }
         

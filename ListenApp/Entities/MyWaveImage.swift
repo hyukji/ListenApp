@@ -231,7 +231,7 @@ class MyWaveformImageDrawer {
         let path = CGMutablePath()
         var section = 0
         
-        while section <= audio.sectionStart.count {
+        while section < audio.sectionStart.count {
             if range.lowerBound < audio.sectionEnd[section] {
                 let xPos = Double(audio.sectionStart[section] - range.lowerBound)
                 let rectWidth = Double(audio.sectionEnd[section] - audio.sectionStart[section])
@@ -353,7 +353,7 @@ class MyWaveformImageDrawer {
                 label.font = .systemFont(ofSize: 15)
                 label.textColor = UIColor.label
                 
-                let labelRect = CGRect(x: x, y: Int(configuration.size.height) - 30, width: 50, height: 30)
+                let labelRect = CGRect(x: x, y: Int(configuration.size.height) - 35, width: 56, height: 35)
                 label.drawText(in: labelRect)
             }
             else if t % 25 == 0 {
@@ -410,7 +410,7 @@ class MyWaveformImageDrawer {
     
     private func stripeBucket(_ configuration: Waveform.Configuration) -> Int {
         let stripeConfig = configuration.stripeConfig
-//        return Int(stripeConfig.width + stripeConfig.spacing) * Int(configuration.scale)
-        return Int(stripeConfig.width) * Int(configuration.scale)
+        return Int(stripeConfig.width + stripeConfig.spacing) * Int(configuration.scale)
+//        return Int(stripeConfig.width) * Int(configuration.scale)
     }
 }

@@ -343,7 +343,7 @@ extension PlayerUpperView {
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
             size : CGSize(width: width, height: height),
             backgroundColor: UIColor.systemGray5,
-            stripeConfig: .init(color: .label, width: 1, spacing: 5),
+            stripeConfig: .init(color: .label, width: 1, spacing: 4),
             dampening: nil,
             scale: CGFloat(scale),
             verticalScalingFactor: 0.5 )

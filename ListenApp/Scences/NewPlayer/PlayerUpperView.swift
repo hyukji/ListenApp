@@ -46,8 +46,10 @@ class PlayerUpperView : UIView {
     
     private lazy var sliderContainer = UIView()
     
-    
-    let abRepeatButton = UIButton()
+    let Abutton = UIButton()
+    let backToAbutton = UIButton()
+    let Bbutton = UIButton()
+    let trashButton = UIButton()
     
     lazy var upperControllerSV : UIStackView = {
         let stackView = UIStackView()
@@ -64,17 +66,25 @@ class PlayerUpperView : UIView {
         let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
         let speedTitle = UILabel()
         
-        waveRepeatButton.setImage(UIImage(systemName: "repeat.1", withConfiguration: repeatImageConfig), for: .normal)
-        abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
+        Abutton.setImage(UIImage(systemName: "a.square", withConfiguration: repeatImageConfig), for: .normal)
+        backToAbutton.setImage(UIImage(systemName: "chevron.backward.2", withConfiguration: repeatImageConfig), for: .normal)
+        trashButton.setImage(UIImage(systemName: "trash.circle", withConfiguration: repeatImageConfig), for: .normal)
+        Bbutton.setImage(UIImage(systemName: "b.square", withConfiguration: repeatImageConfig), for: .normal)
         
-//        waveRepeatButton.addTarget(self, action: #selector(<#T##@objc method#>), for: .touchUpInside)
-        abRepeatButton.addTarget(self, action: #selector(tapABRepeatButton), for: .touchUpInside)
+        Abutton.addTarget(self, action: #selector(tapAButton), for: .touchUpInside)
+        backToAbutton.addTarget(self, action: #selector(tapBackToAButton), for: .touchUpInside)
+        Bbutton.addTarget(self, action: #selector(tapBButton), for: .touchUpInside)
+        trashButton.addTarget(self, action: #selector(taptrashButton), for: .touchUpInside)
+        
+        backToAbutton.isEnabled = false
+        Bbutton.isEnabled = false
+        trashButton.isEnabled = false
         
         speedButton.setTitle("1.0x", for: .normal)
         speedButton.setTitleColor(.label, for: .normal)
         speedButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .regular)
         
-        [waveRepeatButton, speedButton, abRepeatButton].forEach{
+        [Abutton, backToAbutton, trashButton, Bbutton].forEach{
             stackView.addArrangedSubview($0)
         }
         
@@ -180,34 +190,92 @@ class PlayerUpperView : UIView {
 // repeat button functions
 extension PlayerUpperView {
     
-    @objc private func tapABRepeatButton() {
-        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
-        
+    @objc private func tapAButton() {
         if playerController.positionA == nil {
             // A위치 설정
-            playerController.positionA = Int(scrollView.contentOffset.x)
-            abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
-            abRepeatButton.tintColor = .red
-        } else if playerController.positionB == nil {
-            // B위치 설정 및 반복 설정
-            playerController.positionB = Int(scrollView.contentOffset.x)
-            playerController.player.currentTime = Double(playerController.positionA!) / changedAmountPerSec
-            abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
-            abRepeatButton.tintColor = .blue
-            playerController.shouldABRepeat = true
+            let x = Int(scrollView.contentOffset.x)
+            if nowImageIdx == 0 {
+                playerController.positionA = x
+            } else {
+                let totalWidth = Int(waveImageSize * (nowImageIdx-1)) + x
+                playerController.positionA = totalWidth
+            }
+            
+            Abutton.tintColor = .red
+            // backToA, B 클릭 가능하게
+            backToAbutton.isEnabled = true
+            Bbutton.isEnabled = true
+            trashButton.isEnabled = true
         } else {
-            // 설정 초기화
+            // A 위치 설정 해제
             playerController.positionA = nil
-            playerController.positionB = nil
-            abRepeatButton.setImage(UIImage(systemName: "repeat", withConfiguration: repeatImageConfig), for: .normal)
-            abRepeatButton.tintColor = .label
-            playerController.shouldABRepeat = false
+            Abutton.tintColor = .label
+            // backToA, B 클릭 불가능하게
+            backToAbutton.isEnabled = false
+            Bbutton.isEnabled = false
+            trashButton.isEnabled = false
         }
         
         // wave image업데이트
         scrollStackView.removeFullySubviews()
         audio.currentTime = playerController.player.currentTime
         configureWaveImgView()
+    }
+    
+    @objc private func tapBackToAButton() {
+        if playerController.positionA != nil {
+            playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
+        }
+        
+        // wave image업데이트
+        scrollStackView.removeFullySubviews()
+        audio.currentTime = playerController.player.currentTime
+        configureWaveImgView()
+    }
+    
+    @objc private func taptrashButton() {
+        playerController.shouldABRepeat = false
+        playerController.positionA = nil
+        playerController.positionB = nil
+        
+        Abutton.tintColor = .label
+        Bbutton.tintColor = .label
+        
+        Abutton.isEnabled = true
+        backToAbutton.isEnabled = false
+        Bbutton.isEnabled = false
+        trashButton.isEnabled = false
+        
+        scrollStackView.removeFullySubviews()
+        audio.currentTime = playerController.player.currentTime
+        configureWaveImgView()
+    }
+    
+    
+    @objc private func tapBButton() {
+        // B 위치 설정
+        let x = Int(scrollView.contentOffset.x)
+        if nowImageIdx == 0 {
+            playerController.positionB = x
+        } else {
+            let totalWidth = Int(waveImageSize * (nowImageIdx-1)) + x
+            playerController.positionB = totalWidth
+        }
+        
+        Bbutton.tintColor = .blue
+        
+        // 시간 설정
+        playerController.player.currentTime = Double(playerController.positionA!) / changedAmountPerSec
+        playerController.shouldABRepeat = true
+        
+        Abutton.isEnabled = false
+        Bbutton.isEnabled = false
+        
+        // wave image업데이트
+        scrollStackView.removeFullySubviews()
+        audio.currentTime = playerController.player.currentTime
+        configureWaveImgView()
+        
     }
 }
 
@@ -367,11 +435,19 @@ extension PlayerUpperView {
     
     // player currentTime에 맞추어 시간 label들 관리 및 scrollView 위치이동
     @objc func updatePlayTime() {
-        updateTimeLabel(time: playerController.player.currentTime)
-        
         let targetAnalysis = Double(playerController.player.currentTime * changedAmountPerSec)
+        if playerController.shouldABRepeat == true && (Int(targetAnalysis) + 2 < playerController.positionA! || playerController.positionB! < Int(targetAnalysis)) {
+            if let timer = timer {
+                if timer.isValid { timer.invalidate() }
+            }
+            playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
+        }
+        
         let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
         let nx = (newImageIdx == 0) ? targetAnalysis : (targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize) + 4.0)
+        
+        // label들 시간 업데이트
+        updateTimeLabel(time: playerController.player.currentTime)
         
         // nx에 따른 scrollStackView 관리
         updateScrollStackView(newImageIdx: newImageIdx, nx: nx)

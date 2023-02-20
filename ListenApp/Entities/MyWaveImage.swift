@@ -351,7 +351,7 @@ class MyWaveformImageDrawer {
                 let label = UILabel()
                 label.text = String(format: "%02d:%02d", min, sec)
                 label.font = .systemFont(ofSize: 15)
-                label.textColor = configuration.backgroundColor
+                label.textColor = UIColor.label
 //                label.backgroundColor = .darkGray
                 
                 let labelRect = CGRect(x: x, y: Int(configuration.size.height) - 30, width: 50, height: 30)
@@ -409,11 +409,6 @@ class MyWaveformImageDrawer {
         context.setAlpha(1)
         
         context.drawPath(using: .fillStroke)
-//
-//        let font = UIFont.systemFont(ofSize: 20)
-//        let string = NSAttributedString(string: "+", attributes: [NSAttributedString.Key.font: font])
-//        string.draw(at: CGPoint(x: xPos-5, y: 0))
-//
     }
     
     private func stripeBucket(_ configuration: Waveform.Configuration) -> Int {

@@ -332,8 +332,6 @@ extension PlayerUpperView {
         let count = waveImageSize * Int(scale)
         let target = idx*count..<(idx+1)*count
         
-        print("draw \(idx) target \(idx*count) ..< \((idx+1)*count)", target.count)
-        
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
             size : CGSize(width: waveImageSize, height: height),
             backgroundColor: UIColor.systemGray5,
@@ -410,7 +408,7 @@ extension PlayerUpperView {
         slider.value = Float(time)
     }
     
-    // scrollView의 x좌표 이동시 scrollStackView의 waveimage 관리
+    // scrollView의 x좌표 변화가 생겼을 때 scrollStackView의 waveimage 관리
     private func updateScrollStackView(newImageIdx : Int, nx : Double){
         if newImageIdx != nowImageIdx {
             // 패치 저장된 내용 사용하기
@@ -444,7 +442,7 @@ extension PlayerUpperView {
         }
         
         let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
-        let nx = (newImageIdx == 0) ? targetAnalysis : (targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize) + 4.0)
+        let nx = (newImageIdx == 0) ? targetAnalysis : (targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize))
         
         // label들 시간 업데이트
         updateTimeLabel(time: playerController.player.currentTime)

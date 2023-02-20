@@ -248,22 +248,32 @@ extension PlayerUpperView {
     
     @objc private func tapBButton() {
         // B 위치 설정
-        let x = Int(scrollView.contentOffset.x)
-        if nowImageIdx == 0 {
-            playerController.positionB = x
+        if playerController.positionB == nil {
+            let x = Int(scrollView.contentOffset.x)
+            if nowImageIdx == 0 { playerController.positionB = x }
+            else {
+                let totalWidth = Int(waveImageSize * (nowImageIdx-1)) + x
+                playerController.positionB = totalWidth
+            }
+            
+            Bbutton.tintColor = .blue
+            
+            // 시간 설정
+            playerController.player.currentTime = Double(playerController.positionA!) / changedAmountPerSec
+            playerController.shouldABRepeat = true
+            
+            Abutton.isEnabled = false
         } else {
-            let totalWidth = Int(waveImageSize * (nowImageIdx-1)) + x
-            playerController.positionB = totalWidth
+            playerController.positionB = nil
+            Bbutton.tintColor = .label
+            
+            playerController.shouldABRepeat = false
+            
+            Abutton.isEnabled = false
+            Bbutton.isEnabled = true
+            backToAbutton.isEnabled = true
+            trashButton.isEnabled = true
         }
-        
-        Bbutton.tintColor = .blue
-        
-        // 시간 설정
-        playerController.player.currentTime = Double(playerController.positionA!) / changedAmountPerSec
-        playerController.shouldABRepeat = true
-        
-        Abutton.isEnabled = false
-        Bbutton.isEnabled = false
         
         // wave image업데이트
         resetScrollStackView()

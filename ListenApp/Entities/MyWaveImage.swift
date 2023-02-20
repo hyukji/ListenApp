@@ -203,6 +203,7 @@ class MyWaveformImageDrawer {
 
         drawBackground(on: context, with: configuration)
         drawSection(from: range, on: context, with: configuration)
+        drawSectionRepeat(from: range, on: context, with: configuration)
         drawGraph(from: range, on: context, with: configuration)
         drawGraduation(from: range, on: context, with: configuration)
         drawABIndicator(from: range, on: context, with: configuration)
@@ -218,6 +219,62 @@ class MyWaveformImageDrawer {
             drawIndicator(context: context, xPos: xPos, color : UIColor.blue.cgColor, configuration: configuration)
         }
         
+    }
+    
+    private func drawSectionRepeat(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
+        if !PlayerController.playerController.shouldSectionRepeat { return }
+        
+        let path = CGMutablePath()
+        let sectionStart = PlayerController.playerController.positionSectionStart!
+        let sectionEnd = PlayerController.playerController.positionSectionEnd!
+    
+        if range.lowerBound < sectionEnd {
+            let xPos = Double(sectionStart - range.lowerBound)
+            let rectWidth = Double(sectionEnd - sectionStart)
+            
+            if range.upperBound < sectionEnd {
+                if sectionStart < range.upperBound {
+                    // 이미지 끝이 섹션의 중간부분임
+                    path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+                    let rectangle = CGRect(
+                        x: xPos,
+                        y: 50,
+                        width: Double(range.upperBound - sectionStart),
+                        height: configuration.size.height - 120)
+                    path.addRect(rectangle)
+                }
+            }
+            
+            if sectionStart < range.lowerBound {
+                // 이미지 시작이 섹션의 중간부분임
+                path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+                let rectangle = CGRect(
+                    x: 0,
+                    y: 50,
+                    width: Double(sectionEnd - range.lowerBound),
+                    height: configuration.size.height - 120)
+                path.addRect(rectangle)
+            }
+            else{
+                // 온전한 섹션파트 그리기
+                path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+                let rectangle = CGRect(
+                    x: xPos,
+                    y: 50,
+                    width: rectWidth,
+                    height: configuration.size.height - 120)
+                path.addRect(rectangle)
+            }
+        }
+            
+        
+        context.addPath(path)
+        
+        context.setFillColor(UIColor.yellow.cgColor)
+        context.setLineWidth(0)
+        context.setAlpha(1)
+        
+        context.drawPath(using: .fillStroke)
     }
     
     private func drawBackground(on context: CGContext, with configuration: Waveform.Configuration) {

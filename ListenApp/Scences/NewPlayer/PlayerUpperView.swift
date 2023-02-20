@@ -217,9 +217,7 @@ extension PlayerUpperView {
         }
         
         // wave image업데이트
-        scrollStackView.removeFullySubviews()
-        audio.currentTime = playerController.player.currentTime
-        configureWaveImgView()
+        resetScrollStackView()
     }
     
     @objc private func tapBackToAButton() {
@@ -228,9 +226,7 @@ extension PlayerUpperView {
         }
         
         // wave image업데이트
-        scrollStackView.removeFullySubviews()
-        audio.currentTime = playerController.player.currentTime
-        configureWaveImgView()
+        resetScrollStackView()
     }
     
     @objc private func taptrashButton() {
@@ -246,9 +242,7 @@ extension PlayerUpperView {
         Bbutton.isEnabled = false
         trashButton.isEnabled = false
         
-        scrollStackView.removeFullySubviews()
-        audio.currentTime = playerController.player.currentTime
-        configureWaveImgView()
+        resetScrollStackView()
     }
     
     
@@ -272,9 +266,7 @@ extension PlayerUpperView {
         Bbutton.isEnabled = false
         
         // wave image업데이트
-        scrollStackView.removeFullySubviews()
-        audio.currentTime = playerController.player.currentTime
-        configureWaveImgView()
+        resetScrollStackView()
         
     }
 }
@@ -390,7 +382,22 @@ extension PlayerUpperView {
             name: Notification.Name("playerStatusChanged"),
             object: nil
         )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetScrollStackView),
+            name: Notification.Name("playerScrollViewReset"),
+            object: nil
+        )
+        
         completion()
+    }
+    
+    // ScrollStackView 재구성
+    @objc func resetScrollStackView() {
+        scrollStackView.removeFullySubviews()
+        audio.currentTime = playerController.player.currentTime
+        configureWaveImgView()
     }
     
     // noti를 받으면 status에 따라 timer에 0.01단위의 schedule을 설정
@@ -430,9 +437,7 @@ extension PlayerUpperView {
             }
             // slider or 새로 오디오 재생
             else {
-                scrollStackView.removeFullySubviews()
-                audio.currentTime = playerController.player.currentTime
-                configureWaveImgView()
+                resetScrollStackView()
             }
             
             nowImageIdx = newImageIdx
@@ -456,6 +461,15 @@ extension PlayerUpperView {
             }
             playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
         }
+        
+        // wave 반복 여부 체크
+        if playerController.shouldSectionRepeat == true && (Int(targetAnalysis) + 2 < playerController.positionSectionStart! || playerController.positionSectionEnd! < Int(targetAnalysis)) {
+            if let timer = timer {
+                if timer.isValid { timer.invalidate() }
+            }
+            playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
+        }
+        
         
         let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
         let nx = (newImageIdx == 0) ? targetAnalysis : (targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize))

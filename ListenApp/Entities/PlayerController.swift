@@ -33,6 +33,10 @@ class PlayerController {
     var positionA : Int?
     var positionB : Int?
     
+    var shouldSectionRepeat = false
+    var positionSectionStart : Int?
+    var positionSectionEnd : Int?
+    
     private init() { }
     
     

@@ -42,6 +42,20 @@ class PlayerLowerView : UIView {
         return stackView
     }()
     
+    let waveRepeatButton : UIButton = {
+        let button = UIButton()
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular), scale: .default)
+        button.setImage(UIImage(systemName: "repeat", withConfiguration: imageConfig), for: .normal)
+        return button
+    }()
+    
+    let settingButton : UIButton = {
+        let button = UIButton()
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular), scale: .default)
+        button.setImage(UIImage(systemName: "slider.horizontal.3", withConfiguration: imageConfig), for: .normal)
+        return button
+    }()
+    
     private lazy var waveControllerSV : UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -70,13 +84,32 @@ class PlayerLowerView : UIView {
     
     private lazy var waveContollerContainer : UIView = {
         let view = UIView()
-        
+
         view.layer.borderWidth = 2
         view.layer.cornerRadius = 35
-        
+
         view.addSubview(waveControllerSV)
-        
+
         return view
+    }()
+    
+    private lazy var lowerControllerStackView : UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        
+        stackView.tintColor = .label
+        
+        waveRepeatButton.addTarget(self, action: #selector(tapWaveRepeatButton), for: .touchUpInside)
+        settingButton.addTarget(self, action: #selector(tapSettingButton), for: .touchUpInside)
+        
+        [waveRepeatButton, waveContollerContainer, settingButton].forEach{
+            stackView.addArrangedSubview($0)
+        }
+        
+        return stackView
     }()
     
     private lazy var verticalStackView : UIStackView = {
@@ -87,7 +120,7 @@ class PlayerLowerView : UIView {
         stackView.distribution = .fillProportionally
         
         
-        [normalControllerSV, waveContollerContainer].forEach{
+        [normalControllerSV, lowerControllerStackView].forEach{
             stackView.addArrangedSubview($0)
         }
         
@@ -150,15 +183,15 @@ extension PlayerLowerView {
                 break
             }
             section += 1
-                
         }
         return section - 1
     }
     
     @objc private func tapWaveBackButton() {
         let section = getSection()
-        var sectionStart = audio.sectionStart[section]
+        if section == -1 { return }
         
+        var sectionStart = audio.sectionStart[section]
         if playerController.player.currentTime - (Double(sectionStart-1) / playerController.changedAmountPerSec) < 0.2
             && section != 0 {
             sectionStart = audio.sectionStart[section-1]
@@ -175,6 +208,38 @@ extension PlayerLowerView {
         }
     }
     
+    @objc private func tapWaveRepeatButton() {
+        let section = getSection()
+        if section == -1 { return }
+        
+        if playerController.shouldSectionRepeat == false {
+            // 반복 설정
+            playerController.shouldSectionRepeat = true
+            playerController.positionSectionStart = audio.sectionStart[section]
+            playerController.positionSectionEnd = audio.sectionEnd[section]
+            
+            waveRepeatButton.tintColor = tintColor
+        } else {
+            // 반복 설정 해제
+            playerController.shouldSectionRepeat = false
+            playerController.positionSectionStart = nil
+            playerController.positionSectionEnd = nil
+            
+            waveRepeatButton.tintColor = .label
+        }
+        
+        NotificationCenter.default.post(
+            name: Notification.Name("playerScrollViewReset"),
+            object: nil,
+            userInfo: nil
+        )
+    
+    }
+    
+    @objc private func tapSettingButton() {
+        print("tapSettingButton")
+    }
+    
 }
 
 
@@ -189,19 +254,25 @@ extension PlayerLowerView {
             $0.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        waveContollerContainer.snp.makeConstraints{
-            $0.width.equalTo(170)
-            $0.height.equalToSuperview().multipliedBy(0.4)
+        lowerControllerStackView.snp.makeConstraints{
+            $0.width.equalTo(300)
+            $0.height.equalTo(72)
         }
         
         normalControllerSV.snp.makeConstraints{
             $0.width.equalTo(300)
+            $0.height.equalTo(108)
+        }
+        
+        waveContollerContainer.snp.makeConstraints{
+            $0.width.equalTo(170)
+            $0.height.equalToSuperview()
         }
         
         waveControllerSV.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
-            $0.width.equalToSuperview().multipliedBy(0.9)
+            $0.width.equalTo(155)
             $0.height.equalToSuperview().multipliedBy(0.9)
         }
     }

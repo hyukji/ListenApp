@@ -274,17 +274,26 @@ extension CoreDataFunc {
         var sectionEnd : [Int] = []
         
         for (idx, data) in samples.enumerated() {
-            // 무음이다가 소리가 들린다면
-            if (isSilence && data < 0.7) {
-                isSilence = false
-                sectionStart.append(idx)
+            if isSilence {
+                // 무음이다가 소리가 들린다면
+                if data < 0.8 {
+                    isSilence = false
+                    sectionStart.append(idx)
+                }
             }
-            // 소리가 들리다가 특정 횟수 이상 끊긴다면
-            else if (!isSilence && data > 0.75) {
-                cnt += 1
-                if cnt > 15 {
-                    isSilence = true
-                    sectionEnd.append(idx)
+            else {
+                if data > 0.8 {
+                    // 소리가 들리다가 조용해 진다며
+                    cnt += 1
+                    if cnt == 1 {
+                        sectionEnd.append(idx)
+                    } else if cnt > 10 {
+                        isSilence = true
+                        cnt = 0
+                    }
+                } else if cnt > 0 {
+                    // 소리가 계속해서 들리는 데 cnt가 0보다 크다면
+                    sectionEnd.removeLast()
                     cnt = 0
                 }
             }

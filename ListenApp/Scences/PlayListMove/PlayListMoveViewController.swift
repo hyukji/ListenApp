@@ -86,7 +86,16 @@ extension PlayListMoveViewController : UITableViewDataSource, UITableViewDelegat
         if cannotMoveUrls.contains(item.url) {
             cell.isCanMoveFolder = false
         }
-        cell.setLayout(item: item)
+        
+        let documentItem = playList[indexPath.row]
+        if let audioData = CoreAudioData.audioList.first(where: {
+            $0.fileSystemFileNumber == documentItem.fileSystemFileNumber
+            && $0.creationDate == documentItem.creationDate })
+        {
+            cell.setLayout(item: documentItem, duration : audioData.duration)
+        } else {
+            cell.setLayout(item: documentItem, duration : 0.0)
+        }
     
         return cell
         

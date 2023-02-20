@@ -27,7 +27,7 @@ class PlayListTableViewCell : UITableViewCell {
     
     private lazy var timeLabel : UILabel = {
         let label = UILabel()
-        label.text = "30:21"
+        label.text = "00:00"
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .secondaryLabel
         
@@ -64,7 +64,7 @@ class PlayListTableViewCell : UITableViewCell {
 
     }
     
-    func setLayout(item : DocumentItem) {
+    func setLayout(item : DocumentItem, duration : TimeInterval) {
         self.selectionStyle = .default
         
         [imgView, rightIconButton, stackView].forEach{
@@ -80,6 +80,7 @@ class PlayListTableViewCell : UITableViewCell {
             imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
             
             timeLabel.isHidden = false
+            timeLabel.text = duration.toString()
             
             let image = UIImage(systemName: "play", withConfiguration: buttonImgConfig)
             rightIconButton.setImage(image, for: .normal)

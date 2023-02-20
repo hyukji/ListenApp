@@ -148,9 +148,16 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlayListTableViewCell", for: indexPath) as? PlayListTableViewCell else {return UITableViewCell()}
         
-        cell.setLayout(item: playList[indexPath.row])
-        cell.tag = indexPath.row            
-        
+        let documentItem = playList[indexPath.row]
+        if let audioData = CoreAudioData.audioList.first(where: {
+            $0.fileSystemFileNumber == documentItem.fileSystemFileNumber
+            && $0.creationDate == documentItem.creationDate })
+        {
+            cell.setLayout(item: documentItem, duration : audioData.duration)
+        } else {
+            cell.setLayout(item: documentItem, duration : 0.0)
+        }
+                
         return cell
         
     }

@@ -295,7 +295,6 @@ extension PlayerUpperView {
                 scrollStackView.appendWaveImg(view: drawWaveImage(idx : $0))
             }
         }
-        scrollStackView.checkSubViews()
     }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
@@ -329,11 +328,20 @@ extension PlayerUpperView {
         
         let height = Int(UIScreen.main.bounds.size.height) - 345
         let scale = 1
-        let count = waveImageSize * Int(scale)
-        let target = idx*count..<(idx+1)*count
+        
+        // target범위가 waveAnalysis 분석 개수 넘지 않도록
+        var target = idx*waveImageSize..<(idx+1)*waveImageSize
+        if audio.waveAnalysis.count < target.lowerBound {
+            print(audio.waveAnalysis.count, target.lowerBound, target.upperBound, "dont make")
+            return waveImgView
+        } else if audio.waveAnalysis.count < target.upperBound {
+            target = idx*waveImageSize..<audio.waveAnalysis.count
+            print(audio.waveAnalysis.count, target.lowerBound, target.upperBound, "partically made")
+        }
+        let width = target.count
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
-            size : CGSize(width: waveImageSize, height: height),
+            size : CGSize(width: width, height: height),
             backgroundColor: UIColor.systemGray5,
             stripeConfig: .init(color: .label, width: 1, spacing: 5),
             dampening: nil,
@@ -433,7 +441,15 @@ extension PlayerUpperView {
     
     // player currentTime에 맞추어 시간 label들 관리 및 scrollView 위치이동
     @objc func updatePlayTime() {
+        // 끝까지 다 재생되었다면
+        if audio.duration - 0.02 <= playerController.player.currentTime {
+            playerController.rePlayPlayer()
+            return
+        }
+        
         let targetAnalysis = Double(playerController.player.currentTime * changedAmountPerSec)
+        
+        // ab반복 여부 체크
         if playerController.shouldABRepeat == true && (Int(targetAnalysis) + 2 < playerController.positionA! || playerController.positionB! < Int(targetAnalysis)) {
             if let timer = timer {
                 if timer.isValid { timer.invalidate() }

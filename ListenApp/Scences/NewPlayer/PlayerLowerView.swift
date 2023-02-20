@@ -145,7 +145,7 @@ extension PlayerLowerView {
     private func getSection() -> Int {
         let x = playerController.player.currentTime * playerController.changedAmountPerSec
         var section = 0
-        while (section <= audio.sectionStart.count) {
+        while (section < audio.sectionStart.count) {
             if x < Double(audio.sectionStart[section]){
                 break
             }

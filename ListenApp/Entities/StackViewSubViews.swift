@@ -53,10 +53,4 @@ extension UIStackView {
         }
     }
     
-    func checkSubViews() {
-        arrangedSubviews.forEach{
-            print($0.tag, $0.intrinsicContentSize)
-        }
-    }
-    
 }

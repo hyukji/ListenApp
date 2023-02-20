@@ -94,6 +94,11 @@ class PlayerController {
         )
     }
     
+    func rePlayPlayer() {
+        stopPlayer()
+        playPlayer()
+    }
+    
 }
 
 

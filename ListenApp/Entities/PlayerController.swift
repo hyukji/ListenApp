@@ -55,6 +55,7 @@ class PlayerController {
     func playPlayer() {
 //        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
 //        try AVAudioSession.sharedInstance().setActive(true)
+        player.enableRate = true
         player.prepareToPlay()
         player.play()
         

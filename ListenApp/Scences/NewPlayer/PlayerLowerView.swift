@@ -49,10 +49,11 @@ class PlayerLowerView : UIView {
         return button
     }()
     
-    let settingButton : UIButton = {
+    let speedButton : UIButton = {
         let button = UIButton()
-        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular), scale: .default)
-        button.setImage(UIImage(systemName: "slider.horizontal.3", withConfiguration: imageConfig), for: .normal)
+        button.setTitle("1.0x", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 21, weight: .regular)
         return button
     }()
     
@@ -103,9 +104,9 @@ class PlayerLowerView : UIView {
         stackView.tintColor = .label
         
         waveRepeatButton.addTarget(self, action: #selector(tapWaveRepeatButton), for: .touchUpInside)
-        settingButton.addTarget(self, action: #selector(tapSettingButton), for: .touchUpInside)
+        speedButton.addTarget(self, action: #selector(tapSpeedButton), for: .touchUpInside)
         
-        [waveRepeatButton, waveContollerContainer, settingButton].forEach{
+        [waveRepeatButton, waveContollerContainer, speedButton].forEach{
             stackView.addArrangedSubview($0)
         }
         
@@ -119,7 +120,6 @@ class PlayerLowerView : UIView {
         stackView.alignment = .center
         stackView.distribution = .fillProportionally
         
-        
         [normalControllerSV, lowerControllerStackView].forEach{
             stackView.addArrangedSubview($0)
         }
@@ -127,11 +127,13 @@ class PlayerLowerView : UIView {
         return stackView
     }()
     
+    private lazy var speedSettingView = SpeedSettingView()
+    
     override init(frame: CGRect) {
         super .init(frame: frame)
         
         setLayout()
-        
+        configureSpeedSelector()
     }
     
     required init(coder: NSCoder) {
@@ -233,14 +235,87 @@ extension PlayerLowerView {
             object: nil,
             userInfo: nil
         )
-    
     }
     
-    @objc private func tapSettingButton() {
-        print("tapSettingButton")
+    
+    @objc private func tapSpeedButton() {
+        setSpeedSelector()
+        speedSettingView.setNewRate(rate: playerController.player.rate)
+    }
+    
+    @objc private func tapSpeedCompleteButton() {
+        hideSpeedSelector()
+        
+        let rate = String(format: "%.1f", PlayerController.playerController.player.rate)
+        speedButton.setTitle("\(rate)x", for: .normal)
+        
+    }
+    
+    @objc private func tapSpeedPlusButton() {
+        if (round(playerController.player.rate * 10) / 10) >= 2.0 { return }
+        
+        playerController.player.rate += 0.1
+        
+        speedSettingView.setNewRate(rate: playerController.player.rate)
+    }
+    
+    @objc private func tapSpeedMinusButton() {
+        if (round(playerController.player.rate * 10) / 10) <= 0.5 { return }
+        
+        playerController.player.rate -= 0.1
+        
+        speedSettingView.setNewRate(rate: playerController.player.rate)
     }
     
 }
+
+// SpeedSettingView
+extension PlayerLowerView {
+    // 하단 safe inset 받아오기
+    private func getSafeAreaBottomInset() -> CGFloat {
+        let windowScene = UIApplication.shared.connectedScenes.first as! UIWindowScene
+        let window = windowScene.windows.first!
+        let bottomInset = window.safeAreaInsets.bottom
+        
+        return bottomInset
+    }
+    
+    // SpeedSettingView 초기화
+    private func configureSpeedSelector() {
+        
+        let rate = String(format: "%.1f", PlayerController.playerController.player.rate)
+        speedButton.setTitle("\(rate)x", for: .normal)
+        
+        self.addSubview(speedSettingView)
+        
+        let bottomInset = getSafeAreaBottomInset()
+        speedSettingView.frame = CGRect(x: 0, y: bottomInset + 200, width: UIScreen.main.bounds.width, height: 100)
+        
+        speedSettingView.completeButton.addTarget(self, action: #selector(tapSpeedCompleteButton), for: .touchUpInside)
+        speedSettingView.plusButton.addTarget(self, action: #selector(tapSpeedPlusButton), for: .touchUpInside)
+        speedSettingView.minusButton.addTarget(self, action: #selector(tapSpeedMinusButton), for: .touchUpInside)
+        
+        
+    }
+    
+    // SpeedSettingView 보이도록 애니메이션
+    private func setSpeedSelector() {
+        UIView.animate(withDuration: 0.3) {
+            self.speedSettingView.frame = CGRect(x: 0, y: 90, width: UIScreen.main.bounds.width, height: 100)
+        }
+    }
+    
+    // SpeedSettingView 숨기기 애니메이션
+    private func hideSpeedSelector() {
+        let bottomInset = getSafeAreaBottomInset()
+        UIView.animate(withDuration: 0.3) {
+            self.speedSettingView.frame = CGRect(x: 0, y: bottomInset + 200, width: UIScreen.main.bounds.width, height: 100)
+        }
+    }
+    
+}
+
+
 
 
 
@@ -248,15 +323,16 @@ extension PlayerLowerView {
 extension PlayerLowerView {
     private func setLayout() {
         
+        
+//        speedSettingView.snp.makeConstraints{
+//            $0.top.equalTo(normalControllerSV.snp.bottom)
+//            $0.bottom.leading.trailing.equalToSuperview()
+//        }
+        
         self.addSubview(verticalStackView)
         
         verticalStackView.snp.makeConstraints{
             $0.top.bottom.leading.trailing.equalToSuperview()
-        }
-        
-        lowerControllerStackView.snp.makeConstraints{
-            $0.width.equalTo(300)
-            $0.height.equalTo(72)
         }
         
         normalControllerSV.snp.makeConstraints{
@@ -264,17 +340,24 @@ extension PlayerLowerView {
             $0.height.equalTo(108)
         }
         
+        
+        lowerControllerStackView.snp.makeConstraints{
+            $0.width.equalTo(300)
+            $0.height.equalTo(72)
+        }
+
         waveContollerContainer.snp.makeConstraints{
             $0.width.equalTo(170)
             $0.height.equalToSuperview()
         }
-        
+
         waveControllerSV.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
             $0.width.equalTo(155)
             $0.height.equalToSuperview().multipliedBy(0.9)
         }
+        
     }
 }
 

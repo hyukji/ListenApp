@@ -12,6 +12,7 @@
 		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
 		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
 		199BF314297AEDA600DAD3E1 /* DocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF313297AEDA600DAD3E1 /* DocumentItem.swift */; };
+		199CFD2529A4A86700C93037 /* SpeedSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199CFD2429A4A86700C93037 /* SpeedSettingView.swift */; };
 		199F3AD929792141001C6A3B /* CoreDataFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F3AD829792141001C6A3B /* CoreDataFunction.swift */; };
 		19A615D5299BAB1B00766660 /* MyWaveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A615D4299BAB1B00766660 /* MyWaveImage.swift */; };
 		19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41EEB296FFEA200DC30C1 /* AppDelegate.swift */; };
@@ -45,6 +46,7 @@
 		199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebUploader.swift; sourceTree = "<group>"; };
 		199BF311297AEB4900DAD3E1 /* MyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFileManager.swift; sourceTree = "<group>"; };
 		199BF313297AEDA600DAD3E1 /* DocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentItem.swift; sourceTree = "<group>"; };
+		199CFD2429A4A86700C93037 /* SpeedSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedSettingView.swift; sourceTree = "<group>"; };
 		199F3AD829792141001C6A3B /* CoreDataFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFunction.swift; sourceTree = "<group>"; };
 		19A615D4299BAB1B00766660 /* MyWaveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWaveImage.swift; sourceTree = "<group>"; };
 		19B41EE8296FFEA200DC30C1 /* ListenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ListenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -164,6 +166,7 @@
 				19B53E62298003CA00FED417 /* CustomAlertViewController.swift */,
 				19015320298FD2D800BDB429 /* StackViewSubViews.swift */,
 				19A615D4299BAB1B00766660 /* MyWaveImage.swift */,
+				199CFD2429A4A86700C93037 /* SpeedSettingView.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -342,6 +345,7 @@
 				19B41F042970011800DC30C1 /* TabBarController.swift in Sources */,
 				19B53E67298177D000FED417 /* PlayListMoveTableViewCell.swift in Sources */,
 				19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */,
+				199CFD2529A4A86700C93037 /* SpeedSettingView.swift in Sources */,
 				19B7B21A2985443C009E2570 /* AudioData.xcdatamodeld in Sources */,
 				19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */,
 				19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */,

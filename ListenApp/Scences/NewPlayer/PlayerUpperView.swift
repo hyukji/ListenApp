@@ -60,16 +60,12 @@ class PlayerUpperView : UIView {
         
         stackView.tintColor = .label
         
-        let waveRepeatButton = UIButton()
-        let speedButton = UIButton()
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
         
-        let repeatImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20), scale: .default)
-        let speedTitle = UILabel()
-        
-        Abutton.setImage(UIImage(systemName: "a.square", withConfiguration: repeatImageConfig), for: .normal)
-        backToAbutton.setImage(UIImage(systemName: "chevron.backward.2", withConfiguration: repeatImageConfig), for: .normal)
-        trashButton.setImage(UIImage(systemName: "trash.circle", withConfiguration: repeatImageConfig), for: .normal)
-        Bbutton.setImage(UIImage(systemName: "b.square", withConfiguration: repeatImageConfig), for: .normal)
+        Abutton.setImage(UIImage(systemName: "a.square", withConfiguration: imageConfig), for: .normal)
+        backToAbutton.setImage(UIImage(systemName: "chevron.backward.2", withConfiguration: imageConfig), for: .normal)
+        trashButton.setImage(UIImage(systemName: "trash.circle", withConfiguration: imageConfig), for: .normal)
+        Bbutton.setImage(UIImage(systemName: "b.square", withConfiguration: imageConfig), for: .normal)
         
         Abutton.addTarget(self, action: #selector(tapAButton), for: .touchUpInside)
         backToAbutton.addTarget(self, action: #selector(tapBackToAButton), for: .touchUpInside)
@@ -79,10 +75,6 @@ class PlayerUpperView : UIView {
         backToAbutton.isEnabled = false
         Bbutton.isEnabled = false
         trashButton.isEnabled = false
-        
-        speedButton.setTitle("1.0x", for: .normal)
-        speedButton.setTitleColor(.label, for: .normal)
-        speedButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .regular)
         
         [Abutton, backToAbutton, trashButton, Bbutton].forEach{
             stackView.addArrangedSubview($0)

@@ -295,7 +295,25 @@ extension PlayerLowerView {
         speedSettingView.plusButton.addTarget(self, action: #selector(tapSpeedPlusButton), for: .touchUpInside)
         speedSettingView.minusButton.addTarget(self, action: #selector(tapSpeedMinusButton), for: .touchUpInside)
         
-        
+        speedSettingView.speedSlider.addTarget(self, action: #selector(speedSliderValChanged(slider:event:)), for: .valueChanged)
+    }
+    
+    @objc func speedSliderValChanged(slider: UISlider, event: UIEvent) {
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .moved:
+                let value = round(slider.value)
+                if value != round(playerController.player.rate * 10) {
+                    playerController.player.rate = value / 10
+                    speedSettingView.setNewLabel(rate: value / 10)
+                }
+            case .ended:
+                let value = round(slider.value)
+                slider.setValue(value, animated: true)
+            default:
+                break
+            }
+        }
     }
     
     // SpeedSettingView 보이도록 애니메이션
@@ -312,6 +330,7 @@ extension PlayerLowerView {
             self.speedSettingView.frame = CGRect(x: 0, y: bottomInset + 200, width: UIScreen.main.bounds.width, height: 100)
         }
     }
+    
     
 }
 

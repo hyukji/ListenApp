@@ -9,7 +9,7 @@ import UIKit
 
 class SpeedSettingView: UIView {
     
-    let slider : UISlider = {
+    let speedSlider : UISlider = {
         let slider = UISlider()
         
         slider.value = 10
@@ -83,9 +83,12 @@ class SpeedSettingView: UIView {
         
         stackView.tintColor = .label
         
-        [turtle, slider, rabbit].forEach{
+        [turtle, speedSlider, rabbit].forEach{
             stackView.addArrangedSubview($0)
         }
+        
+        stackView.setCustomSpacing(5, after: turtle)
+        stackView.setCustomSpacing(5, after: speedSlider)
         
         return stackView
     }()
@@ -138,9 +141,13 @@ class SpeedSettingView: UIView {
     }
     
     func setNewRate(rate : Float) {
+        setNewLabel(rate: rate)
+        speedSlider.value = rate * 10
+    }
+    
+    func setNewLabel(rate : Float) {
         let rateString = String(format: "%.1f", rate)
         speedLabel.text = "\(rateString)x"
-        slider.value = rate * 10
     }
     
 }

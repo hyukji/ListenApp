@@ -454,22 +454,24 @@ extension PlayerUpperView {
             return
         }
         
-        let targetAnalysis = Double(playerController.player.currentTime * changedAmountPerSec)
+        let targetAnalysis = playerController.player.currentTime * changedAmountPerSec
         
         // ab반복 여부 체크
-        if playerController.shouldABRepeat == true && (Int(targetAnalysis) + 2 < playerController.positionA! || playerController.positionB! < Int(targetAnalysis)) {
+        if playerController.shouldABRepeat == true && (Int(targetAnalysis) + 5 < playerController.positionA! || playerController.positionB! < Int(targetAnalysis)) {
             if let timer = timer {
                 if timer.isValid { timer.invalidate() }
             }
             playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
+            return
         }
         
         // wave 반복 여부 체크
-        if playerController.shouldSectionRepeat == true && (Int(targetAnalysis) + 2 < playerController.positionSectionStart! || playerController.positionSectionEnd! < Int(targetAnalysis)) {
+        if playerController.shouldSectionRepeat == true && (Int(targetAnalysis) + 5 < playerController.positionSectionStart! || playerController.positionSectionEnd! < Int(targetAnalysis)) {
             if let timer = timer {
                 if timer.isValid { timer.invalidate() }
             }
             playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
+            return
         }
         
         

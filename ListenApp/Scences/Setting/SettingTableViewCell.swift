@@ -9,6 +9,7 @@
 import UIKit
 
 class SettingTableViewCell : UITableViewCell {
+    var cellData : settingCellStruct?
     
     private lazy var leftimgView : UIImageView = {
         let imageView = UIImageView()
@@ -20,13 +21,13 @@ class SettingTableViewCell : UITableViewCell {
     
     private lazy var titleLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .light)
+        label.font = .systemFont(ofSize: 16)
         label.textColor = .label
         
         return label
     }()
     
-    private lazy var rightimgView : UIImageView = {
+    private lazy var chevronImgView : UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "chevron.right")
         imageView.tintColor = .secondaryLabel
@@ -34,29 +35,79 @@ class SettingTableViewCell : UITableViewCell {
         return imageView
     }()
     
-    func setLayout(img : String, title : String) {
-        leftimgView.image = UIImage(systemName: img)
-        titleLabel.text = title
+    
+    lazy var controlSwitch: UISwitch = {
+        let swicth: UISwitch = UISwitch()
+        
+        swicth.isOn = false
+        
+        // Set the event to be called when switching On / Off of Switch.
+//        swicth.addTarget(self, action: #selector(onClickSwitch(sender:)), for: UIControlEvents.valueChanged)
+        return swicth
+    }()
+    
+    private lazy var accessoryLabel : UILabel = {
+        let label = UILabel()
+        label.text = "미정"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .secondaryLabel
+        
+        return label
+    }()
+    
+    
+    
+    func setLayout(data : settingCellStruct) {
+        cellData = data
+        leftimgView.image = UIImage(systemName: data.icon)
+        titleLabel.text = data.text
         
         
-        [leftimgView, titleLabel, rightimgView].forEach{
+        [leftimgView, titleLabel].forEach{
             addSubview($0)
         }
         
         leftimgView.snp.makeConstraints{
             $0.centerY.equalToSuperview()
-            $0.leading.equalToSuperview().offset(20)
+            $0.leading.equalToSuperview().offset(15)
         }
         
         titleLabel.snp.makeConstraints{
             $0.centerY.equalToSuperview()
-            $0.leading.equalTo(leftimgView.snp.trailing).offset(20)
+            $0.leading.equalTo(leftimgView.snp.trailing).offset(15)
         }
         
-        rightimgView.snp.makeConstraints{
-            $0.centerY.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(20)
+        switch data.accessory {
+        case .onlyChevron:
+            addSubview(chevronImgView)
+            chevronImgView.snp.makeConstraints{
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalToSuperview().inset(15)
+            }
+        case .onlySwitch:
+            addSubview(controlSwitch)
+            controlSwitch.snp.makeConstraints{
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalToSuperview().inset(15)
+            }
+        case .textChevron:
+
+            [accessoryLabel, chevronImgView].forEach{
+                addSubview($0)
+            }
+
+            chevronImgView.snp.makeConstraints{
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalToSuperview().inset(15)
+            }
+
+            accessoryLabel.text = data.accessoryText
+            accessoryLabel.snp.makeConstraints{
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalTo(chevronImgView.snp.leading).offset(-10)
+            }
         }
+        
     }
     
     

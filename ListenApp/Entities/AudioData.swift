@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct AudioData {
+struct AudioData : Equatable {
     let fileSystemFileNumber : Int
     let creationDate : Date
     var currentTime : TimeInterval

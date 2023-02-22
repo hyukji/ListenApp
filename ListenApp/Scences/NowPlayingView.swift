@@ -9,6 +9,8 @@ import UIKit
 
 
 class NowPlayingView : UIView {
+    var item : DocumentItem?
+    var audio : AudioData?
     
     private lazy var imageView : UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "play.fill"))
@@ -27,7 +29,7 @@ class NowPlayingView : UIView {
     private lazy var titleLabel : UILabel = {
         let label = UILabel()
         
-        label.text = "01 Title1"
+        label.text = ""
         label.font = .systemFont(ofSize: 15, weight: .semibold)
         label.textColor = .white
         
@@ -47,6 +49,12 @@ class NowPlayingView : UIView {
     }
     
     
+    func setNowItem(item : DocumentItem, audio : AudioData) {
+        self.item = item
+        self.audio = audio
+        
+        self.titleLabel.text = item.title
+    }
     
     
 }

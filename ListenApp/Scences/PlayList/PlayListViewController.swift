@@ -123,9 +123,20 @@ class PlayListViewController : UIViewController {
     }
     
     @objc func PushPlayerVC(_ sender: UITapGestureRecognizer) {
-        if playerController.audio == nil { return }
+        if nowPlayingView.audio == nil { return }
         
+        let item = nowPlayingView.item!
+        let audio = nowPlayingView.audio!
+        
+        if playerController.audio != audio {
+            playerController.isNewAudio = true
+            playerController.audio = audio
+            playerController.url = item.url
+            playerController.configurePlayer(url : item.url)
+        }
+
         let playerVC = NewPlayerVIewController()
+        playerVC.setNavigationBar(title: item.title)
         navigationController?.pushViewController(playerVC, animated: true)
     }
 
@@ -187,11 +198,15 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
                 playerController.audio = CoreAudioData.audioList[idx]
                 playerController.url = item.url
                 playerController.configurePlayer(url : item.url)
+                
+                nowPlayingView.setNowItem(item: item, audio: CoreAudioData.audioList[idx])
             }
 
             let playerVC = NewPlayerVIewController()
             playerVC.setNavigationBar(title: item.title)
             navigationController?.pushViewController(playerVC, animated: true)
+            
+            
         }
         else {
             let playListVC = PlayListViewController()

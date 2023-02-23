@@ -8,7 +8,6 @@
 import UIKit
 
 enum SettingAccessory {
-    case onlySwitch
     case onlyChevron
     case textChevron
 }
@@ -19,6 +18,7 @@ struct settingCellStruct {
     let accessory : SettingAccessory
     var accessoryText : String?
     var detailData : [String]?
+    var selectedIndex : Int?
     
     
     init(text: String, icon: String, accessory: SettingAccessory) {
@@ -27,14 +27,16 @@ struct settingCellStruct {
         self.accessory = accessory
         self.accessoryText = nil
         self.detailData = nil
+        self.selectedIndex = nil
     }
     
-    init(text: String, icon: String, accessory: SettingAccessory, accessoryText: String?, detailData: [String]?) {
+    init(text: String, icon: String, accessory: SettingAccessory, accessoryText: String?, detailData: [String]?, selectedIndex : Int?) {
         self.text = text
         self.icon = icon
         self.accessory = accessory
         self.accessoryText = accessoryText
         self.detailData = detailData
+        self.selectedIndex = selectedIndex
     }
     
     init(text: String, icon: String, accessory: SettingAccessory, accessoryText: String?) {
@@ -43,23 +45,24 @@ struct settingCellStruct {
         self.accessory = accessory
         self.accessoryText = accessoryText
         self.detailData = nil
+        self.selectedIndex = nil
     }
     
 }
 
 class SettingViewController : UIViewController {
     
-    private let normalSettingList: [settingCellStruct] = [
-        settingCellStruct(text: "다크 모드", icon: "moon", accessory: .onlySwitch),
-        settingCellStruct(text: "언어", icon: "globe", accessory: .textChevron, accessoryText: "한쿡말", detailData: ["한국어", "영어"])
+    private var normalSettingList: [settingCellStruct] = [
+        settingCellStruct(text: "테마", icon: "moon", accessory: .textChevron, accessoryText: "라이트?", detailData: ["라이트 모드", "다크 모드"], selectedIndex: 0),
+        settingCellStruct(text: "언어", icon: "globe", accessory: .textChevron, accessoryText: "한쿡말", detailData: ["한국어", "영어"], selectedIndex: 0)
         ]
-    private let audioSettingList: [settingCellStruct] = [
-        settingCellStruct(text: "시작 위치", icon: "play", accessory: .textChevron, accessoryText: "처음부터", detailData: ["처음부터", "종료된 시점부터"]),
+    private var audioSettingList: [settingCellStruct] = [
+        settingCellStruct(text: "시작 위치", icon: "play", accessory: .textChevron, accessoryText: "처음부터", detailData: ["처음부터", "종료된 시점부터"], selectedIndex: 0),
         settingCellStruct(text: "재생 속도", icon: "forward.circle", accessory: .textChevron, accessoryText: "1.0xx"),
-        settingCellStruct(text: "초단위 이동", icon: "arrow.rectanglepath", accessory: .textChevron, accessoryText: "5ss", detailData: ["1s", "2s","3s","5s","10s","15s"]),
+        settingCellStruct(text: "초단위 이동", icon: "arrow.rectanglepath", accessory: .textChevron, accessoryText: "5ss", detailData: ["1s", "2s","3s","5s","10s","15s"], selectedIndex: 0),
         settingCellStruct(text: "파장 분석", icon: "waveform.badge.exclamationmark", accessory: .onlyChevron)
     ]
-    private let supportSettingList: [settingCellStruct] = [
+    private var supportSettingList: [settingCellStruct] = [
         settingCellStruct(text: "평가", icon: "star", accessory: .onlyChevron),
         settingCellStruct(text: "앱공유", icon: "paperplane", accessory: .onlyChevron),
         settingCellStruct(text: "오픈카카오톡", icon: "message", accessory: .onlyChevron)
@@ -135,6 +138,9 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
         if data.accessory == .textChevron {
             let settingDetailView = SettingDetailView()
             settingDetailView.settingDetailData = data
+            settingDetailView.SettingindexPath = indexPath
+            settingDetailView.delegate = self
+            
             navigationController?.pushViewController(settingDetailView, animated: true)
         }
         else { print("nope")}
@@ -174,10 +180,30 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         SettingTableViewCell.setLayout(data : targetList[indexPath.row])
+        SettingTableViewCell.selectionStyle = .none
         
         
         return SettingTableViewCell
     }
     
     
+}
+
+extension SettingViewController : settingDetailProtocol {
+    func ChangeSetting(indexPath: IndexPath, selectedInt: Int) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
+        switch indexPath.section {
+        case 0:
+            normalSettingList[indexPath.row].selectedIndex = selectedInt
+            cell.setLayout(data : normalSettingList[indexPath.row])
+        case 1:
+            audioSettingList[indexPath.row].selectedIndex = selectedInt
+            cell.setLayout(data : audioSettingList[indexPath.row])
+        case 2:
+            supportSettingList[indexPath.row].selectedIndex = selectedInt
+            cell.setLayout(data : supportSettingList[indexPath.row])
+        default:
+            return
+        }
+    }
 }

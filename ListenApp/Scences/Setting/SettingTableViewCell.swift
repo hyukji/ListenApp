@@ -36,15 +36,15 @@ class SettingTableViewCell : UITableViewCell {
     }()
     
     
-    lazy var controlSwitch: UISwitch = {
-        let swicth: UISwitch = UISwitch()
-        
-        swicth.isOn = false
-        
-        // Set the event to be called when switching On / Off of Switch.
-//        swicth.addTarget(self, action: #selector(onClickSwitch(sender:)), for: UIControlEvents.valueChanged)
-        return swicth
-    }()
+//    lazy var controlSwitch: UISwitch = {
+//        let swicth: UISwitch = UISwitch()
+//
+//        swicth.isOn = false
+//
+//        // Set the event to be called when switching On / Off of Switch.
+////        swicth.addTarget(self, action: #selector(onClickSwitch(sender:)), for: UIControlEvents.valueChanged)
+//        return swicth
+//    }()
     
     private lazy var accessoryLabel : UILabel = {
         let label = UILabel()
@@ -84,12 +84,6 @@ class SettingTableViewCell : UITableViewCell {
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalToSuperview().inset(15)
             }
-        case .onlySwitch:
-            addSubview(controlSwitch)
-            controlSwitch.snp.makeConstraints{
-                $0.centerY.equalToSuperview()
-                $0.trailing.equalToSuperview().inset(15)
-            }
         case .textChevron:
 
             [accessoryLabel, chevronImgView].forEach{
@@ -101,7 +95,7 @@ class SettingTableViewCell : UITableViewCell {
                 $0.trailing.equalToSuperview().inset(15)
             }
 
-            accessoryLabel.text = data.accessoryText
+            accessoryLabel.text = data.detailData?[data.selectedIndex ?? 0]
             accessoryLabel.snp.makeConstraints{
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalTo(chevronImgView.snp.leading).offset(-10)

@@ -310,26 +310,38 @@ extension CoreDataFunc {
         
     }
     
-    
-//
-//    func saveItemListwithInitializeAnalysis(itemList : [DocumentItem]) {
-//        for item in itemList{
-//            guard let waveformAnalyzer = WaveformAnalyzer(audioAssetURL: item.url) else {return}
-//            let duration = 1 * 60
-//            let width = duration * 10
-//            let count = Int(width * 3 / 2)
-//            waveformAnalyzer.samples(count: count) { samples in
-//                let audio = AudioData(
-//                    fileSystemFileNumber: item.fileSystemFileNumber,
-//                    creationDate : item.creationDate,
-//                    currentTime: 0.0,
-//                    waveAnalysis: samples ?? [0.0]
-//                )
-//
-//                self.saveAudio(audioData: audio)
-//            }
-//        }
-//        //        audioList = fetchAudio()
-//    }
+    // 해당 오디오의 마지막 시간 저장해주기
+    func updateCurrentTime(audio : AudioData) {
+        print(audio.currentTime)
+        // 현재 가지고 있는 값 업데이트
+        for idx in audioList.indices {
+            if audioList[idx].fileSystemFileNumber == audio.fileSystemFileNumber && audioList[idx].creationDate == audio.creationDate {
+                audioList[idx].currentTime = audio.currentTime
+            }
+        }
+        
+        // coredata에 있는 값 업데이트
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
+        fetchRequest.predicate = NSPredicate(
+            format: "fileSystemFileNumber == %d && creationDate == %@", audio.fileSystemFileNumber, audio.creationDate as NSDate
+        )
+        do {
+            let result = try self.context.fetch(fetchRequest)
+            if result.count > 0 {
+                let CoreDataAudio = result[0]
+                CoreDataAudio.setValue(audio.currentTime, forKey: "currentTime")
+            }
+        } catch {
+            print(error)
+        }
+        
+        
+        do {
+            try context.save()
+        } catch {
+            print(error)
+        }
+        
+    }
 }
 

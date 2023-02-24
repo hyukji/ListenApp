@@ -51,6 +51,9 @@ class PlayerController {
             let speedSelected = AdminUserDefault.settingSelected["audioSpeed"] ?? 5
             player.rate = Float(speedSelected + 5) / 10.0
             
+            let startLocationSelected = AdminUserDefault.settingSelected["startLocation"] ?? 0
+            player.currentTime = (startLocationSelected == 0) ? 0.0 : audio!.currentTime
+            
         } catch {
             print("Error: Audio File missing.")
         }

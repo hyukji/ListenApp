@@ -16,7 +16,11 @@ class PlayerUpperView : UIView {
     let changedAmountPerSec = PlayerController.playerController.changedAmountPerSec
     let waveImageSize = 1000
     
-    var nowImageIdx = 0
+    var nowImageIdx = 0 {
+        didSet{
+            CoreDataFunc.shared.updateCurrentTime(audio: audio)
+        }
+    }
     var maxImageIdx = 0
     
     private var slider : UISlider = {
@@ -442,7 +446,7 @@ extension PlayerUpperView {
                 resetScrollStackView()
             }
             
-            nowImageIdx = newImageIdx
+            if nowImageIdx != newImageIdx { nowImageIdx = newImageIdx }
         }
     }
     

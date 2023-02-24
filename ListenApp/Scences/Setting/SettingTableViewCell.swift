@@ -9,7 +9,7 @@
 import UIKit
 
 class SettingTableViewCell : UITableViewCell {
-    var cellData : settingCellStruct?
+    var cellData : SettingCategory?
     
     private lazy var leftimgView : UIImageView = {
         let imageView = UIImageView()
@@ -57,7 +57,7 @@ class SettingTableViewCell : UITableViewCell {
     
     
     
-    func setLayout(data : settingCellStruct) {
+    func setLayout(data : SettingCategory) {
         cellData = data
         leftimgView.image = UIImage(systemName: data.icon)
         titleLabel.text = data.text
@@ -77,15 +77,14 @@ class SettingTableViewCell : UITableViewCell {
             $0.leading.equalTo(leftimgView.snp.trailing).offset(15)
         }
         
-        switch data.accessory {
-        case .onlyChevron:
+        switch data.type {
+        case .another:
             addSubview(chevronImgView)
             chevronImgView.snp.makeConstraints{
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalToSuperview().inset(15)
             }
-        case .textChevron:
-
+        case .subSetting:
             [accessoryLabel, chevronImgView].forEach{
                 addSubview($0)
             }
@@ -95,7 +94,10 @@ class SettingTableViewCell : UITableViewCell {
                 $0.trailing.equalToSuperview().inset(15)
             }
 
-            accessoryLabel.text = data.detailData?[data.selectedIndex ?? 0]
+            let subSettingData = AdminUserDefault.settingData[data.name] ?? []
+            let selectedNum = AdminUserDefault.settingSelected[data.name] ?? 0
+            print(subSettingData, selectedNum)
+            accessoryLabel.text = subSettingData[selectedNum]
             accessoryLabel.snp.makeConstraints{
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalTo(chevronImgView.snp.leading).offset(-10)

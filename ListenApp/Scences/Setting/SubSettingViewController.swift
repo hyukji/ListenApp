@@ -7,15 +7,17 @@
 
 import UIKit
 
-protocol settingDetailProtocol : AnyObject {
+protocol SubSettingProtocol : AnyObject {
     func ChangeSetting(indexPath : IndexPath, selectedInt : Int)
 }
 
-class SettingDetailView : UIViewController {
-    var settingDetailData : settingCellStruct?
+class SubSettingViewController : UIViewController {
+    var settingCategory : SettingCategory?
+    var subSettingData : [String]?
+    var selected : Int?
     var SettingindexPath : IndexPath!
     
-    weak var delegate : settingDetailProtocol?
+    weak var delegate : SubSettingProtocol?
     
     private lazy var tableView : UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -23,9 +25,13 @@ class SettingDetailView : UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.rowHeight = 50
-        
         tableView.register(SettingDetailTableViewCell.self, forCellReuseIdentifier: "SettingDetailTableViewCell")
+        
+        // tableView의 계산된 높이 값은 68이다. 즉 Default Height이다.
+//                UITableView.estimatedRowHeight = 68.0
+//                // tableView의 rowHeight는 유동적일 수 있다
+//                UITableView.rowHeight = UITableViewAutomaticDimension
+        
         
         return tableView
     }()
@@ -36,7 +42,7 @@ class SettingDetailView : UIViewController {
         
         navigationController?.navigationBar.prefersLargeTitles = false
 //        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(popVC))
-        navigationItem.title = settingDetailData?.text
+        navigationItem.title = settingCategory?.text
         setLayout()
         
     }
@@ -46,7 +52,7 @@ class SettingDetailView : UIViewController {
 
 
 // layout Setting
-private extension SettingDetailView {
+private extension SubSettingViewController {
     
     func setLayout() {
         [tableView].forEach{
@@ -66,32 +72,37 @@ private extension SettingDetailView {
 
 
 
-extension SettingDetailView : UITableViewDelegate, UITableViewDataSource {
+extension SubSettingViewController : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return settingDetailData?.detailData?.count ?? 0
+        return subSettingData?.count ?? 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         guard let settingDetailTableViewCell = tableView.dequeueReusableCell(withIdentifier: "SettingDetailTableViewCell", for: indexPath) as? SettingDetailTableViewCell else {return UITableViewCell() }
         
-        let detailData : [String] = settingDetailData!.detailData!
-        settingDetailTableViewCell.setLayout(text : detailData[indexPath.row])
-        if settingDetailData!.selectedIndex! == indexPath.row {
+        settingDetailTableViewCell.setLayout(text : subSettingData![indexPath.row])
+        if selected! == indexPath.row {
             settingDetailTableViewCell.accessoryType = .checkmark
         }
         settingDetailTableViewCell.selectionStyle = .none
+        
         
         return settingDetailTableViewCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if settingDetailData!.selectedIndex! == indexPath.row {
-            return
-        }
+        // 현재 checkMark 되어 있는 row를 클릭시 그냥 넘기기
+        if selected! == indexPath.row { return }
         else {
+            // 새로운 row select -> 데디터 저장 및 checkMark업데이트
+            selected = indexPath.row
             delegate?.ChangeSetting(indexPath: SettingindexPath, selectedInt: indexPath.row)
-            settingDetailData!.selectedIndex = indexPath.row
-            for row in 0...(settingDetailData?.detailData?.count ?? 0){
+            for row in 0...(subSettingData?.count ?? 0){
                 if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 0)) {
                     if row == indexPath.row {
                         cell.accessoryType = .checkmark

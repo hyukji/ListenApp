@@ -7,15 +7,29 @@
 
 import UIKit
 
+
 class AdminUserDefault {
     
-    static var thema : Int = 0
-    static var langauge : Int = 0
+    static let settingData: [String: [String]] = [
+        "thema" : ["라이트 모드", "다크 모드"],
+        "language" : ["한국어", "영어"],
+        "startLocation" : ["처음부터", "종료된 시점부터"],
+        "audioSpeed" : {
+            var arr : [String] = []
+            for i in 5...20 { arr.append(String(Double(i) / 10.0)) }
+
+            return arr
+        }(),
+        "secondTerm" : ["1s", "2s", "3s", "5s", "10s", "15s"]
+    ]
     
-    static var startLocation : Int = 0
-    static var audioSpeed : Double = 1.0
-    static var secondTerm : Int = 2
-    
+    static var settingSelected : [String: Int] = [
+        "thema" : 0,
+        "language" : 0,
+        "startLocation" : 0,
+        "audioSpeed" : 0,
+        "secondTerm" : 0
+    ]
     
     static func configuration() {
         registerData()
@@ -25,48 +39,30 @@ class AdminUserDefault {
     static func registerData() {
         UserDefaults.standard.register(
           defaults: [
-            "thema" : AdminUserDefault.thema,
-            "langauge" : AdminUserDefault.langauge,
+            "thema" : AdminUserDefault.settingSelected["thema"]!,
+            "language" : AdminUserDefault.settingSelected["language"]!,
              
-            "startLocation" : AdminUserDefault.startLocation,
-            "audioSpeed" : AdminUserDefault.audioSpeed,
-            "secondTerm" : AdminUserDefault.secondTerm
+            "startLocation" : AdminUserDefault.settingSelected["startLocation"]!,
+            "audioSpeed" : AdminUserDefault.settingSelected["audioSpeed"]!,
+            "secondTerm" : AdminUserDefault.settingSelected["secondTerm"]!,
           ])
     }
     
     
     static func loadData() {
-        AdminUserDefault.thema = UserDefaults.standard.integer(forKey: "thema")
-        AdminUserDefault.langauge = UserDefaults.standard.integer(forKey: "langauge")
+        AdminUserDefault.settingSelected["thema"] = UserDefaults.standard.integer(forKey: "thema")
+        AdminUserDefault.settingSelected["langauge"] = UserDefaults.standard.integer(forKey: "langauge")
         
-        AdminUserDefault.startLocation = UserDefaults.standard.integer(forKey: "startLocation")
-        AdminUserDefault.audioSpeed = UserDefaults.standard.double(forKey: "audioSpeed")
-        AdminUserDefault.secondTerm = UserDefaults.standard.integer(forKey: "secondTerm")
+        AdminUserDefault.settingSelected["startLocation"] = UserDefaults.standard.integer(forKey: "startLocation")
+        AdminUserDefault.settingSelected["audioSpeed"] = UserDefaults.standard.integer(forKey: "audioSpeed")
+        AdminUserDefault.settingSelected["secondTerm"] = UserDefaults.standard.integer(forKey: "secondTerm")
     }
     
     
-    func saveData(name : String, new : Any) {
+    func saveData(name : String, new : Int) {
+        AdminUserDefault.settingSelected[name] = new
         UserDefaults.standard.set(new, forKey: name)
     }
     
-    func saveLangauge(new : Int) {
-        UserDefaults.standard.set(new, forKey: "langauge")
-        AdminUserDefault.langauge = new
-    }
-    
-    func saveStartLocation(new : Int) {
-        UserDefaults.standard.set(new, forKey: "startLocation")
-        AdminUserDefault.startLocation = new
-    }
-    
-    func saveAudioSpeed(new : Double) {
-        UserDefaults.standard.set(new, forKey: "audioSpeed")
-        AdminUserDefault.audioSpeed = new
-    }
-    
-    func saveSecondTerm(new : Int) {
-        UserDefaults.standard.set(new, forKey: "secondTerm")
-        AdminUserDefault.secondTerm = new
-    }
     
 }

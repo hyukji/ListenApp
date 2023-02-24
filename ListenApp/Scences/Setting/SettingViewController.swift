@@ -7,58 +7,25 @@
 
 import UIKit
 
-enum SettingAccessory {
-    case onlyChevron
-    case textChevron
-}
 
-struct settingCellStruct {
+struct SettingCategory {
     let name : String
     let text : String
     let icon : String
-    let accessory : SettingAccessory
-    var accessoryText : String?
-    var detailData : [String]?
-    var selectedIndex : Int?
-    
-    
-    init(name : String, text: String, icon: String, accessory: SettingAccessory) {
-        self.name = name
-        self.text = text
-        self.icon = icon
-        self.accessory = accessory
-        self.accessoryText = nil
-        self.detailData = nil
-        self.selectedIndex = nil
-    }
-    
-    init(name : String, text: String, icon: String, accessory: SettingAccessory, accessoryText: String, detailData: [String], selectedIndex : Int) {
-        self.name = name
-        self.text = text
-        self.icon = icon
-        self.accessory = accessory
-        self.accessoryText = accessoryText
-        self.detailData = detailData
-        self.selectedIndex = selectedIndex
-    }
-    
-    init(name : String, text: String, icon: String, accessory: SettingAccessory, accessoryText: String) {
-        self.name = name
-        self.text = text
-        self.icon = icon
-        self.accessory = accessory
-        self.accessoryText = accessoryText
-        self.detailData = nil
-        self.selectedIndex = nil
-    }
-    
+    var type : SettingType
 }
+
+enum SettingType : Equatable {
+    case subSetting
+    case another
+}
+
 
 class SettingViewController : UIViewController {
     
-    private var normalSettingList: [settingCellStruct] = []
-    private var audioSettingList: [settingCellStruct] = []
-    private var supportSettingList: [settingCellStruct] = []
+    private var normalSettingList: [SettingCategory] = []
+    private var audioSettingList: [SettingCategory] = []
+    private var supportSettingList: [SettingCategory] = []
     
     private lazy var tableView : UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -90,19 +57,19 @@ class SettingViewController : UIViewController {
     
     func setData() {
         normalSettingList = [
-            settingCellStruct(name: "thema", text: "테마", icon: "moon", accessory: .textChevron, accessoryText: "라이트?", detailData: ["라이트 모드", "다크 모드"], selectedIndex: AdminUserDefault.thema),
-            settingCellStruct(name: "language", text: "언어", icon: "globe", accessory: .textChevron, accessoryText: "한쿡말", detailData: ["한국어", "영어"], selectedIndex: AdminUserDefault.langauge)
+            SettingCategory(name: "thema", text: "테마", icon: "moon", type: .subSetting),
+            SettingCategory(name: "language", text: "언어", icon: "globe", type: .subSetting)
         ]
         audioSettingList = [
-            settingCellStruct(name: "startLocation", text: "시작 위치", icon: "play", accessory: .textChevron, accessoryText: "처음부터", detailData: ["처음부터", "종료된 시점부터"], selectedIndex: AdminUserDefault.startLocation),
-            settingCellStruct(name: "audioSpeed", text: "재생 속도", icon: "forward.circle", accessory: .textChevron, accessoryText: "1.0xx"),
-            settingCellStruct(name: "secondTerm", text: "초단위 이동", icon: "arrow.rectanglepath", accessory: .textChevron, accessoryText: "5ss", detailData: ["1s", "2s","3s","5s","10s","15s"], selectedIndex: AdminUserDefault.secondTerm),
-            settingCellStruct(name: "waveAnalysis", text: "파장 분석", icon: "waveform.badge.exclamationmark", accessory: .onlyChevron)
+            SettingCategory(name: "startLocation", text: "시작 위치", icon: "play", type: .subSetting),
+            SettingCategory(name: "audioSpeed", text: "재생 속도", icon: "forward.circle", type: .subSetting),
+            SettingCategory(name: "secondTerm", text: "초단위 이동", icon: "arrow.rectanglepath", type: .subSetting),
+            SettingCategory(name: "waveAnalysis", text: "파장 분석", icon: "waveform.badge.exclamationmark", type: .another)
         ]
         supportSettingList = [
-            settingCellStruct(name: "", text: "평가", icon: "star", accessory: .onlyChevron),
-            settingCellStruct(name: "", text: "앱공유", icon: "paperplane", accessory: .onlyChevron),
-            settingCellStruct(name: "", text: "오픈카카오톡", icon: "message", accessory: .onlyChevron)
+            SettingCategory(name: "", text: "평가", icon: "star", type: .another),
+            SettingCategory(name: "", text: "앱공유", icon: "paperplane", type: .another),
+            SettingCategory(name: "", text: "오픈카카오톡", icon: "message", type: .another)
         ]
     }
     
@@ -132,7 +99,7 @@ private extension SettingViewController {
 
 extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var targetList : [settingCellStruct] = []
+        var targetList : [SettingCategory] = []
         switch indexPath.section {
         case 0:
             targetList = normalSettingList
@@ -145,15 +112,20 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
         }
         
         let data = targetList[indexPath.row]
-        if data.accessory == .textChevron {
-            let settingDetailView = SettingDetailView()
-            settingDetailView.settingDetailData = data
-            settingDetailView.SettingindexPath = indexPath
-            settingDetailView.delegate = self
+        
+        if data.type == .another {
+            print("nope")
+        } else {
+            let subSettingVC = SubSettingViewController()
             
-            navigationController?.pushViewController(settingDetailView, animated: true)
+            subSettingVC.settingCategory = data
+            subSettingVC.subSettingData = AdminUserDefault.settingData[data.name] ?? []
+            subSettingVC.selected = AdminUserDefault.settingSelected[data.name] ?? 0
+            subSettingVC.SettingindexPath = indexPath
+            subSettingVC.delegate = self
+            
+            navigationController?.pushViewController(subSettingVC, animated: true)
         }
-        else { print("nope")}
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -177,7 +149,7 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let SettingTableViewCell = tableView.dequeueReusableCell(withIdentifier: "SettingTableViewCell", for: indexPath) as? SettingTableViewCell else {return UITableViewCell() }
         
-        let targetList : [settingCellStruct]
+        let targetList : [SettingCategory]
         
         switch indexPath.section {
         case 0:
@@ -199,22 +171,19 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
     
 }
 
-extension SettingViewController : settingDetailProtocol {
+extension SettingViewController : SubSettingProtocol {
     func ChangeSetting(indexPath: IndexPath, selectedInt: Int) {
         guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
         switch indexPath.section {
         case 0:
-            normalSettingList[indexPath.row].selectedIndex = selectedInt
-            cell.setLayout(data : normalSettingList[indexPath.row])
             AdminUserDefault().saveData(name: normalSettingList[indexPath.row].name, new: selectedInt)
+            cell.setLayout(data : normalSettingList[indexPath.row])
         case 1:
-            audioSettingList[indexPath.row].selectedIndex = selectedInt
-            cell.setLayout(data : audioSettingList[indexPath.row])
             AdminUserDefault().saveData(name: audioSettingList[indexPath.row].name, new: selectedInt)
+            cell.setLayout(data : audioSettingList[indexPath.row])
         case 2:
-            supportSettingList[indexPath.row].selectedIndex = selectedInt
-            cell.setLayout(data : supportSettingList[indexPath.row])
             AdminUserDefault().saveData(name: supportSettingList[indexPath.row].name, new: selectedInt)
+            cell.setLayout(data : supportSettingList[indexPath.row])
         default:
             return
         }

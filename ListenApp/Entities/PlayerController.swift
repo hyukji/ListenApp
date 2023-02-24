@@ -24,7 +24,6 @@ class PlayerController {
     
     var status : PlayerStatus = .pause
     
-    var timeInterval = 5.0
     var isNewAudio = false
     
     let changedAmountPerSec = 100.0
@@ -47,6 +46,11 @@ class PlayerController {
         do {
             isNewAudio = false
             player = try AVAudioPlayer(contentsOf: url)
+            
+            player.enableRate = true
+            let speedSelected = AdminUserDefault.settingSelected["audioSpeed"] ?? 5
+            player.rate = Float(speedSelected + 5) / 10.0
+            
         } catch {
             print("Error: Audio File missing.")
         }
@@ -55,7 +59,6 @@ class PlayerController {
     func playPlayer() {
 //        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
 //        try AVAudioSession.sharedInstance().setActive(true)
-        player.enableRate = true
         player.prepareToPlay()
         player.play()
         

@@ -51,7 +51,7 @@ class PlayerLowerView : UIView {
     
     let speedButton : UIButton = {
         let button = UIButton()
-        button.setTitle("1.0x", for: .normal)
+        button.setTitle(String(format: "%.1fx", PlayerController.playerController.player.rate), for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 21, weight: .regular)
         return button
@@ -149,6 +149,13 @@ class PlayerLowerView : UIView {
         }
     }
     
+    private func getSecondTerm() -> Int {
+        let terms = [1, 2, 3, 5, 10, 15]
+        let secondTermSelected = AdminUserDefault.settingSelected["secondTerm"] ?? 3
+        
+        return terms[secondTermSelected]
+    }
+    
 }
     
 
@@ -164,14 +171,14 @@ extension PlayerLowerView {
     }
     
     @objc private func tapSecondBackButton() {
-        let changedTime = playerController.player.currentTime - playerController.timeInterval
+        let changedTime = playerController.player.currentTime - Double(getSecondTerm())
         
         if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
     @objc private func tapSecondFrontButton() {
-        let changedTime = playerController.player.currentTime + playerController.timeInterval
+        let changedTime = playerController.player.currentTime + Double(getSecondTerm())
         
         if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
         else { playerController.changePlayerTime(changedTime: changedTime) }

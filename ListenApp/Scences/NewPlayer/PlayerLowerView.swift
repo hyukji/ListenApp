@@ -26,8 +26,14 @@ class PlayerLowerView : UIView {
         
         let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30), scale: .default)
         
-        secondBackButton.setImage(UIImage(systemName: "gobackward.\(Int(playerController.timeInterval))", withConfiguration: secondImageConfig), for: .normal)
-        secondFrontButton.setImage(UIImage(systemName: "goforward.\(Int(playerController.timeInterval))", withConfiguration: secondImageConfig), for: .normal)
+        let secondTerm = getSecondTerm()
+        if secondTerm > 3 {
+            secondBackButton.setImage(UIImage(systemName: "gobackward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
+            secondFrontButton.setImage(UIImage(systemName: "goforward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
+        } else {
+            secondBackButton.setImage(UIImage(named : "gobackward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
+            secondFrontButton.setImage(UIImage(named : "goforward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
+        }
         setPlayButtonImage(btn : playButton)
         
         playButton.addTarget(self, action: #selector(tapPlayButton(_:)), for: .touchUpInside)
@@ -46,6 +52,7 @@ class PlayerLowerView : UIView {
         let button = UIButton()
         let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular), scale: .default)
         button.setImage(UIImage(systemName: "repeat", withConfiguration: imageConfig), for: .normal)
+//        button.setImage(UIImage(named: "waveRepeat", in: nil, with: imageConfig), for: .normal)
         return button
     }()
     
@@ -70,8 +77,8 @@ class PlayerLowerView : UIView {
         
         let waveImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 35, weight: .regular), scale: .default)
         
-        waveBackButton.setImage(UIImage(systemName: "gobackward", withConfiguration: waveImageConfig), for: .normal)
-        waveFrontButton.setImage(UIImage(systemName: "goforward", withConfiguration: waveImageConfig), for: .normal)
+        waveBackButton.setImage(UIImage(named: "goWaveBack", in: nil, with: waveImageConfig), for: .normal)
+        waveFrontButton.setImage(UIImage(named: "goWaveForward", in: nil, with: waveImageConfig), for: .normal)
         
         waveBackButton.addTarget(self, action: #selector(tapWaveBackButton), for: .touchUpInside)
         waveFrontButton.addTarget(self, action: #selector(tapWaveFrontButton), for: .touchUpInside)

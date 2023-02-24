@@ -19,6 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
+        
+        AdminUserDefault.configuration()
 
         return
     }

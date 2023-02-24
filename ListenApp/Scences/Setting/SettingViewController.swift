@@ -13,6 +13,7 @@ enum SettingAccessory {
 }
 
 struct settingCellStruct {
+    let name : String
     let text : String
     let icon : String
     let accessory : SettingAccessory
@@ -21,7 +22,8 @@ struct settingCellStruct {
     var selectedIndex : Int?
     
     
-    init(text: String, icon: String, accessory: SettingAccessory) {
+    init(name : String, text: String, icon: String, accessory: SettingAccessory) {
+        self.name = name
         self.text = text
         self.icon = icon
         self.accessory = accessory
@@ -30,7 +32,8 @@ struct settingCellStruct {
         self.selectedIndex = nil
     }
     
-    init(text: String, icon: String, accessory: SettingAccessory, accessoryText: String?, detailData: [String]?, selectedIndex : Int?) {
+    init(name : String, text: String, icon: String, accessory: SettingAccessory, accessoryText: String, detailData: [String], selectedIndex : Int) {
+        self.name = name
         self.text = text
         self.icon = icon
         self.accessory = accessory
@@ -39,7 +42,8 @@ struct settingCellStruct {
         self.selectedIndex = selectedIndex
     }
     
-    init(text: String, icon: String, accessory: SettingAccessory, accessoryText: String?) {
+    init(name : String, text: String, icon: String, accessory: SettingAccessory, accessoryText: String) {
+        self.name = name
         self.text = text
         self.icon = icon
         self.accessory = accessory
@@ -52,21 +56,9 @@ struct settingCellStruct {
 
 class SettingViewController : UIViewController {
     
-    private var normalSettingList: [settingCellStruct] = [
-        settingCellStruct(text: "테마", icon: "moon", accessory: .textChevron, accessoryText: "라이트?", detailData: ["라이트 모드", "다크 모드"], selectedIndex: 0),
-        settingCellStruct(text: "언어", icon: "globe", accessory: .textChevron, accessoryText: "한쿡말", detailData: ["한국어", "영어"], selectedIndex: 0)
-        ]
-    private var audioSettingList: [settingCellStruct] = [
-        settingCellStruct(text: "시작 위치", icon: "play", accessory: .textChevron, accessoryText: "처음부터", detailData: ["처음부터", "종료된 시점부터"], selectedIndex: 0),
-        settingCellStruct(text: "재생 속도", icon: "forward.circle", accessory: .textChevron, accessoryText: "1.0xx"),
-        settingCellStruct(text: "초단위 이동", icon: "arrow.rectanglepath", accessory: .textChevron, accessoryText: "5ss", detailData: ["1s", "2s","3s","5s","10s","15s"], selectedIndex: 0),
-        settingCellStruct(text: "파장 분석", icon: "waveform.badge.exclamationmark", accessory: .onlyChevron)
-    ]
-    private var supportSettingList: [settingCellStruct] = [
-        settingCellStruct(text: "평가", icon: "star", accessory: .onlyChevron),
-        settingCellStruct(text: "앱공유", icon: "paperplane", accessory: .onlyChevron),
-        settingCellStruct(text: "오픈카카오톡", icon: "message", accessory: .onlyChevron)
-    ]
+    private var normalSettingList: [settingCellStruct] = []
+    private var audioSettingList: [settingCellStruct] = []
+    private var supportSettingList: [settingCellStruct] = []
     
     private lazy var tableView : UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -86,14 +78,32 @@ class SettingViewController : UIViewController {
         self.view.backgroundColor = .systemGray6
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "설정"
+        setData()
         setLayout()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
+    func setData() {
+        normalSettingList = [
+            settingCellStruct(name: "thema", text: "테마", icon: "moon", accessory: .textChevron, accessoryText: "라이트?", detailData: ["라이트 모드", "다크 모드"], selectedIndex: AdminUserDefault.thema),
+            settingCellStruct(name: "language", text: "언어", icon: "globe", accessory: .textChevron, accessoryText: "한쿡말", detailData: ["한국어", "영어"], selectedIndex: AdminUserDefault.langauge)
+        ]
+        audioSettingList = [
+            settingCellStruct(name: "startLocation", text: "시작 위치", icon: "play", accessory: .textChevron, accessoryText: "처음부터", detailData: ["처음부터", "종료된 시점부터"], selectedIndex: AdminUserDefault.startLocation),
+            settingCellStruct(name: "audioSpeed", text: "재생 속도", icon: "forward.circle", accessory: .textChevron, accessoryText: "1.0xx"),
+            settingCellStruct(name: "secondTerm", text: "초단위 이동", icon: "arrow.rectanglepath", accessory: .textChevron, accessoryText: "5ss", detailData: ["1s", "2s","3s","5s","10s","15s"], selectedIndex: AdminUserDefault.secondTerm),
+            settingCellStruct(name: "waveAnalysis", text: "파장 분석", icon: "waveform.badge.exclamationmark", accessory: .onlyChevron)
+        ]
+        supportSettingList = [
+            settingCellStruct(name: "", text: "평가", icon: "star", accessory: .onlyChevron),
+            settingCellStruct(name: "", text: "앱공유", icon: "paperplane", accessory: .onlyChevron),
+            settingCellStruct(name: "", text: "오픈카카오톡", icon: "message", accessory: .onlyChevron)
+        ]
     }
     
 }
@@ -196,12 +206,15 @@ extension SettingViewController : settingDetailProtocol {
         case 0:
             normalSettingList[indexPath.row].selectedIndex = selectedInt
             cell.setLayout(data : normalSettingList[indexPath.row])
+            AdminUserDefault().saveData(name: normalSettingList[indexPath.row].name, new: selectedInt)
         case 1:
             audioSettingList[indexPath.row].selectedIndex = selectedInt
             cell.setLayout(data : audioSettingList[indexPath.row])
+            AdminUserDefault().saveData(name: audioSettingList[indexPath.row].name, new: selectedInt)
         case 2:
             supportSettingList[indexPath.row].selectedIndex = selectedInt
             cell.setLayout(data : supportSettingList[indexPath.row])
+            AdminUserDefault().saveData(name: supportSettingList[indexPath.row].name, new: selectedInt)
         default:
             return
         }

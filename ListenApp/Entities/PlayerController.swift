@@ -38,21 +38,28 @@ class PlayerController {
     
     private init() { }
     
-    
-    func configurePlayer(url : URL) {
+    func configurePlayer(url : URL, audio : AudioData) {
         if !isNewAudio { return }
         if status == .play { stopPlayer() }
         
         do {
             isNewAudio = false
+            self.audio = audio
+            self.url = url
+            
             player = try AVAudioPlayer(contentsOf: url)
             
+            // 오디오 배속 설정
             player.enableRate = true
             let speedSelected = AdminUserDefault.shared.settingSelected["audioSpeed"] ?? 5
             player.rate = Float(speedSelected + 5) / 10.0
             
+            // 시작위치 설정
             let startLocationSelected = AdminUserDefault.shared.settingSelected["startLocation"] ?? 0
-            player.currentTime = (startLocationSelected == 0) ? 0.0 : audio!.currentTime
+            player.currentTime = (startLocationSelected == 0) ? 0.0 : self.audio!.currentTime
+            
+            // LastAudio 설정
+            AdminUserDefault.shared.updateLastAudio(audio: audio)
             
         } catch {
             print("Error: Audio File missing.")

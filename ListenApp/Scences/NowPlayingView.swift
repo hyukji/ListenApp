@@ -9,8 +9,9 @@ import UIKit
 
 
 class NowPlayingView : UIView {
-    var item : DocumentItem?
-    var audio : AudioData?
+    static var shouldHidden = true
+    static var item : DocumentItem?
+    static var audio : AudioData?
     
     private lazy var imageView : UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "play.fill"))
@@ -50,10 +51,12 @@ class NowPlayingView : UIView {
     
     
     func setNowItem(item : DocumentItem, audio : AudioData) {
-        self.item = item
-        self.audio = audio
-        
-        self.titleLabel.text = item.title
+        NowPlayingView.item = item
+        NowPlayingView.audio = audio
+    }
+    
+    func setTitle() {
+        self.titleLabel.text = NowPlayingView.item?.title
     }
     
     

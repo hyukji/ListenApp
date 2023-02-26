@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
         
+        // 테마 적용
         window?.overrideUserInterfaceStyle = AdminUserDefault.shared.getThema()
         return
     }

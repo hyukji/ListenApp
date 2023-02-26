@@ -177,13 +177,13 @@ extension SettingViewController : SubSettingProtocol {
         guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
         switch indexPath.section {
         case 0:
-            adminUserDefault.saveData(name: normalSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveSettingData(name: normalSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : normalSettingList[indexPath.row])
         case 1:
-            adminUserDefault.saveData(name: audioSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveSettingData(name: audioSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : audioSettingList[indexPath.row])
         case 2:
-            adminUserDefault.saveData(name: supportSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveSettingData(name: supportSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : supportSettingList[indexPath.row])
         default:
             return

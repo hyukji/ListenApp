@@ -74,8 +74,17 @@ class AdminUserDefault {
         return themas[settingSelected["thema"] ?? 0]
     }
     
+    // 마지막으로 재생한 오디오 저장
+    func updateLastAudio(audio : AudioData) {
+        LastFileSystemFileNumber = audio.fileSystemFileNumber
+        LastAudioCreationDate = audio.creationDate
+        
+        UserDefaults.standard.set(LastFileSystemFileNumber, forKey: "LastFileSystemFileNumber")
+        UserDefaults.standard.set(LastAudioCreationDate, forKey: "LastAudioCreationDate")
+    }
     
-    func saveData(name : String, new : Int) {
+    // setting 관련 데이터 저장
+    func saveSettingData(name : String, new : Int) {
         settingSelected[name] = new
         UserDefaults.standard.set(new, forKey: name)
     }

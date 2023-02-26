@@ -47,7 +47,6 @@ class PlayListViewController : UIViewController {
     
     private lazy var tableView : UITableView = {
         let tableView = UITableView()
-//        tableView.rowHeight = 80
         tableView.separatorStyle = .none
         
         tableView.delegate = self
@@ -68,17 +67,21 @@ class PlayListViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        CoreAudioData.resetAllRecords()
+        //        CoreAudioData.resetAllRecords()
         setLayout()
         setFuncInHeaderBtn()
         addActionToNowPlayingView()
         if url == filemanager.documentURL {
             reflashPlayList()
         }
+        ConfigureNowPlayingView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        nowPlayingView.setTitle()
+        nowPlayingView.isHidden = NowPlayingView.shouldHidden
         setPlayList()
     }
     
@@ -115,24 +118,48 @@ class PlayListViewController : UIViewController {
         }
         setPlayList()
     }
+}
+
+
+// NowPlaingView funcs
+extension PlayListViewController {
     
-    // when NowPlayeringView was tapped, push PlayerVC to navigation
+    private func ConfigureNowPlayingView() {
+        print("ConfigureNowPlayingView")
+        // 해당 오디오가 있는 지 확인
+        if let audio = CoreAudioData.audioList.first(where: {
+            $0.fileSystemFileNumber == AdminUserDefault.shared.LastFileSystemFileNumber
+            && $0.creationDate == AdminUserDefault.shared.LastAudioCreationDate
+        }) {
+            let allPlayList = MyFileManager().getAllAudioFileListFromDocument()
+            
+            if let item = allPlayList.first(where: {
+                $0.fileSystemFileNumber == AdminUserDefault.shared.LastFileSystemFileNumber
+                && $0.creationDate == AdminUserDefault.shared.LastAudioCreationDate
+            }) {
+                nowPlayingView.setNowItem(item: item, audio: audio)
+                NowPlayingView.shouldHidden = false
+                return
+            }
+        }
+        NowPlayingView.shouldHidden = true
+    }
+    
+    // when NowPlayingView was tapped, push PlayerVC to navigation
     private func addActionToNowPlayingView() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(PushPlayerVC(_:)))
         nowPlayingView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc func PushPlayerVC(_ sender: UITapGestureRecognizer) {
-        if nowPlayingView.audio == nil { return }
+        if NowPlayingView.audio == nil { return }
         
-        let item = nowPlayingView.item!
-        let audio = nowPlayingView.audio!
+        let item = NowPlayingView.item!
+        let audio = NowPlayingView.audio!
         
         if playerController.audio != audio {
             playerController.isNewAudio = true
-            playerController.audio = audio
-            playerController.url = item.url
-            playerController.configurePlayer(url : item.url)
+            playerController.configurePlayer(url : item.url, audio : audio)
         }
 
         let playerVC = NewPlayerVIewController()
@@ -195,11 +222,10 @@ extension PlayListViewController : UITableViewDataSource, UITableViewDelegate {
                 }
 
                 playerController.isNewAudio = true
-                playerController.audio = CoreAudioData.audioList[idx]
-                playerController.url = item.url
-                playerController.configurePlayer(url : item.url)
+                playerController.configurePlayer(url : item.url, audio : CoreAudioData.audioList[idx])
                 
                 nowPlayingView.setNowItem(item: item, audio: CoreAudioData.audioList[idx])
+                NowPlayingView.shouldHidden = false
             }
 
             let playerVC = NewPlayerVIewController()
@@ -566,11 +592,11 @@ extension PlayListViewController {
         setEditingFooterButton()
         self.navigationItem.setHidesBackButton(true, animated: false)
         
+        editingFooter.isHidden = true
+        
         [header, tableView, nowPlayingView, editingFooter].forEach{
             view.addSubview($0)
         }
-        
-        editingFooter.isHidden = true
         
         header.snp.makeConstraints{
             $0.leading.trailing.equalTo(view)
@@ -597,7 +623,5 @@ extension PlayListViewController {
             $0.centerX.equalToSuperview()
             $0.width.equalTo(view.snp.width).multipliedBy(1)
         }
-        
-        
     }
 }

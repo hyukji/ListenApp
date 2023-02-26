@@ -158,7 +158,7 @@ class PlayerLowerView : UIView {
     
     private func getSecondTerm() -> Int {
         let terms = [1, 2, 3, 5, 10, 15]
-        let secondTermSelected = AdminUserDefault.settingSelected["secondTerm"] ?? 3
+        let secondTermSelected = AdminUserDefault.shared.settingSelected["secondTerm"] ?? 3
         
         return terms[secondTermSelected]
     }

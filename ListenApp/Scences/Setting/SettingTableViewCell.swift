@@ -94,8 +94,8 @@ class SettingTableViewCell : UITableViewCell {
                 $0.trailing.equalToSuperview().inset(15)
             }
 
-            let subSettingData = AdminUserDefault.settingData[data.name] ?? []
-            let selectedNum = AdminUserDefault.settingSelected[data.name] ?? 0
+            let subSettingData = AdminUserDefault.shared.settingData[data.name] ?? []
+            let selectedNum = AdminUserDefault.shared.settingSelected[data.name] ?? 0
             print(subSettingData, selectedNum)
             accessoryLabel.text = subSettingData[selectedNum]
             accessoryLabel.snp.makeConstraints{

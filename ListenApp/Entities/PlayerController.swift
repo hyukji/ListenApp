@@ -48,10 +48,10 @@ class PlayerController {
             player = try AVAudioPlayer(contentsOf: url)
             
             player.enableRate = true
-            let speedSelected = AdminUserDefault.settingSelected["audioSpeed"] ?? 5
+            let speedSelected = AdminUserDefault.shared.settingSelected["audioSpeed"] ?? 5
             player.rate = Float(speedSelected + 5) / 10.0
             
-            let startLocationSelected = AdminUserDefault.settingSelected["startLocation"] ?? 0
+            let startLocationSelected = AdminUserDefault.shared.settingSelected["startLocation"] ?? 0
             player.currentTime = (startLocationSelected == 0) ? 0.0 : audio!.currentTime
             
         } catch {

@@ -99,6 +99,12 @@ extension SubSettingViewController : UITableViewDelegate, UITableViewDataSource 
         // 현재 checkMark 되어 있는 row를 클릭시 그냥 넘기기
         if selected! == indexPath.row { return }
         else {
+            if settingCategory?.name == "thema" {
+                view.window?.overrideUserInterfaceStyle = AdminUserDefault.shared.themas[indexPath.row]
+            } else if settingCategory?.name == "language" {
+                print("language")
+            }
+            
             // 새로운 row select -> 데디터 저장 및 checkMark업데이트
             selected = indexPath.row
             delegate?.ChangeSetting(indexPath: SettingindexPath, selectedInt: indexPath.row)

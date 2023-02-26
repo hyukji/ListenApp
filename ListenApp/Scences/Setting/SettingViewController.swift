@@ -22,6 +22,7 @@ enum SettingType : Equatable {
 
 
 class SettingViewController : UIViewController {
+    let adminUserDefault = AdminUserDefault.shared
     
     private var normalSettingList: [SettingCategory] = []
     private var audioSettingList: [SettingCategory] = []
@@ -42,7 +43,7 @@ class SettingViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .systemGray6
+        self.view.backgroundColor = .systemGroupedBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "설정"
         setData()
@@ -119,8 +120,8 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
             let subSettingVC = SubSettingViewController()
             
             subSettingVC.settingCategory = data
-            subSettingVC.subSettingData = AdminUserDefault.settingData[data.name] ?? []
-            subSettingVC.selected = AdminUserDefault.settingSelected[data.name] ?? 0
+            subSettingVC.subSettingData = adminUserDefault.settingData[data.name] ?? []
+            subSettingVC.selected = adminUserDefault.settingSelected[data.name] ?? 0
             subSettingVC.SettingindexPath = indexPath
             subSettingVC.delegate = self
             
@@ -176,13 +177,13 @@ extension SettingViewController : SubSettingProtocol {
         guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
         switch indexPath.section {
         case 0:
-            AdminUserDefault().saveData(name: normalSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveData(name: normalSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : normalSettingList[indexPath.row])
         case 1:
-            AdminUserDefault().saveData(name: audioSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveData(name: audioSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : audioSettingList[indexPath.row])
         case 2:
-            AdminUserDefault().saveData(name: supportSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveData(name: supportSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : supportSettingList[indexPath.row])
         default:
             return

@@ -9,9 +9,10 @@ import UIKit
 
 
 class AdminUserDefault {
+    static let shared = AdminUserDefault()
     
-    static let settingData: [String: [String]] = [
-        "thema" : ["라이트 모드", "다크 모드"],
+    let settingData: [String: [String]] = [
+        "thema" : ["기본 모드", "라이트 모드", "다크 모드"],
         "language" : ["한국어", "영어"],
         "startLocation" : ["처음부터", "종료된 시점부터"],
         "audioSpeed" : {
@@ -23,7 +24,7 @@ class AdminUserDefault {
         "secondTerm" : ["1s", "2s", "3s", "5s", "10s", "15s"]
     ]
     
-    static var settingSelected : [String: Int] = [
+    var settingSelected : [String: Int] = [
         "thema" : 0,
         "language" : 0,
         "startLocation" : 0,
@@ -31,36 +32,51 @@ class AdminUserDefault {
         "secondTerm" : 0
     ]
     
-    static func configuration() {
+    let themas = [UIUserInterfaceStyle.unspecified, UIUserInterfaceStyle.light, UIUserInterfaceStyle.dark]
+    var LastFileSystemFileNumber : Int = 0
+    var LastAudioCreationDate : Date = Date()
+    
+    private init() {
         registerData()
         loadData()
+        print("init")
     }
     
-    static func registerData() {
+    func registerData() {
         UserDefaults.standard.register(
           defaults: [
-            "thema" : AdminUserDefault.settingSelected["thema"]!,
-            "language" : AdminUserDefault.settingSelected["language"]!,
+            "thema" : settingSelected["thema"]!,
+            "language" : settingSelected["language"]!,
              
-            "startLocation" : AdminUserDefault.settingSelected["startLocation"]!,
-            "audioSpeed" : AdminUserDefault.settingSelected["audioSpeed"]!,
-            "secondTerm" : AdminUserDefault.settingSelected["secondTerm"]!,
+            "startLocation" : settingSelected["startLocation"]!,
+            "audioSpeed" : settingSelected["audioSpeed"]!,
+            "secondTerm" : settingSelected["secondTerm"]!,
+            
+            "LastFileSystemFileNumber" : LastFileSystemFileNumber,
+            "LastAudioCreationDate" : LastAudioCreationDate
           ])
     }
     
     
-    static func loadData() {
-        AdminUserDefault.settingSelected["thema"] = UserDefaults.standard.integer(forKey: "thema")
-        AdminUserDefault.settingSelected["langauge"] = UserDefaults.standard.integer(forKey: "langauge")
+    func loadData() {
+        settingSelected["thema"] = UserDefaults.standard.integer(forKey: "thema")
+        settingSelected["langauge"] = UserDefaults.standard.integer(forKey: "langauge")
         
-        AdminUserDefault.settingSelected["startLocation"] = UserDefaults.standard.integer(forKey: "startLocation")
-        AdminUserDefault.settingSelected["audioSpeed"] = UserDefaults.standard.integer(forKey: "audioSpeed")
-        AdminUserDefault.settingSelected["secondTerm"] = UserDefaults.standard.integer(forKey: "secondTerm")
+        settingSelected["startLocation"] = UserDefaults.standard.integer(forKey: "startLocation")
+        settingSelected["audioSpeed"] = UserDefaults.standard.integer(forKey: "audioSpeed")
+        settingSelected["secondTerm"] = UserDefaults.standard.integer(forKey: "secondTerm")
+        
+        LastFileSystemFileNumber = UserDefaults.standard.integer(forKey: "LastFileSystemFileNumber")
+        LastAudioCreationDate = UserDefaults.standard.value(forKey: "LastAudioCreationDate") as! Date
+    }
+    
+    func getThema() -> UIUserInterfaceStyle {
+        return themas[settingSelected["thema"] ?? 0]
     }
     
     
     func saveData(name : String, new : Int) {
-        AdminUserDefault.settingSelected[name] = new
+        settingSelected[name] = new
         UserDefaults.standard.set(new, forKey: name)
     }
     

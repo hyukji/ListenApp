@@ -51,8 +51,6 @@ class SpeedSettingView: UIView {
     
     let speedLabel : UILabel = {
         let lbl = UILabel()
-        let rate = String(format: "%.1f", PlayerController.playerController.player.rate)
-        lbl.text = "\(rate)x"
         lbl.font = .systemFont(ofSize: 20, weight: .bold)
         
         return lbl
@@ -102,9 +100,10 @@ class SpeedSettingView: UIView {
         return button
     }()
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, rate : Float) {
         super.init(frame: frame)
-        setLayout()
+        
+        setLayout(rate : rate)
     }
     
     required init?(coder: NSCoder) {
@@ -112,8 +111,11 @@ class SpeedSettingView: UIView {
     }
     
     
-    func setLayout() {
+    func setLayout(rate : Float) {
         self.backgroundColor = .systemBackground
+        
+        let rate = String(format: "%.1f", rate)
+        speedLabel.text = "\(rate)x"
         
         [speedLabelSV, completeButton, speedSliderSV].forEach{
             self.addSubview($0)

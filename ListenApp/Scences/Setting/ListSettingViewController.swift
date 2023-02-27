@@ -7,17 +7,17 @@
 
 import UIKit
 
-protocol SubSettingProtocol : AnyObject {
-    func ChangeSetting(indexPath : IndexPath, selectedInt : Int)
+protocol ListSettingProtocol : AnyObject {
+    func ChangeListSetting(indexPath : IndexPath, selectedInt : Int)
 }
 
-class SubSettingViewController : UIViewController {
+class ListSettingViewController : UIViewController {
     var settingCategory : SettingCategory?
     var subSettingData : [String]?
     var selected : Int?
     var SettingindexPath : IndexPath!
     
-    weak var delegate : SubSettingProtocol?
+    weak var delegate : ListSettingProtocol?
     
     private lazy var tableView : UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -25,23 +25,17 @@ class SubSettingViewController : UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.register(SettingDetailTableViewCell.self, forCellReuseIdentifier: "SettingDetailTableViewCell")
-        
-        // tableView의 계산된 높이 값은 68이다. 즉 Default Height이다.
-//                UITableView.estimatedRowHeight = 68.0
-//                // tableView의 rowHeight는 유동적일 수 있다
-//                UITableView.rowHeight = UITableViewAutomaticDimension
-        
+        tableView.register(ListSettingTableViewCell.self, forCellReuseIdentifier: "ListSettingTableViewCell")
         
         return tableView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .systemGroupedBackground
         
         navigationController?.navigationBar.prefersLargeTitles = false
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(popVC))
+        navigationController?.navigationBar.tintColor = .label
         navigationItem.title = settingCategory?.text
         setLayout()
         
@@ -52,7 +46,7 @@ class SubSettingViewController : UIViewController {
 
 
 // layout Setting
-private extension SubSettingViewController {
+private extension ListSettingViewController {
     
     func setLayout() {
         [tableView].forEach{
@@ -72,7 +66,7 @@ private extension SubSettingViewController {
 
 
 
-extension SubSettingViewController : UITableViewDelegate, UITableViewDataSource {
+extension ListSettingViewController : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return subSettingData?.count ?? 1
     }
@@ -83,16 +77,16 @@ extension SubSettingViewController : UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let settingDetailTableViewCell = tableView.dequeueReusableCell(withIdentifier: "SettingDetailTableViewCell", for: indexPath) as? SettingDetailTableViewCell else {return UITableViewCell() }
+        guard let listSettingTableViewCell = tableView.dequeueReusableCell(withIdentifier: "ListSettingTableViewCell", for: indexPath) as? ListSettingTableViewCell else {return UITableViewCell() }
         
-        settingDetailTableViewCell.setLayout(text : subSettingData![indexPath.row])
+        listSettingTableViewCell.setLayout(text : subSettingData![indexPath.row])
         if selected! == indexPath.row {
-            settingDetailTableViewCell.accessoryType = .checkmark
+            listSettingTableViewCell.accessoryType = .checkmark
         }
-        settingDetailTableViewCell.selectionStyle = .none
+        listSettingTableViewCell.selectionStyle = .none
         
         
-        return settingDetailTableViewCell
+        return listSettingTableViewCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -107,7 +101,7 @@ extension SubSettingViewController : UITableViewDelegate, UITableViewDataSource 
             
             // 새로운 row select -> 데디터 저장 및 checkMark업데이트
             selected = indexPath.row
-            delegate?.ChangeSetting(indexPath: SettingindexPath, selectedInt: indexPath.row)
+            delegate?.ChangeListSetting(indexPath: SettingindexPath, selectedInt: indexPath.row)
             for row in 0...(subSettingData?.count ?? 0){
                 if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 0)) {
                     if row == indexPath.row {
@@ -124,7 +118,7 @@ extension SubSettingViewController : UITableViewDelegate, UITableViewDataSource 
 }
 
 
-class SettingDetailTableViewCell : UITableViewCell {
+class ListSettingTableViewCell : UITableViewCell {
     
     private lazy var titleLabel : UILabel = {
         let label = UILabel()
@@ -133,16 +127,6 @@ class SettingDetailTableViewCell : UITableViewCell {
         
         return label
     }()
-//
-//    private lazy var chevronImgView : UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.image = UIImage(systemName: "chevron.right")
-//        imageView.tintColor = .secondaryLabel
-//
-//        return imageView
-//    }()
-    
-    
     
     func setLayout(text : String) {
         titleLabel.text = text
@@ -152,9 +136,6 @@ class SettingDetailTableViewCell : UITableViewCell {
             $0.centerY.equalToSuperview()
             $0.leading.equalToSuperview().offset(15)
         }
-        
-        
     }
-    
     
 }

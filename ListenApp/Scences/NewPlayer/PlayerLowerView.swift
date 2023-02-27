@@ -134,7 +134,7 @@ class PlayerLowerView : UIView {
         return stackView
     }()
     
-    private lazy var speedSettingView = SpeedSettingView()
+    private lazy var speedSettingView = SpeedSettingView(frame: .zero, rate: playerController.player.rate)
     
     override init(frame: CGRect) {
         super .init(frame: frame)

@@ -78,13 +78,22 @@ class SettingTableViewCell : UITableViewCell {
         }
         
         switch data.type {
-        case .another:
-            addSubview(chevronImgView)
+        case .rateSetting:
+            [accessoryLabel, chevronImgView].forEach{
+                addSubview($0)
+            }
+
             chevronImgView.snp.makeConstraints{
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalToSuperview().inset(15)
             }
-        case .subSetting:
+
+            accessoryLabel.text = String(format: "%.1f", AdminUserDefault.shared.rateSetting)
+            accessoryLabel.snp.makeConstraints{
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalTo(chevronImgView.snp.leading).offset(-10)
+            }
+        case .listSetting:
             [accessoryLabel, chevronImgView].forEach{
                 addSubview($0)
             }
@@ -102,6 +111,13 @@ class SettingTableViewCell : UITableViewCell {
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalTo(chevronImgView.snp.leading).offset(-10)
             }
+        default:
+            addSubview(chevronImgView)
+            chevronImgView.snp.makeConstraints{
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalToSuperview().inset(15)
+            }
+            
         }
         
     }

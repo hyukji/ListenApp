@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		19015321298FD2D800BDB429 /* StackViewSubViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19015320298FD2D800BDB429 /* StackViewSubViews.swift */; };
+		19201FCA29AC81B400B36283 /* RateSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19201FC929AC81B400B36283 /* RateSettingViewController.swift */; };
 		193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193FAB6B29759C3500385BD4 /* PlayerController.swift */; };
-		19547B0829A65DBE00F8AEDE /* SubSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19547B0729A65DBE00F8AEDE /* SubSettingViewController.swift */; };
+		19547B0829A65DBE00F8AEDE /* ListSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19547B0729A65DBE00F8AEDE /* ListSettingViewController.swift */; };
 		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
 		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
 		199BF314297AEDA600DAD3E1 /* DocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF313297AEDA600DAD3E1 /* DocumentItem.swift */; };
@@ -44,8 +45,9 @@
 
 /* Begin PBXFileReference section */
 		19015320298FD2D800BDB429 /* StackViewSubViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewSubViews.swift; sourceTree = "<group>"; };
+		19201FC929AC81B400B36283 /* RateSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateSettingViewController.swift; sourceTree = "<group>"; };
 		193FAB6B29759C3500385BD4 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
-		19547B0729A65DBE00F8AEDE /* SubSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubSettingViewController.swift; sourceTree = "<group>"; };
+		19547B0729A65DBE00F8AEDE /* ListSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSettingViewController.swift; sourceTree = "<group>"; };
 		199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebUploader.swift; sourceTree = "<group>"; };
 		199BF311297AEB4900DAD3E1 /* MyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFileManager.swift; sourceTree = "<group>"; };
 		199BF313297AEDA600DAD3E1 /* DocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentItem.swift; sourceTree = "<group>"; };
@@ -141,7 +143,8 @@
 			children = (
 				19B41F1D2970027C00DC30C1 /* SettingTableViewCell.swift */,
 				19B41F1F2970029200DC30C1 /* SettingViewController.swift */,
-				19547B0729A65DBE00F8AEDE /* SubSettingViewController.swift */,
+				19547B0729A65DBE00F8AEDE /* ListSettingViewController.swift */,
+				19201FC929AC81B400B36283 /* RateSettingViewController.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19A615D5299BAB1B00766660 /* MyWaveImage.swift in Sources */,
+				19201FCA29AC81B400B36283 /* RateSettingViewController.swift in Sources */,
 				19B41F192970023D00DC30C1 /* PlayListTableViewCell.swift in Sources */,
 				19B8273B2983F9D700B2AB9C /* PlayerLowerView.swift in Sources */,
 				19B827392983F9CD00B2AB9C /* PlayerUpperView.swift in Sources */,
@@ -371,7 +375,7 @@
 				19B53E63298003CA00FED417 /* CustomAlertViewController.swift in Sources */,
 				19BAE879297BB2DD0074A5F2 /* PlayListMenu.swift in Sources */,
 				199F3AD929792141001C6A3B /* CoreDataFunction.swift in Sources */,
-				19547B0829A65DBE00F8AEDE /* SubSettingViewController.swift in Sources */,
+				19547B0829A65DBE00F8AEDE /* ListSettingViewController.swift in Sources */,
 				193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

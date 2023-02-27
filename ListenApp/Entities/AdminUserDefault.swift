@@ -12,15 +12,9 @@ class AdminUserDefault {
     static let shared = AdminUserDefault()
     
     let settingData: [String: [String]] = [
-        "thema" : ["기본 모드", "라이트 모드", "다크 모드"],
+        "thema" : ["시스템 설정 모드", "라이트 모드", "다크 모드"],
         "language" : ["한국어", "영어"],
         "startLocation" : ["처음부터", "종료된 시점부터"],
-        "audioSpeed" : {
-            var arr : [String] = []
-            for i in 5...20 { arr.append(String(Double(i) / 10.0)) }
-
-            return arr
-        }(),
         "secondTerm" : ["1s", "2s", "3s", "5s", "10s", "15s"]
     ]
     
@@ -28,18 +22,19 @@ class AdminUserDefault {
         "thema" : 0,
         "language" : 0,
         "startLocation" : 0,
-        "audioSpeed" : 0,
         "secondTerm" : 0
     ]
     
     let themas = [UIUserInterfaceStyle.unspecified, UIUserInterfaceStyle.light, UIUserInterfaceStyle.dark]
+    var rateSetting : Float = 1.0
+    
     var LastFileSystemFileNumber : Int = 0
     var LastAudioCreationDate : Date = Date()
     
     private init() {
+        print("init")
         registerData()
         loadData()
-        print("init")
     }
     
     func registerData() {
@@ -49,8 +44,9 @@ class AdminUserDefault {
             "language" : settingSelected["language"]!,
              
             "startLocation" : settingSelected["startLocation"]!,
-            "audioSpeed" : settingSelected["audioSpeed"]!,
             "secondTerm" : settingSelected["secondTerm"]!,
+                        
+            "rateSetting" : rateSetting,
             
             "LastFileSystemFileNumber" : LastFileSystemFileNumber,
             "LastAudioCreationDate" : LastAudioCreationDate
@@ -63,8 +59,10 @@ class AdminUserDefault {
         settingSelected["langauge"] = UserDefaults.standard.integer(forKey: "langauge")
         
         settingSelected["startLocation"] = UserDefaults.standard.integer(forKey: "startLocation")
-        settingSelected["audioSpeed"] = UserDefaults.standard.integer(forKey: "audioSpeed")
         settingSelected["secondTerm"] = UserDefaults.standard.integer(forKey: "secondTerm")
+        
+        rateSetting = UserDefaults.standard.float(forKey: "rateSetting")
+        print("rateSetting", rateSetting)
         
         LastFileSystemFileNumber = UserDefaults.standard.integer(forKey: "LastFileSystemFileNumber")
         LastAudioCreationDate = UserDefaults.standard.value(forKey: "LastAudioCreationDate") as! Date
@@ -83,8 +81,13 @@ class AdminUserDefault {
         UserDefaults.standard.set(LastAudioCreationDate, forKey: "LastAudioCreationDate")
     }
     
+    func saveRateSettingData(new : Float) {
+        rateSetting = new
+        UserDefaults.standard.set(new, forKey: "rateSetting")
+    }
+    
     // setting 관련 데이터 저장
-    func saveSettingData(name : String, new : Int) {
+    func saveListSettingData(name : String, new : Int) {
         settingSelected[name] = new
         UserDefaults.standard.set(new, forKey: name)
     }

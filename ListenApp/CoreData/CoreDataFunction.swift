@@ -312,7 +312,6 @@ extension CoreDataFunc {
     
     // 해당 오디오의 마지막 시간 저장해주기
     func updateCurrentTime(audio : AudioData) {
-        print(audio.currentTime)
         // 현재 가지고 있는 값 업데이트
         for idx in audioList.indices {
             if audioList[idx].fileSystemFileNumber == audio.fileSystemFileNumber && audioList[idx].creationDate == audio.creationDate {

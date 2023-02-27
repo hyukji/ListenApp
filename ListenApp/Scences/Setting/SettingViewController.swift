@@ -16,7 +16,9 @@ struct SettingCategory {
 }
 
 enum SettingType : Equatable {
-    case subSetting
+    case listSetting
+    case rateSetting
+    case waveSetting
     case another
 }
 
@@ -58,14 +60,13 @@ class SettingViewController : UIViewController {
     
     func setData() {
         normalSettingList = [
-            SettingCategory(name: "thema", text: "테마", icon: "moon", type: .subSetting),
-            SettingCategory(name: "language", text: "언어", icon: "globe", type: .subSetting)
+            SettingCategory(name: "thema", text: "테마", icon: "moon", type: .listSetting),
+            SettingCategory(name: "language", text: "언어", icon: "globe", type: .listSetting)
         ]
         audioSettingList = [
-            SettingCategory(name: "startLocation", text: "시작 위치", icon: "play", type: .subSetting),
-            SettingCategory(name: "audioSpeed", text: "재생 속도", icon: "forward.circle", type: .subSetting),
-            SettingCategory(name: "secondTerm", text: "초단위 이동", icon: "arrow.rectanglepath", type: .subSetting),
-            SettingCategory(name: "waveAnalysis", text: "파장 분석", icon: "waveform.badge.exclamationmark", type: .another)
+            SettingCategory(name: "startLocation", text: "시작 위치", icon: "play", type: .listSetting),
+            SettingCategory(name: "rateSetting", text: "재생 속도", icon: "forward.circle", type: .rateSetting),
+            SettingCategory(name: "secondTerm", text: "초단위 이동", icon: "arrow.rectanglepath", type: .listSetting),
         ]
         supportSettingList = [
             SettingCategory(name: "", text: "평가", icon: "star", type: .another),
@@ -113,11 +114,9 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
         }
         
         let data = targetList[indexPath.row]
-        
-        if data.type == .another {
-            print("nope")
-        } else {
-            let subSettingVC = SubSettingViewController()
+        switch data.type {
+        case .listSetting:
+            let subSettingVC = ListSettingViewController()
             
             subSettingVC.settingCategory = data
             subSettingVC.subSettingData = adminUserDefault.settingData[data.name] ?? []
@@ -126,6 +125,16 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
             subSettingVC.delegate = self
             
             navigationController?.pushViewController(subSettingVC, animated: true)
+        case .rateSetting:
+            let rateSettingVC = RateSettingViewController()
+            
+            rateSettingVC.settingCategory = data
+            rateSettingVC.selectedValue = adminUserDefault.rateSetting
+            rateSettingVC.delegate = self
+            
+            navigationController?.pushViewController(rateSettingVC, animated: true)
+        default:
+            print("nope")
         }
     }
     
@@ -172,21 +181,32 @@ extension SettingViewController : UITableViewDelegate, UITableViewDataSource {
     
 }
 
-extension SettingViewController : SubSettingProtocol {
-    func ChangeSetting(indexPath: IndexPath, selectedInt: Int) {
+extension SettingViewController : ListSettingProtocol {
+    func ChangeListSetting(indexPath: IndexPath, selectedInt: Int) {
         guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
         switch indexPath.section {
         case 0:
-            adminUserDefault.saveSettingData(name: normalSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveListSettingData(name: normalSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : normalSettingList[indexPath.row])
         case 1:
-            adminUserDefault.saveSettingData(name: audioSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveListSettingData(name: audioSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : audioSettingList[indexPath.row])
         case 2:
-            adminUserDefault.saveSettingData(name: supportSettingList[indexPath.row].name, new: selectedInt)
+            adminUserDefault.saveListSettingData(name: supportSettingList[indexPath.row].name, new: selectedInt)
             cell.setLayout(data : supportSettingList[indexPath.row])
         default:
             return
         }
+    }
+}
+
+
+
+extension SettingViewController : RateSettingProtocol {
+    func ChangeRateSetting(selectedValue: Float) {
+        let indexPath = IndexPath(row: 1, section: 1)
+        guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
+        adminUserDefault.saveRateSettingData(new: selectedValue)
+        cell.setLayout(data : audioSettingList[indexPath.row])
     }
 }

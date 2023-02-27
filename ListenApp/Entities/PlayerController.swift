@@ -51,8 +51,7 @@ class PlayerController {
             
             // 오디오 배속 설정
             player.enableRate = true
-            let speedSelected = AdminUserDefault.shared.settingSelected["audioSpeed"] ?? 5
-            player.rate = Float(speedSelected + 5) / 10.0
+            player.rate = AdminUserDefault.shared.rateSetting
             
             // 시작위치 설정
             let startLocationSelected = AdminUserDefault.shared.settingSelected["startLocation"] ?? 0

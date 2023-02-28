@@ -101,6 +101,10 @@ enum Waveform {
 
         /// Background color of the waveform, defaults to `clear`.
         public let backgroundColor: UIColor
+        
+        public let sectionColor: UIColor
+        
+        public let sectionRepeatColor: UIColor
 
         /// Waveform drawing style, defaults to `.gradient`.
         public let stripeConfig: StripeConfig
@@ -140,8 +144,11 @@ enum Waveform {
 
 
         public init(size: CGSize = .zero,
-                    backgroundColor: UIColor = UIColor.clear,
+//                    backgroundColor: UIColor = UIColor(rgb: 0xcededed),
+                    backgroundColor: UIColor = .systemGray6,
                     stripeConfig: StripeConfig = .init(color: .label),
+                    sectionColor : UIColor = UIColor(rgb: 0xfce0ac),
+                    sectionRepeatColor : UIColor = UIColor(rgb: 0xFFD384),
                     dampening: Dampening? = nil,
                     position: Position = .middle,
                     scale: CGFloat = UIScreen.main.scale,
@@ -152,6 +159,8 @@ enum Waveform {
             }
 
             self.backgroundColor = backgroundColor
+            self.sectionColor = sectionColor
+            self.sectionRepeatColor = sectionRepeatColor
             self.stripeConfig = stripeConfig
             self.dampening = dampening
             self.position = position
@@ -238,9 +247,9 @@ class MyWaveformImageDrawer {
                     path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                     let rectangle = CGRect(
                         x: xPos,
-                        y: 50,
+                        y: 20,
                         width: Double(range.upperBound - sectionStart),
-                        height: configuration.size.height - 120)
+                        height: configuration.size.height - 60)
                     path.addRect(rectangle)
                 }
             }
@@ -250,9 +259,9 @@ class MyWaveformImageDrawer {
                 path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                 let rectangle = CGRect(
                     x: 0,
-                    y: 50,
+                    y: 20,
                     width: Double(sectionEnd - range.lowerBound),
-                    height: configuration.size.height - 120)
+                    height: configuration.size.height - 60)
                 path.addRect(rectangle)
             }
             else{
@@ -260,9 +269,9 @@ class MyWaveformImageDrawer {
                 path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                 let rectangle = CGRect(
                     x: xPos,
-                    y: 50,
+                    y: 20,
                     width: rectWidth,
-                    height: configuration.size.height - 120)
+                    height: configuration.size.height - 60)
                 path.addRect(rectangle)
             }
         }
@@ -270,7 +279,7 @@ class MyWaveformImageDrawer {
         
         context.addPath(path)
         
-        context.setFillColor(UIColor.yellow.cgColor)
+        context.setFillColor(configuration.sectionRepeatColor.cgColor)
         context.setLineWidth(0)
         context.setAlpha(1)
         
@@ -299,9 +308,9 @@ class MyWaveformImageDrawer {
                         path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                         let rectangle = CGRect(
                             x: xPos,
-                            y: 50,
+                            y: 20,
                             width: Double(range.upperBound - audio.sectionStart[section]),
-                            height: configuration.size.height - 120)
+                            height: configuration.size.height - 60)
                         path.addRect(rectangle)
                     }
                     break
@@ -312,9 +321,9 @@ class MyWaveformImageDrawer {
                     path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                     let rectangle = CGRect(
                         x: 0,
-                        y: 50,
+                        y: 20,
                         width: Double(audio.sectionEnd[section] - range.lowerBound),
-                        height: configuration.size.height - 120)
+                        height: configuration.size.height - 60)
                     path.addRect(rectangle)
                 }
                 else{
@@ -322,9 +331,9 @@ class MyWaveformImageDrawer {
                     path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
                     let rectangle = CGRect(
                         x: xPos,
-                        y: 50,
+                        y: 20,
                         width: rectWidth,
-                        height: configuration.size.height - 120)
+                        height: configuration.size.height - 60)
                     path.addRect(rectangle)
                 }
                 
@@ -335,9 +344,9 @@ class MyWaveformImageDrawer {
         
         context.addPath(path)
         
-        context.setFillColor(UIColor.yellow.cgColor)
+        context.setFillColor(configuration.sectionColor.cgColor)
         context.setLineWidth(0)
-        context.setAlpha(0.4)
+        context.setAlpha(1)
         
         context.drawPath(using: .fillStroke)
     }

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		19015321298FD2D800BDB429 /* StackViewSubViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19015320298FD2D800BDB429 /* StackViewSubViews.swift */; };
 		19201FCA29AC81B400B36283 /* RateSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19201FC929AC81B400B36283 /* RateSettingViewController.swift */; };
+		19201FCE29ACFA3D00B36283 /* hexUIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19201FCD29ACFA3D00B36283 /* hexUIColor.swift */; };
 		193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193FAB6B29759C3500385BD4 /* PlayerController.swift */; };
 		19547B0829A65DBE00F8AEDE /* ListSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19547B0729A65DBE00F8AEDE /* ListSettingViewController.swift */; };
 		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
@@ -46,6 +47,7 @@
 /* Begin PBXFileReference section */
 		19015320298FD2D800BDB429 /* StackViewSubViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewSubViews.swift; sourceTree = "<group>"; };
 		19201FC929AC81B400B36283 /* RateSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateSettingViewController.swift; sourceTree = "<group>"; };
+		19201FCD29ACFA3D00B36283 /* hexUIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexUIColor.swift; sourceTree = "<group>"; };
 		193FAB6B29759C3500385BD4 /* PlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		19547B0729A65DBE00F8AEDE /* ListSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSettingViewController.swift; sourceTree = "<group>"; };
 		199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebUploader.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				19A615D4299BAB1B00766660 /* MyWaveImage.swift */,
 				199CFD2429A4A86700C93037 /* SpeedSettingView.swift */,
 				19A717E829A7B99A004E3081 /* AdminUserDefault.swift */,
+				19201FCD29ACFA3D00B36283 /* hexUIColor.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -357,6 +360,7 @@
 				19B41EEC296FFEA200DC30C1 /* AppDelegate.swift in Sources */,
 				199CFD2529A4A86700C93037 /* SpeedSettingView.swift in Sources */,
 				19A717E929A7B99A004E3081 /* AdminUserDefault.swift in Sources */,
+				19201FCE29ACFA3D00B36283 /* hexUIColor.swift in Sources */,
 				19B7B21A2985443C009E2570 /* AudioData.xcdatamodeld in Sources */,
 				19B41F202970029200DC30C1 /* SettingViewController.swift in Sources */,
 				19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */,

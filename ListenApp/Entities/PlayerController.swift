@@ -13,6 +13,7 @@ enum PlayerStatus {
     case pause
     case stop
     case intermit
+    case autoIntermit
 }
 
 class PlayerController {
@@ -68,9 +69,8 @@ class PlayerController {
     func playPlayer() {
 //        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
 //        try AVAudioSession.sharedInstance().setActive(true)
-        player.prepareToPlay()
+//        player.prepareToPlay()
         player.play()
-        
         status = .play
 
         NotificateTo()
@@ -96,6 +96,13 @@ class PlayerController {
         status = .pause
         
         NotificateTo()
+    }
+    
+    func autoIntermittPlayer() {
+        if status == .play {
+            player.pause()
+            status = .autoIntermit
+        }
     }
     
     func changePlayerTime(changedTime : TimeInterval) {

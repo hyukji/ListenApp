@@ -11,6 +11,8 @@ class PlayerLowerView : UIView {
     let playerController = PlayerController.playerController
     let audio = PlayerController.playerController.audio!
     
+    let playButton = UIButton()
+    
     lazy var normalControllerSV : UIStackView = {
         let stackView = UIStackView()
         
@@ -20,7 +22,6 @@ class PlayerLowerView : UIView {
         
         stackView.tintColor = .label
         
-        let playButton = UIButton()
         let secondFrontButton = UIButton()
         let secondBackButton = UIButton()
         
@@ -34,7 +35,7 @@ class PlayerLowerView : UIView {
             secondBackButton.setImage(UIImage(named : "gobackward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
             secondFrontButton.setImage(UIImage(named : "goforward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
         }
-        setPlayButtonImage(btn : playButton)
+        setPlayButtonImage()
         
         playButton.addTarget(self, action: #selector(tapPlayButton(_:)), for: .touchUpInside)
         secondBackButton.addTarget(self, action: #selector(tapSecondBackButton), for: .touchUpInside)
@@ -147,12 +148,12 @@ class PlayerLowerView : UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setPlayButtonImage(btn : UIButton) {
+    func setPlayButtonImage() {
         let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
         if playerController.status == .play {
-            btn.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
+            playButton.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
         } else {
-            btn.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
+            playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
         }
     }
     
@@ -174,12 +175,13 @@ extension PlayerLowerView {
         } else {
             playerController.playPlayer()
         }
-        setPlayButtonImage(btn : sender)
+        setPlayButtonImage()
     }
     
     @objc private func tapSecondBackButton() {
         let changedTime = playerController.player.currentTime - Double(getSecondTerm())
         
+        playerController.autoIntermittPlayer()
         if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
@@ -187,10 +189,12 @@ extension PlayerLowerView {
     @objc private func tapSecondFrontButton() {
         let changedTime = playerController.player.currentTime + Double(getSecondTerm())
         
+        playerController.autoIntermittPlayer()
         if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
+    // 현재 구간 번호 return
     private func getSection() -> Int {
         let x = playerController.player.currentTime * playerController.changedAmountPerSec
         var section = 0
@@ -203,16 +207,19 @@ extension PlayerLowerView {
         return section - 1
     }
     
+    // 현재 구간 다시 재생
     @objc private func tapWaveBackButton() {
         let section = getSection()
         if section == -1 { return }
         
         var sectionStart = audio.sectionStart[section]
-        if playerController.player.currentTime - (Double(sectionStart-1) / playerController.changedAmountPerSec) < 0.2
+        // 더블 클릭 시에 이전 구간으로
+        if playerController.player.currentTime - (Double(sectionStart) / playerController.changedAmountPerSec) < 0.2
             && section != 0 {
             sectionStart = audio.sectionStart[section-1]
         }
         
+        playerController.autoIntermittPlayer()
         playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
     }
     
@@ -220,7 +227,9 @@ extension PlayerLowerView {
         let nextSection = getSection() + 1
         if nextSection != audio.sectionStart.count {
             let sectionStart = audio.sectionStart[nextSection]
-            playerController.changePlayerTime(changedTime: Double(sectionStart-1) / playerController.changedAmountPerSec)
+            
+            playerController.autoIntermittPlayer()
+            playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
         }
     }
     
@@ -245,7 +254,7 @@ extension PlayerLowerView {
         }
         
         NotificationCenter.default.post(
-            name: Notification.Name("playerScrollViewReset"),
+            name: Notification.Name("tapWaveRepeatButton"),
             object: nil,
             userInfo: nil
         )
@@ -347,10 +356,6 @@ extension PlayerLowerView {
     
     
 }
-
-
-
-
 
 // PlayerLowerView UI
 extension PlayerLowerView {

@@ -117,6 +117,8 @@ enum Waveform {
 
         /// Scale (@2x, @3x, etc.) to be applied to the image, defaults to `UIScreen.main.scale`.
         public let scale: CGFloat
+        
+        public let sectionIdx : Int
 
         /// *Optional* padding or vertical shrinking factor for the waveform.
         @available(swift, obsoleted: 3.0, message: "Please use scalingFactor instead")
@@ -153,7 +155,8 @@ enum Waveform {
                     position: Position = .middle,
                     scale: CGFloat = UIScreen.main.scale,
                     verticalScalingFactor: CGFloat = 0.95,
-                    shouldAntialias: Bool = false) {
+                    shouldAntialias: Bool = false,
+                    sectionIdx: Int = 0) {
             guard verticalScalingFactor > 0 else {
                 preconditionFailure("verticalScalingFactor must be greater 0")
             }
@@ -168,6 +171,7 @@ enum Waveform {
             self.scale = scale
             self.verticalScalingFactor = verticalScalingFactor
             self.shouldAntialias = shouldAntialias
+            self.sectionIdx = sectionIdx
         }
     }
 
@@ -176,13 +180,13 @@ enum Waveform {
 
 class MyWaveformImageDrawer {
     let audio = PlayerController.playerController.audio!
-    private var lastOffset = 0
+    var leftOffset = 0
     
     public func waveformImage(from range: Range<Int>, with configuration: Waveform.Configuration) -> UIImage? {
-        guard range.count > 0, range.count == Int(configuration.size.width * configuration.scale) else {
-            print("ERROR: samples: \(range.count) != \(configuration.size.width) * \(configuration.scale)")
-            return nil
-        }
+        //        guard range.count > 0, range.count == Int(configuration.size.width * configuration.scale) else {
+        //            print("ERROR: samples: \(range.count) != \(configuration.size.width) * \(configuration.scale)")
+        //            return nil
+        //        }
 
         let format = UIGraphicsImageRendererFormat()
         format.scale = configuration.scale
@@ -212,9 +216,10 @@ class MyWaveformImageDrawer {
 
         drawBackground(on: context, with: configuration)
         drawSection(from: range, on: context, with: configuration)
-        drawSectionRepeat(from: range, on: context, with: configuration)
+        
         drawGraph(from: range, on: context, with: configuration)
         drawGraduation(from: range, on: context, with: configuration)
+        
         drawABIndicator(from: range, on: context, with: configuration)
     }
     
@@ -227,120 +232,32 @@ class MyWaveformImageDrawer {
             let xPos = Double(positionB - range.lowerBound)
             drawIndicator(context: context, xPos: xPos, color : UIColor.blue.cgColor, configuration: configuration)
         }
-        
-    }
-    
-    private func drawSectionRepeat(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
-        if !PlayerController.playerController.shouldSectionRepeat { return }
-        
-        let path = CGMutablePath()
-        let sectionStart = PlayerController.playerController.positionSectionStart!
-        let sectionEnd = PlayerController.playerController.positionSectionEnd!
-    
-        if range.lowerBound < sectionEnd {
-            let xPos = Double(sectionStart - range.lowerBound)
-            let rectWidth = Double(sectionEnd - sectionStart)
-            
-            if range.upperBound < sectionEnd {
-                if sectionStart < range.upperBound {
-                    // 이미지 끝이 섹션의 중간부분임
-                    path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
-                    let rectangle = CGRect(
-                        x: xPos,
-                        y: 20,
-                        width: Double(range.upperBound - sectionStart),
-                        height: configuration.size.height - 60)
-                    path.addRect(rectangle)
-                }
-            }
-            
-            if sectionStart < range.lowerBound {
-                // 이미지 시작이 섹션의 중간부분임
-                path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
-                let rectangle = CGRect(
-                    x: 0,
-                    y: 20,
-                    width: Double(sectionEnd - range.lowerBound),
-                    height: configuration.size.height - 60)
-                path.addRect(rectangle)
-            }
-            else{
-                // 온전한 섹션파트 그리기
-                path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
-                let rectangle = CGRect(
-                    x: xPos,
-                    y: 20,
-                    width: rectWidth,
-                    height: configuration.size.height - 60)
-                path.addRect(rectangle)
-            }
-        }
-            
-        
-        context.addPath(path)
-        
-        context.setFillColor(configuration.sectionRepeatColor.cgColor)
-        context.setLineWidth(0)
-        context.setAlpha(1)
-        
-        context.drawPath(using: .fillStroke)
     }
     
     private func drawBackground(on context: CGContext, with configuration: Waveform.Configuration) {
         context.setFillColor(configuration.backgroundColor.cgColor)
-        let size = CGSize(width: configuration.size.width, height: configuration.size.height - 60)
-        context.fill(CGRect(origin: CGPoint(x: 0, y: 20), size: size))
+        let size = CGSize(width: configuration.size.width, height: configuration.size.height - 50)
+        context.fill(CGRect(origin: CGPoint(x: 0, y: 10), size: size))
     }
     
     
     private func drawSection(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
         let path = CGMutablePath()
-        var section = 0
+        let idx = configuration.sectionIdx
         
-        while section < audio.sectionStart.count {
-            if range.lowerBound < audio.sectionEnd[section] {
-                let xPos = Double(audio.sectionStart[section] - range.lowerBound)
-                let rectWidth = Double(audio.sectionEnd[section] - audio.sectionStart[section])
-                
-                if range.upperBound < audio.sectionEnd[section] {
-                    if audio.sectionStart[section] < range.upperBound {
-                        // 이미지 끝이 섹션의 중간부분임
-                        path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
-                        let rectangle = CGRect(
-                            x: xPos,
-                            y: 20,
-                            width: Double(range.upperBound - audio.sectionStart[section]),
-                            height: configuration.size.height - 60)
-                        path.addRect(rectangle)
-                    }
-                    break
-                }
-                
-                if audio.sectionStart[section] < range.lowerBound {
-                    // 이미지 시작이 섹션의 중간부분임
-                    path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
-                    let rectangle = CGRect(
-                        x: 0,
-                        y: 20,
-                        width: Double(audio.sectionEnd[section] - range.lowerBound),
-                        height: configuration.size.height - 60)
-                    path.addRect(rectangle)
-                }
-                else{
-                    // 온전한 섹션파트 그리기
-                    path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
-                    let rectangle = CGRect(
-                        x: xPos,
-                        y: 20,
-                        width: rectWidth,
-                        height: configuration.size.height - 60)
-                    path.addRect(rectangle)
-                }
-                
-            }
-            
-            section += 1
-        }
+        let xPos = Double(audio.sectionStart[idx] - range.lowerBound + leftOffset)
+        let rectWidth = Double(audio.sectionEnd[idx] - audio.sectionStart[idx])
+        
+        print("xPos", xPos, rectWidth)
+        
+        path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
+        let rectangle = CGRect(
+            x: xPos,
+            y: 10,
+            width: rectWidth,
+            height: configuration.size.height - 50)
+        path.addRect(rectangle)
+        
         
         context.addPath(path)
         
@@ -356,32 +273,33 @@ class MyWaveformImageDrawer {
                            with configuration: Waveform.Configuration) {
         let samples = audio.waveAnalysis[range]
         let graphRect = CGRect(origin: CGPoint(x: 0, y: 0), size: configuration.size)
-        let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * graphRect.size.height - 10
+        let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * (graphRect.size.height - 50) + 10
         let drawMappingFactor = graphRect.size.height * configuration.verticalScalingFactor
         let minimumGraphAmplitude: CGFloat = 1 / configuration.scale // we want to see at least a 1px line for silence
-
+        
         let path = CGMutablePath()
         var maxAmplitude: CGFloat = 0.0 // we know 1 is our max in normalized data, but we keep it 'generic'
-
-        for (y, sample) in samples.enumerated() {
-            let x = y + lastOffset
-            if x % Int(configuration.scale) != 0 || x % stripeBucket(configuration) != 0 {
+        
+        for (y, t) in range.enumerated() {
+            let sample = samples[t]
+            let x = y + leftOffset
+            if t % Int(configuration.scale) != 0 || t % stripeBucket(configuration) != 0 {
                 // skip sub-pixels - any x value not scale aligned
                 // skip any point that is not a multiple of our bucket width (width + spacing)
                 continue
             }
-
-            let xPos = CGFloat(x - lastOffset) / configuration.scale
+            
+            let xPos = CGFloat(x) / configuration.scale
             let invertedDbSample = 1 - CGFloat(sample) // sample is in dB, linearly normalized to [0, 1] (1 -> -50 dB)
             let drawingAmplitude = max(minimumGraphAmplitude, invertedDbSample * drawMappingFactor)
             let drawingAmplitudeUp = positionAdjustedGraphCenter - drawingAmplitude
             let drawingAmplitudeDown = positionAdjustedGraphCenter + drawingAmplitude
             maxAmplitude = max(drawingAmplitude, maxAmplitude)
-
+            
             path.move(to: CGPoint(x: xPos, y: drawingAmplitudeUp))
             path.addLine(to: CGPoint(x: xPos, y: drawingAmplitudeDown))
         }
-
+        
         context.addPath(path)
         context.setAlpha(1.0)
         context.setShouldAntialias(configuration.shouldAntialias)
@@ -395,20 +313,20 @@ class MyWaveformImageDrawer {
     
     
     private func drawGraduation(from range: Range<Int>,
-                                 on context: CGContext,
-                                 with configuration: Waveform.Configuration) {
+                                on context: CGContext,
+                                with configuration: Waveform.Configuration) {
         
         let path = CGMutablePath()
-        
-        for (x, t) in range.enumerated() {
+        let graduationRange = range.lowerBound-50..<range.upperBound+1
+        for (x, t) in graduationRange.enumerated() {
+            let xPos = x + leftOffset - 50
             // 눈금 그리기
             if t % 100 == 0 {
-                path.move(to: CGPoint(x: x, y: Int(configuration.size.height) - 40))
-                path.addLine(to: CGPoint(x: x, y: Int(configuration.size.height) - 22))
+                path.move(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 40))
+                path.addLine(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 27))
                 
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.alignment = .left
-                
                 
                 let time = t / 100
                 let min = time / 60
@@ -419,12 +337,12 @@ class MyWaveformImageDrawer {
                 label.font = .systemFont(ofSize: 15)
                 label.textColor = UIColor.label
                 
-                let labelRect = CGRect(x: x, y: Int(configuration.size.height) - 35, width: 56, height: 35)
+                let labelRect = CGRect(x: xPos, y: Int(configuration.size.height) - 32, width: 50, height: 32)
                 label.drawText(in: labelRect)
             }
             else if t % 25 == 0 {
-                path.move(to: CGPoint(x: x, y: Int(configuration.size.height) - 40))
-                path.addLine(to: CGPoint(x: x, y: Int(configuration.size.height) - 32))
+                path.move(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 40))
+                path.addLine(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 32))
                 
             }
         }
@@ -436,35 +354,30 @@ class MyWaveformImageDrawer {
         let config = configuration.stripeConfig
         context.setLineWidth(1)
         context.setLineCap(config.lineCap)
-        context.setStrokeColor(configuration.backgroundColor.cgColor)
+        context.setStrokeColor(UIColor.darkGray.cgColor)
         context.strokePath()
         
     }
     
     private func drawIndicator(context: CGContext, xPos: Double, color : CGColor, configuration : Waveform.Configuration) {
         let path = CGMutablePath()
-        let height = configuration.size.height
         
-        path.move(to: CGPoint(x: xPos, y: 0))
-        path.addLine(to: CGPoint(x: xPos, y: height))
+        let rectangle = CGRect(
+            x: xPos,
+            y: 10,
+            width: 1,
+            height: configuration.size.height - 50)
         
+        path.addRect(rectangle)
         context.addPath(path)
-        context.setAlpha(1.0)
-        context.setShouldAntialias(configuration.shouldAntialias)
-        
-        let config = configuration.stripeConfig
-        context.setLineWidth(configuration.stripeConfig.width)
-        context.setLineCap(config.lineCap)
-        context.setStrokeColor(color)
-        context.strokePath()
         
         let rect = CGRect(
-            x: xPos-8,
+            x: xPos - 3,
             y: 0,
-            width: 16,
-            height: 20)
+            width: 7,
+            height: 10)
         
-        let roundRect = UIBezierPath(roundedRect: rect, cornerRadius: 4)
+        let roundRect = UIBezierPath(ovalIn: rect)
         context.addPath(roundRect.cgPath)
         
         context.setFillColor(color)
@@ -477,6 +390,6 @@ class MyWaveformImageDrawer {
     private func stripeBucket(_ configuration: Waveform.Configuration) -> Int {
         let stripeConfig = configuration.stripeConfig
         return Int(stripeConfig.width + stripeConfig.spacing) * Int(configuration.scale)
-//        return Int(stripeConfig.width) * Int(configuration.scale)
+        //        return Int(stripeConfig.width) * Int(configuration.scale)
     }
 }

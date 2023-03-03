@@ -15,13 +15,12 @@ class PlayerUpperView : UIView {
     
     let changedAmountPerSec = PlayerController.playerController.changedAmountPerSec
     let waveImageSize = 1000
+    let sectionCount = PlayerController.playerController.audio!.sectionStart.count
+    let windowWidth = UIScreen.main.bounds.size.width
     
-    var nowImageIdx = 0 {
-        didSet{
-            CoreDataFunc.shared.updateCurrentTime(audio: audio)
-        }
-    }
-    var maxImageIdx = 0
+    var nowSectionIdx = 0
+    var leftSectionIdx = 0
+    var rightSectionIdx = 0
     
     private var slider : UISlider = {
         let slider = UISlider()
@@ -157,126 +156,46 @@ class PlayerUpperView : UIView {
         slider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
     }
     
+    func getSectionidx(target : Int) -> Int {
+        let sectionStartArr = audio.sectionStart
+        
+        var idx = 0
+        while idx < sectionStartArr.count-1 {
+            if target < sectionStartArr[idx+1] {
+                break
+            }
+            idx += 1
+        }
+        return idx
+    }
+    
+    
+    // 처음 ScrollStackView 만들때
     func configureWaveImgView() {
-        nowImageIdx = Int(audio.currentTime * changedAmountPerSec / Double(waveImageSize))
-        maxImageIdx = audio.waveAnalysis.count / waveImageSize
+        let current = Int(playerController.player.currentTime * changedAmountPerSec)
         
-        var waveImageIdxList : [Int] = []
-
-        if maxImageIdx < 3 {
-            waveImageIdxList = [-2]
-        }
-        else{
-            switch nowImageIdx{
-            case 0:
-                waveImageIdxList = [0, 1, 2]
-            case maxImageIdx:
-                waveImageIdxList = [maxImageIdx - 2, maxImageIdx - 1, maxImageIdx]
-            default:
-                waveImageIdxList = [nowImageIdx - 1, nowImageIdx, nowImageIdx + 1]
-            }
-        }
+        leftSectionIdx = getSectionidx(target : current - Int(windowWidth/2) - 100)
+        rightSectionIdx = getSectionidx(target : current + Int(windowWidth/2) + 100)
         
-        
-        setImgOnScrollSV(waveImageIdxList: [-1, -1])
-        setImgOnScrollSV(waveImageIdxList: waveImageIdxList)
+        setImgOnScrollSV(waveImageIdxList: Array(leftSectionIdx...rightSectionIdx))
+        setScrollViewX(time : playerController.player.currentTime)
     }
+    
+    
+    // scrollView의 x좌표 설정, currentLoc - leftSectionStart - 화면가로/2
+    func setScrollViewX(time : TimeInterval) {
+        let currentLoc = time < 0.0 ? 0 : time * changedAmountPerSec
+        var nx = currentLoc
+        
+        if leftSectionIdx != 0 {
+            let startLoc = audio.sectionStart[leftSectionIdx]
+            nx -= Double(startLoc + Int(windowWidth/2))
+        }
+        
+        scrollView.contentOffset = CGPointMake(nx, 0)
+    }
+    
 }
-
-// repeat button functions
-extension PlayerUpperView {
-    
-    @objc private func tapAButton() {
-        if playerController.positionA == nil {
-            // A위치 설정
-            let x = Int(scrollView.contentOffset.x)
-            if nowImageIdx == 0 {
-                playerController.positionA = x
-            } else {
-                let totalWidth = Int(waveImageSize * (nowImageIdx-1)) + x
-                playerController.positionA = totalWidth
-            }
-            
-            Abutton.tintColor = .red
-            // backToA, B 클릭 가능하게
-            backToAbutton.isEnabled = true
-            Bbutton.isEnabled = true
-            trashButton.isEnabled = true
-        } else {
-            // A 위치 설정 해제
-            playerController.positionA = nil
-            Abutton.tintColor = .label
-            // backToA, B 클릭 불가능하게
-            backToAbutton.isEnabled = false
-            Bbutton.isEnabled = false
-            trashButton.isEnabled = false
-        }
-        
-        // wave image업데이트
-        resetScrollStackView()
-    }
-    
-    @objc private func tapBackToAButton() {
-        if playerController.positionA != nil {
-            playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
-        }
-        
-        // wave image업데이트
-        resetScrollStackView()
-    }
-    
-    @objc private func taptrashButton() {
-        playerController.shouldABRepeat = false
-        playerController.positionA = nil
-        playerController.positionB = nil
-        
-        Abutton.tintColor = .label
-        Bbutton.tintColor = .label
-        
-        Abutton.isEnabled = true
-        backToAbutton.isEnabled = false
-        Bbutton.isEnabled = false
-        trashButton.isEnabled = false
-        
-        resetScrollStackView()
-    }
-    
-    
-    @objc private func tapBButton() {
-        // B 위치 설정
-        if playerController.positionB == nil {
-            let x = Int(scrollView.contentOffset.x)
-            if nowImageIdx == 0 { playerController.positionB = x }
-            else {
-                let totalWidth = Int(waveImageSize * (nowImageIdx-1)) + x
-                playerController.positionB = totalWidth
-            }
-            
-            Bbutton.tintColor = .blue
-            
-            // 시간 설정
-            playerController.player.currentTime = Double(playerController.positionA!) / changedAmountPerSec
-            playerController.shouldABRepeat = true
-            
-            Abutton.isEnabled = false
-        } else {
-            playerController.positionB = nil
-            Bbutton.tintColor = .label
-            
-            playerController.shouldABRepeat = false
-            
-            Abutton.isEnabled = false
-            Bbutton.isEnabled = true
-            backToAbutton.isEnabled = true
-            trashButton.isEnabled = true
-        }
-        
-        // wave image업데이트
-        resetScrollStackView()
-        
-    }
-}
-
 
 
 // draw and set Image for scrollView
@@ -284,38 +203,9 @@ extension PlayerUpperView {
     // int 배열에 맞추어 waveImage 생성 후 scrollStackView에 추가
     func setImgOnScrollSV(waveImageIdxList : [Int]) {
         waveImageIdxList.forEach{
-            switch $0{
-            case -1:
-                scrollStackView.addArrangedSubview(drawEmptyIamge())
-//            case -2:
-//                scrollStackView.addArrangedSubview(drawEntireWaveImage())
-            default:
-                scrollStackView.appendWaveImg(view: drawWaveImage(idx : $0))
-            }
+            scrollStackView.appendWaveImg(view: drawWaveImage(idx : $0))
         }
     }
-    
-    // int에 맞추어 waveAnalysis의 구간을 설정해 draw
-//    func drawEntireWaveImage() -> UIImageView {
-//        let waveImgView = UIImageView()
-//        waveImgView.contentMode = .scaleToFill
-//
-//        let waveformImageDrawer = WaveformImageDrawer()
-//        let target = audio.waveAnalysis
-//        let width = target.count
-//        let height = Int(UIScreen.main.bounds.size.height) - 345
-//
-//        let image = waveformImageDrawer.waveformImage(from: target, with: .init(
-//            size : CGSize(width: width, height: height),
-//            style: .striped(.init(color: .label)),
-//            dampening: nil,
-//            scale: 1,
-//            verticalScalingFactor: 0.5 )
-//        )
-//        waveImgView.image = image ?? UIImage()
-//        waveImgView.tag = -2
-//        return waveImgView
-//    }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
     func drawWaveImage(idx : Int) -> UIImageView {
@@ -324,54 +214,46 @@ extension PlayerUpperView {
         
         let waveformImageDrawer = MyWaveformImageDrawer()
         
-        let height = Int(UIScreen.main.bounds.size.height) - 345
+        let height = Int(UIScreen.main.bounds.size.height) - 350
+        var width = 0
         let scale = 1
         
-        // target범위가 waveAnalysis 분석 개수 넘지 않도록
-        var target = idx*waveImageSize..<(idx+1)*waveImageSize
-        if audio.waveAnalysis.count < target.lowerBound {
-            print(audio.waveAnalysis.count, target.lowerBound, target.upperBound, "dont make")
-            return waveImgView
-        } else if audio.waveAnalysis.count < target.upperBound {
-            target = idx*waveImageSize..<audio.waveAnalysis.count
-            print(audio.waveAnalysis.count, target.lowerBound, target.upperBound, "partically made")
+        var target : Range = 0..<1
+        
+        // 처음과 마지막 waveImgView에는 화면 반크기의 빈 이미지 추가
+        switch idx {
+        case 0:
+            target = 0..<audio.sectionStart[idx+1]
+            width = target.count + Int(windowWidth/2)
+            waveformImageDrawer.leftOffset = Int(windowWidth/2)
+        case sectionCount - 1:
+            target = audio.sectionStart[idx]..<audio.waveAnalysis.count
+            width = target.count + Int(windowWidth/2)
+        default:
+            target = audio.sectionStart[idx]..<audio.sectionStart[idx+1]
+            width = target.count
         }
-        let width = target.count
+        
+        // 구간 색깔 선정
+        let sectionColor : UIColor = {
+            // 기본 색
+            if nowSectionIdx != idx { return UIColor(rgb: 0xfde9c5) }
+            // 파장 구간 반복일 때 색
+            else if (playerController.shouldSectionRepeat == true) { return UIColor(rgb: 0xf9a762) }
+            // 현재 재생중인 구간 색
+            else { return UIColor(rgb: 0xFFD384)}
+        }()
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
             size : CGSize(width: width, height: height),
-            backgroundColor: UIColor.systemGray5,
-            stripeConfig: .init(color: .label, width: 1, spacing: 4),
+            sectionColor : sectionColor,
             dampening: nil,
             scale: CGFloat(scale),
-            verticalScalingFactor: 0.5 )
+            verticalScalingFactor: 0.5,
+            sectionIdx : idx)
         )
         waveImgView.image = image ?? UIImage()
         waveImgView.tag = idx
-        return waveImgView
-    }
-    
-    // 전체 width의 절반에 맞추어 빈 이미지 생성
-    func drawEmptyIamge() -> UIImageView {
-        let waveImgView = UIImageView()
-        waveImgView.contentMode = .scaleToFill
-        
-        let waveformImageDrawer = MyWaveformImageDrawer()
-        
-        let width = Int(UIScreen.main.bounds.size.width / 2)
-        let height = Int(UIScreen.main.bounds.size.height) - 345
-        let scale = 1
-        
-        let image = waveformImageDrawer.drawEmptyImage(with: .init(
-            size : CGSize(width: width, height: height),
-            backgroundColor: UIColor.systemGray5,
-            stripeConfig: .init(color: .label, width: 1, spacing: 5),
-            dampening: nil,
-            scale: CGFloat(scale),
-            verticalScalingFactor: 0.5 )
-        )
-        waveImgView.image = image
-        waveImgView.tag = -1
         return waveImgView
     }
     
@@ -388,36 +270,49 @@ extension PlayerUpperView {
             name: Notification.Name("playerStatusChanged"),
             object: nil
         )
-        
+
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(resetScrollStackView),
-            name: Notification.Name("playerScrollViewReset"),
+            selector: #selector(updateScrollStackViewForWaveRepeat),
+            name: Notification.Name("tapWaveRepeatButton"),
             object: nil
         )
-        
+
         completion()
     }
     
+    // waveRepeat 버튼 눌렸을 때 호출
+    @objc func updateScrollStackViewForWaveRepeat() {
+        // 구간 처음으로 시간 이동
+        if playerController.shouldSectionRepeat == true {
+            if let timer = timer { if timer.isValid { timer.invalidate() }}
+            if playerController.status != .autoIntermit {
+                playerController.autoIntermittPlayer()
+                playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
+            }
+        }
+        
+        // nowSection의 색깔 선정
+        scrollStackView.changeWaveImage(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx))
+    }
+
     // ScrollStackView 재구성
     @objc func resetScrollStackView() {
         scrollStackView.removeFullySubviews()
-        audio.currentTime = playerController.player.currentTime
         configureWaveImgView()
     }
-    
+
     // noti를 받으면 status에 따라 timer에 0.01단위의 schedule을 설정
     @objc func adminTimer() {
-        if playerController.status == .play {
-            if let timer = timer {
-                if timer.isValid { return }
-            }
+        switch playerController.status {
+        case .play:
+            if let timer = timer { if timer.isValid { return } }
             self.timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
-        } else {
+        case .autoIntermit:
+            playerController.playPlayer()
+        default:
+            if let timer = timer { if timer.isValid { timer.invalidate() } }
             updatePlayTime()
-            if let timer = timer {
-                if timer.isValid { timer.invalidate() }
-            }
         }
     }
     
@@ -428,91 +323,121 @@ extension PlayerUpperView {
         timerLabel.text = time.toStringContainMilisec()
         slider.value = Float(time)
     }
-    
-    // scrollView의 x좌표 변화가 생겼을 때 scrollStackView의 waveimage 관리
-    private func updateScrollStackView(newImageIdx : Int, nx : Double){
-        if newImageIdx != nowImageIdx {
-            // 패치 저장된 내용 사용하기
-            if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx < nowImageIdx {
-                audio.currentTime = playerController.player.currentTime
-                prefetchPrevious(newImageIdx : newImageIdx)
-            }
-            else if abs(newImageIdx - nowImageIdx) < 3 && newImageIdx > nowImageIdx {
-                audio.currentTime = playerController.player.currentTime
-                prefetchNext(newImageIdx : newImageIdx)
-            }
-            // slider or 새로 오디오 재생
-            else {
-                resetScrollStackView()
+
+    // 주어진 time을 바탕으로 left,right idx를 비롯해 scrollView의 stack 관리
+    private func updateScrollStackView(time : TimeInterval){
+        let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+        let rightEnd = rightSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[rightSectionIdx+1]
+        
+        let target = Int(time * changedAmountPerSec)
+        let windowStart = target - Int(windowWidth/2) - 100
+        let windowEnd = target + Int(windowWidth/2) + 100
+        
+        if target < leftStart || rightEnd < target {
+            resetScrollStackView()
+        }
+        else {
+            var nx = scrollView.contentOffset.x
+            while true {
+                let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+                let leftEnd = leftSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[leftSectionIdx+1]
+                
+                // 왼쪽에 waveImg추가
+                if windowStart < leftStart && leftSectionIdx != 0 {
+                    leftSectionIdx -= 1
+                    let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+                    let leftEnd = leftSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[leftSectionIdx+1]
+                    nx += scrollStackView.appendLeftWaveImg(view: drawWaveImage(idx : leftSectionIdx))
+                }
+                // 왼쪽의 waveImg 제거
+                else if leftEnd < windowStart && leftSectionIdx != sectionCount-1 {
+                    nx -= scrollStackView.popLeftWaveImg()
+                    leftSectionIdx += 1
+                }
+                else {
+                    break
+                }
             }
             
-            if nowImageIdx != newImageIdx { nowImageIdx = newImageIdx }
+            while true {
+                let rightStart = rightSectionIdx == 0 ? 0 : audio.sectionStart[rightSectionIdx]
+                let rightEnd = rightSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[rightSectionIdx+1]
+                
+                // 오른쪽 waveImg 제거
+                if windowEnd < rightStart && rightSectionIdx != 0 {
+                    scrollStackView.popWaveImg()
+                    rightSectionIdx -= 1
+                }
+                // 오른쪽 이미지 추가
+                else if rightEnd < windowEnd && rightSectionIdx != sectionCount-1 {
+                    rightSectionIdx += 1
+                    scrollStackView.appendWaveImg(view: drawWaveImage(idx : rightSectionIdx))
+                    
+                    let rightStart = rightSectionIdx == 0 ? 0 : audio.sectionStart[rightSectionIdx]
+                    let rightEnd = rightSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[rightSectionIdx+1]
+                }
+                else { break }
+            }
+            
+            // scrollView x좌표 업데이트
+            if scrollView.contentOffset.x != nx {
+                scrollView.contentOffset.x = nx
+            }
+            
         }
     }
     
     // player currentTime에 맞추어 시간 label들 관리 및 scrollView 위치이동
     @objc func updatePlayTime() {
-        // 끝까지 다 재생되었다면
-        if audio.duration - 0.02 <= playerController.player.currentTime {
-            playerController.rePlayPlayer()
-            return
-        }
-        
         let targetAnalysis = playerController.player.currentTime * changedAmountPerSec
         
         // ab반복 여부 체크
-        if playerController.shouldABRepeat == true && (Int(targetAnalysis) + 5 < playerController.positionA! || playerController.positionB! < Int(targetAnalysis)) {
-            if let timer = timer {
-                if timer.isValid { timer.invalidate() }
+        if playerController.shouldABRepeat == true &&
+            (targetAnalysis < Double(playerController.positionA!) || Double(playerController.positionB!) < targetAnalysis)
+        {
+            if let timer = timer { if timer.isValid { timer.invalidate() }}
+            if playerController.status != .autoIntermit {
+                playerController.autoIntermittPlayer()
+                playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
             }
-            playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
             return
         }
-        
+
         // wave 반복 여부 체크
-        if playerController.shouldSectionRepeat == true && (Int(targetAnalysis) + 5 < playerController.positionSectionStart! || playerController.positionSectionEnd! < Int(targetAnalysis)) {
-            if let timer = timer {
-                if timer.isValid { timer.invalidate() }
+        if playerController.shouldSectionRepeat == true
+            && (targetAnalysis < Double(playerController.positionSectionStart!) || Double(playerController.positionSectionEnd!) < targetAnalysis)
+        {
+            if let timer = timer { if timer.isValid { timer.invalidate() }}
+            if playerController.status != .autoIntermit {
+                playerController.autoIntermittPlayer()
+                playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
             }
-            playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
             return
         }
-        
-        
-        let newImageIdx = Int(targetAnalysis / Double(waveImageSize))
-        let nx = (newImageIdx == 0) ? targetAnalysis : (targetAnalysis - Double(waveImageSize * newImageIdx) + Double(waveImageSize))
         
         // label들 시간 업데이트
         updateTimeLabel(time: playerController.player.currentTime)
+
+        // 현재 시각에 따른 scrollStackView 관리
+        updateScrollStackView(time: playerController.player.currentTime)
+
+        // time에 맞추어 scrollView 좌표 업데이트
+        setScrollViewX(time : playerController.player.currentTime)
         
-        // nx에 따른 scrollStackView 관리
-        updateScrollStackView(newImageIdx: newImageIdx, nx: nx)
-        
-        // scrollView 좌표 업데이트
-        scrollView.contentOffset = CGPointMake(nx, 0)
-        
-    }
-    
-    func prefetchPrevious(newImageIdx : Int) {
-        if newImageIdx == 0 && nowImageIdx == 1 { return }
-        
-        let diff = abs(newImageIdx - nowImageIdx)
-        for _ in 0..<diff {
-            scrollStackView.popWaveImg()
-            scrollStackView.appendLeftWaveImg(view : drawWaveImage(idx: scrollStackView.firstViewTag() - 1 ))
+        // nowSectionIdx에 맞추어 waveImage color 바꾸기
+        let newSectionIdx = getSectionidx(target: Int(targetAnalysis))
+        if nowSectionIdx != newSectionIdx {
+            let originSectionIdx = nowSectionIdx
+            nowSectionIdx = newSectionIdx
+            scrollStackView.changeWaveImage(WaveIdx: originSectionIdx, view: drawWaveImage(idx: originSectionIdx))
+            scrollStackView.changeWaveImage(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx))
+            
+            
+            audio.currentTime = playerController.player.currentTime
+            CoreDataFunc.shared.updateCurrentTime(audio: audio)
         }
+
     }
-        
-    func prefetchNext(newImageIdx : Int) {
-        if newImageIdx == 1 { return }
-        let diff = abs(newImageIdx - nowImageIdx)
-        for _ in 0..<diff {
-            scrollStackView.popLeftWaveImg()
-            scrollStackView.appendWaveImg(view : drawWaveImage(idx: scrollStackView.lastViewTag() + 1 ))
-        }
-        
-    }
-    
 }
 
 
@@ -528,12 +453,11 @@ extension PlayerUpperView {
                 }
             case .moved:
                 // 슬라이더 드래그 중에 value에 맞추어 player 시간 업데이트
-                if let timer = timer { if timer.isValid { return }}
-//                playerController.changePlayerTime(changedTime : Double(slider.value))
+                playerController.changePlayerTime(changedTime : Double(slider.value))
             case .ended:
                 // 슬라이더 드래그 끝날 때 플레이어 잠시 멈춤이라면 재생
-                if let timer = timer { if timer.isValid { return }}
                 playerController.changePlayerTime(changedTime : Double(slider.value))
+                
                 if playerController.status == .intermit {
                     playerController.playPlayer()
                 }
@@ -544,9 +468,9 @@ extension PlayerUpperView {
     }
 }
 
-// 스크롤 동작 인식
+
+//// 스크롤 동작 인식
 extension PlayerUpperView : UIScrollViewDelegate {
-    
     // 드래그 시작할 때 재생중이라면 플레이어 잠시 멈춤
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if playerController.status == .play {
@@ -557,45 +481,30 @@ extension PlayerUpperView : UIScrollViewDelegate {
     // 드래그에 위치에 따라 시간 라벨들 업데이트 및 waveStackView 업데이트
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let timer = timer { if timer.isValid { return }}
+
+        let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+        let nx = scrollView.contentOffset.x
+        var target = Double(leftStart) + nx
+        if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
         
-        var x = Double(scrollView.contentOffset.x)
-        var newImageIdx = nowImageIdx
-        let waveSize = Double(waveImageSize)
+        if target <= 0 { target = 0.0 }
+        else if Double(audio.waveAnalysis.count) <= target { target = Double(audio.waveAnalysis.count) }
         
-        if nowImageIdx == 0 {
-            updateTimeLabel(time: TimeInterval(x / changedAmountPerSec))
-            
-            if x > waveSize {
-                newImageIdx += 1
-            }
-        }
-        else {
-            let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-            updateTimeLabel(time: TimeInterval(totalWidth / changedAmountPerSec))
-            
-            if x < waveSize {
-                x += waveSize
-                newImageIdx -= 1
-            }
-            else if x > waveSize * 2 {
-                x -= waveSize
-                newImageIdx += 1
-            }
-        }
-        updateScrollStackView(newImageIdx: newImageIdx, nx: x)
+        updateTimeLabel(time: target/changedAmountPerSec)
+        updateScrollStackView(time: target/changedAmountPerSec)
     }
     
     // 드래그 끝날 때 끄는 동작 없다면 플레이어 시간 업데이트
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate == false {
-            let x = Double(scrollView.contentOffset.x)
-            if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec)) }
-            else {
-                let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-                playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
-            }
+            let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+            let nx = scrollView.contentOffset.x
+            var target = Double(leftStart) + nx
+            if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
             
-            // 잠시 멈춤이라면 재생
+            playerController.changePlayerTime(changedTime : target/changedAmountPerSec)
+
+//             잠시 멈춤이라면 재생
             if playerController.status == .intermit {
                 playerController.playPlayer()
             }
@@ -605,17 +514,110 @@ extension PlayerUpperView : UIScrollViewDelegate {
     
     // 끄는 동작 끝날 때 플레이어 시간 업데이트
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let x = Double(scrollView.contentOffset.x)
-        if nowImageIdx == 0 { playerController.changePlayerTime(changedTime : TimeInterval(x / changedAmountPerSec))}
-        else {
-            let totalWidth = Double(waveImageSize * (nowImageIdx-1)) + x
-            playerController.changePlayerTime(changedTime : TimeInterval(totalWidth / changedAmountPerSec))
-        }
+        let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+        let nx = scrollView.contentOffset.x
+        var target = Double(leftStart) + nx
+        if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
         
-        // 잠시 멈춤이라면 재생
+        playerController.changePlayerTime(changedTime : target/changedAmountPerSec)
+
+//         잠시 멈춤이라면 재생
         if playerController.status == .intermit {
             playerController.playPlayer()
         }
+    }
+}
+
+
+
+
+// repeat button functions
+extension PlayerUpperView {
+    
+    @objc private func tapAButton() {
+        if playerController.positionA == nil {
+            // A위치 설정
+            
+            let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+            let nx = scrollView.contentOffset.x
+            var target = Double(leftStart) + nx
+            if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
+            
+            playerController.positionA = Int(target)
+
+            Abutton.tintColor = .red
+            // backToA, B 클릭 가능하게
+            backToAbutton.isEnabled = true
+            Bbutton.isEnabled = true
+            trashButton.isEnabled = true
+        } else {
+            // A 위치 설정 해제
+            playerController.positionA = nil
+            Abutton.tintColor = .label
+            // backToA, B 클릭 불가능하게
+            backToAbutton.isEnabled = false
+            Bbutton.isEnabled = false
+            trashButton.isEnabled = false
+        }
+
+        // wave image업데이트
+        resetScrollStackView()
+    }
+
+    @objc private func tapBackToAButton() {
+        if playerController.positionA != nil {
+            playerController.autoIntermittPlayer()
+            playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
+        }
+    }
+
+    @objc private func taptrashButton() {
+        playerController.shouldABRepeat = false
+        playerController.positionA = nil
+        playerController.positionB = nil
+
+        Abutton.tintColor = .label
+        Bbutton.tintColor = .label
+
+        Abutton.isEnabled = true
+        backToAbutton.isEnabled = false
+        Bbutton.isEnabled = false
+        trashButton.isEnabled = false
+
+        resetScrollStackView()
+    }
+
+
+    @objc private func tapBButton() {
+        // B 위치 설정
+        if playerController.positionB == nil {
+            let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
+            let nx = scrollView.contentOffset.x
+            var target = Double(leftStart) + nx
+            if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
+            
+            playerController.positionB = Int(target)
+            
+            Bbutton.tintColor = .blue
+
+            playerController.shouldABRepeat = true
+
+            Abutton.isEnabled = false
+        } else {
+            playerController.positionB = nil
+            Bbutton.tintColor = .label
+
+            playerController.shouldABRepeat = false
+
+            Abutton.isEnabled = true
+            Bbutton.isEnabled = true
+            backToAbutton.isEnabled = true
+            trashButton.isEnabled = true
+        }
+
+        // wave image업데이트
+        resetScrollStackView()
+
     }
 }
 
@@ -657,11 +659,10 @@ extension PlayerUpperView {
             $0.height.equalTo(30)
         }
         
-        
         scrollView.addSubview(scrollStackView)
         scrollView.snp.makeConstraints{
             $0.leading.trailing.equalToSuperview()
-            $0.top.equalTo(upperControllerSV.snp.bottom).offset(20)
+            $0.top.equalTo(upperControllerSV.snp.bottom).offset(15)
             $0.bottom.equalTo(timerLabel.snp.top).offset(-20)
         }
         scrollStackView.snp.makeConstraints{
@@ -669,10 +670,10 @@ extension PlayerUpperView {
         }
         
         currentIndicator.snp.makeConstraints{
-            $0.top.equalTo(scrollView).inset(14)
-            $0.bottom.equalTo(scrollView).inset(14)
+            $0.top.equalTo(scrollView).inset(7)
+            $0.bottom.equalTo(scrollView).inset(20)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(1)
+            $0.width.equalTo(2)
         }
         
         timerLabel.snp.makeConstraints{

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFAudio
 
 
 class NewPlayerVIewController : UIViewController {
@@ -17,6 +18,7 @@ class NewPlayerVIewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
+        PlayerController.playerController.player.delegate = self
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -38,6 +40,18 @@ class NewPlayerVIewController : UIViewController {
     
     
 }
+
+
+// 끝까지 재생되었다면 끝 시간에서 정지
+extension NewPlayerVIewController : AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        PlayerController.playerController.pausePlayer()
+        playerLowerView.setPlayButtonImage()
+        
+        PlayerController.playerController.changePlayerTime(changedTime: player.duration)
+    }
+}
+
 
 
 // UI Design

@@ -66,7 +66,9 @@ class SettingViewController : UIViewController {
         audioSettingList = [
             SettingCategory(name: "startLocation", text: "시작 위치", icon: "play", type: .listSetting),
             SettingCategory(name: "rateSetting", text: "재생 속도", icon: "forward.circle", type: .rateSetting),
-            SettingCategory(name: "secondTerm", text: "초단위 이동", icon: "arrow.rectanglepath", type: .listSetting),
+            SettingCategory(name: "secondTerm", text: "초단위 이동", icon: "arrow.triangle.2.circlepath", type: .listSetting),
+            SettingCategory(name: "repeatTerm", text: "반복 대기시간", icon: "repeat.circle", type: .listSetting)
+            
         ]
         supportSettingList = [
             SettingCategory(name: "", text: "평가", icon: "star", type: .another),

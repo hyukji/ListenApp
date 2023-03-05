@@ -7,37 +7,32 @@
 
 import UIKit
 
-extension UIStackView {
+class MyWaveImgStackView : UIStackView {
     
-    func firstViewWidth() -> CGFloat {
-        let imgView = arrangedSubviews[0] as! UIImageView
-        return imgView.image!.size.width
-    }
-    
-    func lastViewWidth() -> CGFloat {
-        let cnt = arrangedSubviews.count
-        let imgView = arrangedSubviews[cnt-1] as! UIImageView
-        return imgView.image!.size.width
-    }
+    var subWaveViewArr : [UIImageView] = []
 
     func popWaveImg() {
         let cnt = arrangedSubviews.count
         removeFully(view : arrangedSubviews[cnt-1])
+        subWaveViewArr.remove(at: cnt-1)
     }
     
     func popLeftWaveImg() -> CGFloat {
         let view = arrangedSubviews[0] as! UIImageView
         removeFully(view : arrangedSubviews[0])
+        subWaveViewArr.remove(at: 0)
         
         return view.image?.size.width ?? 0
     }
     
-    func appendWaveImg(view : UIImageView) {
+    func appendWaveImg(view : UIImageView, subView : UIImageView) {
         self.addArrangedSubview(view)
+        subWaveViewArr.append(subView)
     }
     
-    func appendLeftWaveImg(view : UIImageView) -> CGFloat {
+    func appendLeftWaveImg(view : UIImageView, subView : UIImageView) -> CGFloat {
         insertArrangedSubview(view, at: 0)
+        subWaveViewArr.insert(subView, at: 0)
         return view.image?.size.width ?? 0
     }
 
@@ -50,14 +45,7 @@ extension UIStackView {
         arrangedSubviews.forEach{
             removeFully(view: $0)
         }
-    }
-    
-    func showAddSubViewsIdx() {
-        var answer = "scrollStackView arr = "
-        arrangedSubviews.forEach{
-            answer += "\($0.tag) "
-        }
-        print(answer)
+        subWaveViewArr = []
     }
     
     func changeWaveImage(WaveIdx : Int, view : UIImageView) {
@@ -69,4 +57,39 @@ extension UIStackView {
         }
     }
     
+    func changeWithSubArr(WaveIdx : Int) {
+        for i in 0..<arrangedSubviews.count {
+            if arrangedSubviews[i].tag == WaveIdx {
+                let view = arrangedSubviews[i] as! UIImageView
+                removeFully(view: arrangedSubviews[i])
+                insertArrangedSubview(subWaveViewArr[i], at: i)
+                subWaveViewArr[i] = view
+            }
+        }
+    }
+    
+}
+
+
+// additional func for debugging
+extension MyWaveImgStackView {
+    
+    func firstViewWidth() -> CGFloat {
+        let imgView = arrangedSubviews[0] as! UIImageView
+        return imgView.image!.size.width
+    }
+    
+    func lastViewWidth() -> CGFloat {
+        let cnt = arrangedSubviews.count
+        let imgView = arrangedSubviews[cnt-1] as! UIImageView
+        return imgView.image!.size.width
+    }
+    
+    func showAddSubViewsIdx() {
+        var answer = "scrollStackView arr = "
+        arrangedSubviews.forEach{
+            answer += "\($0.tag) "
+        }
+        print(answer)
+    }
 }

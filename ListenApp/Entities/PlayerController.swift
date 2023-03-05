@@ -5,6 +5,10 @@
 //  Created by 곽지혁 on 2023/01/16.
 //
 
+protocol AdminPlayBtnProtocol {
+    func setPlayButtonImage()
+}
+
 import Foundation
 import AVFoundation
 
@@ -14,6 +18,8 @@ enum PlayerStatus {
     case stop
     case intermit
     case autoIntermit
+    case ABrepeatIntermit
+    case WaveRepeatIntermit
 }
 
 class PlayerController {
@@ -23,16 +29,21 @@ class PlayerController {
     var audio : AudioData?
     var url : URL?
     
+    var playButtonDelegate : AdminPlayBtnProtocol?
+    
     var status : PlayerStatus = .pause
     
     var isNewAudio = false
     
     let changedAmountPerSec = 100.0
+    var repeatTerm = 1.0
     
+    // ab반복
     var shouldABRepeat = false
     var positionA : Int?
     var positionB : Int?
     
+    // wave반복
     var shouldSectionRepeat = false
     var positionSectionStart : Int?
     var positionSectionEnd : Int?
@@ -45,6 +56,15 @@ class PlayerController {
         
         do {
             isNewAudio = false
+            
+            shouldABRepeat = false
+            positionA = nil
+            positionB = nil
+            
+            shouldSectionRepeat = false
+            positionSectionStart = nil
+            positionSectionEnd = nil
+            
             self.audio = audio
             self.url = url
             
@@ -74,6 +94,7 @@ class PlayerController {
         status = .play
 
         NotificateTo()
+        playButtonDelegate?.setPlayButtonImage()
     }
     
     func stopPlayer() {
@@ -82,13 +103,7 @@ class PlayerController {
         status = .stop
         
         NotificateTo()
-    }
-    
-    func intermitPlayer() {
-        player.pause()
-        status = .intermit
-        
-        NotificateTo()
+        playButtonDelegate?.setPlayButtonImage()
     }
     
     func pausePlayer() {
@@ -96,13 +111,24 @@ class PlayerController {
         status = .pause
         
         NotificateTo()
+        playButtonDelegate?.setPlayButtonImage()
     }
     
-    func autoIntermittPlayer() {
-        if status == .play {
-            player.pause()
-            status = .autoIntermit
-        }
+    func intermitPlayer() {
+        player.pause()
+        status = .intermit
+        
+        NotificateTo()
+        playButtonDelegate?.setPlayButtonImage()
+    }
+    
+    func autoIntermittPlayer(intermitCategory : PlayerStatus) {
+        player.pause()
+        status = intermitCategory
+        
+        print("autoIntermittPlayer", status)
+        playButtonDelegate?.setPlayButtonImage()
+        print("after setPlaybtn")
     }
     
     func changePlayerTime(changedTime : TimeInterval) {

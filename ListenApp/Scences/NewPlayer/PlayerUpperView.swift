@@ -6,7 +6,19 @@
 //
 
 import UIKit
-//import DSWaveformImage
+
+
+enum ABbuttonStatus {
+    case none
+    case onlyA
+    case ABboth
+}
+
+enum waveCategory {
+    case basicWave
+    case nowWave
+    case repeatWave
+}
 
 class PlayerUpperView : UIView {
     let playerController = PlayerController.playerController
@@ -21,6 +33,8 @@ class PlayerUpperView : UIView {
     var nowSectionIdx = 0
     var leftSectionIdx = 0
     var rightSectionIdx = 0
+    
+    var repeatTerm = 0.5
     
     private var slider : UISlider = {
         let slider = UISlider()
@@ -75,9 +89,21 @@ class PlayerUpperView : UIView {
         Bbutton.addTarget(self, action: #selector(tapBButton), for: .touchUpInside)
         trashButton.addTarget(self, action: #selector(taptrashButton), for: .touchUpInside)
         
-        backToAbutton.isEnabled = false
-        Bbutton.isEnabled = false
-        trashButton.isEnabled = false
+        if playerController.shouldABRepeat {
+            if (playerController.positionA != nil && playerController.positionB != nil) {
+                setUpperControllerSVButton(status: .ABboth)
+            }
+            else {
+                playerController.shouldABRepeat = false
+                setUpperControllerSVButton(status : .none)
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!! shouldABrepeat이 true인데 a,b 좌표 없음 !!!!!!!!!!!!!!!!!!!!!!")
+            }
+        } else if (playerController.positionA != nil) {
+            // a 만 설정되어 있다면
+            setUpperControllerSVButton(status: .onlyA)
+        } else {
+            setUpperControllerSVButton(status : .none)
+        }
         
         [Abutton, backToAbutton, trashButton, Bbutton].forEach{
             stackView.addArrangedSubview($0)
@@ -86,14 +112,13 @@ class PlayerUpperView : UIView {
         return stackView
     }()
     
-    lazy var scrollStackView : UIStackView = {
-        let stackView = UIStackView()
+    lazy var scrollStackView : MyWaveImgStackView = {
+        let stackView = MyWaveImgStackView()
         stackView.axis = .horizontal
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         return stackView
     }()
-    
     
     lazy var scrollView : UIScrollView = {
         let scrollView = UIScrollView()
@@ -135,6 +160,8 @@ class PlayerUpperView : UIView {
         addNotificationObserver(){
             self.playerController.playPlayer()
         }
+        repeatTerm = getRepeatTerm()
+        print("repeatTerm", repeatTerm)
     }
     
     required init?(coder: NSCoder) {
@@ -167,6 +194,14 @@ class PlayerUpperView : UIView {
             idx += 1
         }
         return idx
+    }
+    
+    
+    private func getRepeatTerm() -> Double {
+        let terms = [0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0, 15.0]
+        let repeatTermSelected = AdminUserDefault.shared.settingSelected["repeatTerm"] ?? 0
+        
+        return terms[repeatTermSelected]
     }
     
     
@@ -203,12 +238,15 @@ extension PlayerUpperView {
     // int 배열에 맞추어 waveImage 생성 후 scrollStackView에 추가
     func setImgOnScrollSV(waveImageIdxList : [Int]) {
         waveImageIdxList.forEach{
-            scrollStackView.appendWaveImg(view: drawWaveImage(idx : $0))
+            scrollStackView.appendWaveImg(
+                view: drawWaveImage(idx : $0, status: .basicWave),
+                subView: drawWaveImage(idx : $0, status: .nowWave)
+            )
         }
     }
     
     // int에 맞추어 waveAnalysis의 구간을 설정해 draw
-    func drawWaveImage(idx : Int) -> UIImageView {
+    func drawWaveImage(idx : Int, status : waveCategory) -> UIImageView {
         let waveImgView = UIImageView()
         waveImgView.contentMode = .scaleToFill
         
@@ -236,12 +274,15 @@ extension PlayerUpperView {
         
         // 구간 색깔 선정
         let sectionColor : UIColor = {
-            // 기본 색
-            if nowSectionIdx != idx { return UIColor(rgb: 0xfde9c5) }
-            // 파장 구간 반복일 때 색
-            else if (playerController.shouldSectionRepeat == true) { return UIColor(rgb: 0xf9a762) }
             // 현재 재생중인 구간 색
-            else { return UIColor(rgb: 0xFFD384)}
+            switch status {
+            case .basicWave:
+                return UIColor(rgb: 0xfde9c5)
+            case .nowWave:
+                return UIColor(rgb: 0xFFD384)
+            case .repeatWave:
+                return UIColor(rgb: 0xFBA5A9)
+            }
         }()
         
         let image = waveformImageDrawer.waveformImage(from: target, with: .init(
@@ -287,13 +328,13 @@ extension PlayerUpperView {
         if playerController.shouldSectionRepeat == true {
             if let timer = timer { if timer.isValid { timer.invalidate() }}
             if playerController.status != .autoIntermit {
-                playerController.autoIntermittPlayer()
+                playerController.autoIntermittPlayer(intermitCategory: .WaveRepeatIntermit)
                 playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
             }
         }
         
         // nowSection의 색깔 선정
-        scrollStackView.changeWaveImage(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx))
+        scrollStackView.changeWaveImage(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx, status: .repeatWave))
     }
 
     // ScrollStackView 재구성
@@ -308,7 +349,7 @@ extension PlayerUpperView {
         case .play:
             if let timer = timer { if timer.isValid { return } }
             self.timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updatePlayTime), userInfo: nil, repeats: true)
-        case .autoIntermit:
+        case .autoIntermit, .ABrepeatIntermit, .WaveRepeatIntermit:
             playerController.playPlayer()
         default:
             if let timer = timer { if timer.isValid { timer.invalidate() } }
@@ -345,9 +386,10 @@ extension PlayerUpperView {
                 // 왼쪽에 waveImg추가
                 if windowStart < leftStart && leftSectionIdx != 0 {
                     leftSectionIdx -= 1
-                    let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
-                    let leftEnd = leftSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[leftSectionIdx+1]
-                    nx += scrollStackView.appendLeftWaveImg(view: drawWaveImage(idx : leftSectionIdx))
+                    nx += scrollStackView.appendLeftWaveImg(
+                        view: drawWaveImage(idx : leftSectionIdx, status: .basicWave),
+                        subView: drawWaveImage(idx : leftSectionIdx, status: .nowWave)
+                    )
                 }
                 // 왼쪽의 waveImg 제거
                 else if leftEnd < windowStart && leftSectionIdx != sectionCount-1 {
@@ -371,10 +413,10 @@ extension PlayerUpperView {
                 // 오른쪽 이미지 추가
                 else if rightEnd < windowEnd && rightSectionIdx != sectionCount-1 {
                     rightSectionIdx += 1
-                    scrollStackView.appendWaveImg(view: drawWaveImage(idx : rightSectionIdx))
-                    
-                    let rightStart = rightSectionIdx == 0 ? 0 : audio.sectionStart[rightSectionIdx]
-                    let rightEnd = rightSectionIdx == sectionCount-1 ? audio.waveAnalysis.count : audio.sectionStart[rightSectionIdx+1]
+                    scrollStackView.appendWaveImg(
+                        view: drawWaveImage(idx : rightSectionIdx, status: .basicWave),
+                        subView: drawWaveImage(idx : rightSectionIdx, status: .nowWave)
+                    )
                 }
                 else { break }
             }
@@ -387,31 +429,42 @@ extension PlayerUpperView {
         }
     }
     
+    
+    // 반복 시 설정한 대기 시간만큼 지연후 재생
+    private func changeTimeForRepeat(time : TimeInterval, intermitCategory : PlayerStatus) {
+        if let timer = timer { if timer.isValid { timer.invalidate() }}
+        print("changeTimeForRepeat")
+        if playerController.status != intermitCategory {
+            playerController.autoIntermittPlayer(intermitCategory: intermitCategory)
+            playerController.player.currentTime = time
+            updatePlayTime()
+            print("enddddddddd")
+            
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + repeatTerm) {
+                // 지연 후에 아직 intermit이라면
+                print("cehck ", self.playerController.status)
+                if self.playerController.status == intermitCategory {
+                    print("action")
+                    self.playerController.changePlayerTime(changedTime: time)
+                }
+            }
+        }
+    }
+    
+    
     // player currentTime에 맞추어 시간 label들 관리 및 scrollView 위치이동
     @objc func updatePlayTime() {
         let targetAnalysis = playerController.player.currentTime * changedAmountPerSec
         
-        // ab반복 여부 체크
-        if playerController.shouldABRepeat == true &&
-            (targetAnalysis < Double(playerController.positionA!) || Double(playerController.positionB!) < targetAnalysis)
-        {
-            if let timer = timer { if timer.isValid { timer.invalidate() }}
-            if playerController.status != .autoIntermit {
-                playerController.autoIntermittPlayer()
-                playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
-            }
+        // ab 반복
+        if playerController.shouldABRepeat == true && (targetAnalysis < Double(playerController.positionA!) || Double(playerController.positionB!) < targetAnalysis) {
+            changeTimeForRepeat(time : Double(self.playerController.positionA!) / self.changedAmountPerSec, intermitCategory: .ABrepeatIntermit)
             return
         }
 
-        // wave 반복 여부 체크
-        if playerController.shouldSectionRepeat == true
-            && (targetAnalysis < Double(playerController.positionSectionStart!) || Double(playerController.positionSectionEnd!) < targetAnalysis)
-        {
-            if let timer = timer { if timer.isValid { timer.invalidate() }}
-            if playerController.status != .autoIntermit {
-                playerController.autoIntermittPlayer()
-                playerController.changePlayerTime(changedTime: Double(playerController.positionSectionStart!) / changedAmountPerSec)
-            }
+        // wave 반복
+        if playerController.shouldSectionRepeat == true && (targetAnalysis < Double(playerController.positionSectionStart!) || Double(playerController.positionSectionEnd!) < targetAnalysis) {
+            changeTimeForRepeat(time : Double(playerController.positionSectionStart!) / changedAmountPerSec, intermitCategory: .WaveRepeatIntermit)
             return
         }
         
@@ -429,8 +482,8 @@ extension PlayerUpperView {
         if nowSectionIdx != newSectionIdx {
             let originSectionIdx = nowSectionIdx
             nowSectionIdx = newSectionIdx
-            scrollStackView.changeWaveImage(WaveIdx: originSectionIdx, view: drawWaveImage(idx: originSectionIdx))
-            scrollStackView.changeWaveImage(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx))
+            scrollStackView.changeWithSubArr(WaveIdx: originSectionIdx)
+            scrollStackView.changeWithSubArr(WaveIdx: nowSectionIdx)
             
             
             audio.currentTime = playerController.player.currentTime
@@ -529,35 +582,52 @@ extension PlayerUpperView : UIScrollViewDelegate {
 }
 
 
-
-
 // repeat button functions
 extension PlayerUpperView {
+    private func setUpperControllerSVButton(status : ABbuttonStatus) {
+        switch status {
+        case .none:
+            Abutton.tintColor = .label
+            Bbutton.tintColor = .label
+            
+            Abutton.isEnabled = true
+            backToAbutton.isEnabled = false
+            Bbutton.isEnabled = false
+            trashButton.isEnabled = false
+        case .onlyA:
+            Abutton.tintColor = .red
+            Bbutton.tintColor = .label
+            
+            Abutton.isEnabled = true
+            backToAbutton.isEnabled = true
+            Bbutton.isEnabled = true
+            trashButton.isEnabled = true
+        case .ABboth:
+            Abutton.tintColor = .red
+            Bbutton.tintColor = .blue
+            
+            Abutton.isEnabled = false
+            backToAbutton.isEnabled = true
+            trashButton.isEnabled = true
+            Bbutton.isEnabled = true
+        }
+    }
     
     @objc private func tapAButton() {
         if playerController.positionA == nil {
             // A위치 설정
-            
             let leftStart = leftSectionIdx == 0 ? 0 : audio.sectionStart[leftSectionIdx]
             let nx = scrollView.contentOffset.x
             var target = Double(leftStart) + nx
             if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
-            
             playerController.positionA = Int(target)
-
-            Abutton.tintColor = .red
-            // backToA, B 클릭 가능하게
-            backToAbutton.isEnabled = true
-            Bbutton.isEnabled = true
-            trashButton.isEnabled = true
+            
+            setUpperControllerSVButton(status: .onlyA)
         } else {
             // A 위치 설정 해제
             playerController.positionA = nil
-            Abutton.tintColor = .label
-            // backToA, B 클릭 불가능하게
-            backToAbutton.isEnabled = false
-            Bbutton.isEnabled = false
-            trashButton.isEnabled = false
+            
+            setUpperControllerSVButton(status: .none)
         }
 
         // wave image업데이트
@@ -566,7 +636,7 @@ extension PlayerUpperView {
 
     @objc private func tapBackToAButton() {
         if playerController.positionA != nil {
-            playerController.autoIntermittPlayer()
+            playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
             playerController.changePlayerTime(changedTime: Double(playerController.positionA!) / changedAmountPerSec)
         }
     }
@@ -575,14 +645,8 @@ extension PlayerUpperView {
         playerController.shouldABRepeat = false
         playerController.positionA = nil
         playerController.positionB = nil
-
-        Abutton.tintColor = .label
-        Bbutton.tintColor = .label
-
-        Abutton.isEnabled = true
-        backToAbutton.isEnabled = false
-        Bbutton.isEnabled = false
-        trashButton.isEnabled = false
+        
+        setUpperControllerSVButton(status: .none)
 
         resetScrollStackView()
     }
@@ -597,22 +661,16 @@ extension PlayerUpperView {
             if leftSectionIdx != 0 { target += Double(Int(windowWidth/2)) }
             
             playerController.positionB = Int(target)
-            
-            Bbutton.tintColor = .blue
 
             playerController.shouldABRepeat = true
-
-            Abutton.isEnabled = false
+            
+            setUpperControllerSVButton(status: .ABboth)
         } else {
             playerController.positionB = nil
-            Bbutton.tintColor = .label
 
             playerController.shouldABRepeat = false
-
-            Abutton.isEnabled = true
-            Bbutton.isEnabled = true
-            backToAbutton.isEnabled = true
-            trashButton.isEnabled = true
+            
+            setUpperControllerSVButton(status: .onlyA)
         }
 
         // wave image업데이트

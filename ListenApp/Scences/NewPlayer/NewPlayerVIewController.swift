@@ -53,7 +53,6 @@ extension NewPlayerVIewController : AVAudioPlayerDelegate {
 }
 
 
-
 // UI Design
 extension NewPlayerVIewController {
     func setNavigationBar(title : String) {

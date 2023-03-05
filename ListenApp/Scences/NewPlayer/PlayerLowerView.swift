@@ -12,6 +12,7 @@ class PlayerLowerView : UIView {
     let audio = PlayerController.playerController.audio!
     
     let playButton = UIButton()
+    var secondTerm = 5
     
     lazy var normalControllerSV : UIStackView = {
         let stackView = UIStackView()
@@ -27,7 +28,6 @@ class PlayerLowerView : UIView {
         
         let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30), scale: .default)
         
-        let secondTerm = getSecondTerm()
         if secondTerm > 3 {
             secondBackButton.setImage(UIImage(systemName: "gobackward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
             secondFrontButton.setImage(UIImage(systemName: "goforward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
@@ -54,6 +54,7 @@ class PlayerLowerView : UIView {
         let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular), scale: .default)
         button.setImage(UIImage(systemName: "repeat", withConfiguration: imageConfig), for: .normal)
 //        button.setImage(UIImage(named: "waveRepeat", in: nil, with: imageConfig), for: .normal)
+        button.tintColor = (PlayerController.playerController.shouldSectionRepeat) ? .orange : .label
         return button
     }()
     
@@ -142,19 +143,12 @@ class PlayerLowerView : UIView {
         
         setLayout()
         configureSpeedSelector()
+        secondTerm = getSecondTerm()
+        playerController.playButtonDelegate = self
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setPlayButtonImage() {
-        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
-        if playerController.status == .play {
-            playButton.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
-        } else {
-            playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
-        }
     }
     
     private func getSecondTerm() -> Int {
@@ -164,6 +158,18 @@ class PlayerLowerView : UIView {
         return terms[secondTermSelected]
     }
     
+}
+
+extension PlayerLowerView : AdminPlayBtnProtocol {
+    func setPlayButtonImage() {
+        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
+        switch playerController.status {
+        case .play:
+            playButton.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
+        default:
+            playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: playImageConfig), for: .normal)
+        }
+    }
 }
     
 
@@ -175,21 +181,20 @@ extension PlayerLowerView {
         } else {
             playerController.playPlayer()
         }
-        setPlayButtonImage()
     }
     
     @objc private func tapSecondBackButton() {
-        let changedTime = playerController.player.currentTime - Double(getSecondTerm())
+        let changedTime = playerController.player.currentTime - Double(secondTerm)
         
-        playerController.autoIntermittPlayer()
+        playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
         if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
     
     @objc private func tapSecondFrontButton() {
-        let changedTime = playerController.player.currentTime + Double(getSecondTerm())
+        let changedTime = playerController.player.currentTime + Double(secondTerm)
         
-        playerController.autoIntermittPlayer()
+        playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
         if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
@@ -219,7 +224,7 @@ extension PlayerLowerView {
             sectionStart = audio.sectionStart[section-1]
         }
         
-        playerController.autoIntermittPlayer()
+        playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
         playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
     }
     
@@ -228,7 +233,7 @@ extension PlayerLowerView {
         if nextSection != audio.sectionStart.count {
             let sectionStart = audio.sectionStart[nextSection]
             
-            playerController.autoIntermittPlayer()
+            playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
             playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
         }
     }

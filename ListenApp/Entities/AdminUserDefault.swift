@@ -15,14 +15,16 @@ class AdminUserDefault {
         "thema" : ["시스템 설정 모드", "라이트 모드", "다크 모드"],
         "language" : ["한국어", "영어"],
         "startLocation" : ["처음부터", "종료된 시점부터"],
-        "secondTerm" : ["1s", "2s", "3s", "5s", "10s", "15s"]
+        "secondTerm" : ["1s", "2s", "3s", "5s", "10s", "15s"],
+        "repeatTerm" : ["0s", "0.5s", "1s", "2s", "3s", "5s", "10s", "15s"]
     ]
     
     var settingSelected : [String: Int] = [
         "thema" : 0,
         "language" : 0,
         "startLocation" : 0,
-        "secondTerm" : 0
+        "secondTerm" : 0,
+        "repeatTerm" : 1
     ]
     
     let themas = [UIUserInterfaceStyle.unspecified, UIUserInterfaceStyle.light, UIUserInterfaceStyle.dark]
@@ -32,7 +34,6 @@ class AdminUserDefault {
     var LastAudioCreationDate : Date = Date()
     
     private init() {
-        print("init")
         registerData()
         loadData()
     }
@@ -45,6 +46,7 @@ class AdminUserDefault {
              
             "startLocation" : settingSelected["startLocation"]!,
             "secondTerm" : settingSelected["secondTerm"]!,
+            "repeatTerm" : settingSelected["repeatTerm"]!,
                         
             "rateSetting" : rateSetting,
             
@@ -60,9 +62,9 @@ class AdminUserDefault {
         
         settingSelected["startLocation"] = UserDefaults.standard.integer(forKey: "startLocation")
         settingSelected["secondTerm"] = UserDefaults.standard.integer(forKey: "secondTerm")
+        settingSelected["repeatTerm"] = UserDefaults.standard.integer(forKey: "repeatTerm")
         
         rateSetting = UserDefaults.standard.float(forKey: "rateSetting")
-        print("rateSetting", rateSetting)
         
         LastFileSystemFileNumber = UserDefaults.standard.integer(forKey: "LastFileSystemFileNumber")
         LastAudioCreationDate = UserDefaults.standard.value(forKey: "LastAudioCreationDate") as! Date

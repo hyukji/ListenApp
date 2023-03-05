@@ -248,8 +248,6 @@ class MyWaveformImageDrawer {
         let xPos = Double(audio.sectionStart[idx] - range.lowerBound + leftOffset)
         let rectWidth = Double(audio.sectionEnd[idx] - audio.sectionStart[idx])
         
-        print("xPos", xPos, rectWidth)
-        
         path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
         let rectangle = CGRect(
             x: xPos,

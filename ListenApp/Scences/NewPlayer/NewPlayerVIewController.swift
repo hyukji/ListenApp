@@ -177,6 +177,14 @@ class NewPlayerVIewController : UIViewController {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if waveHeight != 0 {
+            resetScrollStackView()
+            adminTimer()
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
         if let timer = timer {

@@ -12,14 +12,38 @@ protocol AdminPlayBtnProtocol {
 import Foundation
 import AVFoundation
 
-enum PlayerStatus {
+enum IntermitType : Equatable {
+    case repeated
+    case button
+    case moved
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+            switch (lhs, rhs) {
+            case (.repeated, .repeated), (.button, .button), (.moved, .moved):
+                return true
+            default:
+                return false
+            }
+        }
+}
+
+enum PlayerStatus : Equatable {
     case play
     case pause
     case stop
-    case intermit
-    case autoIntermit
-    case ABrepeatIntermit
-    case WaveRepeatIntermit
+    
+    indirect case intermit(PlayerStatus, IntermitType)
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+            switch (lhs, rhs) {
+            case (.play, .play), (.pause, .pause), (.stop, .stop):
+                return true
+            case (.intermit(_, let lhsType), .intermit(_, let rhsType)):
+                return lhsType == rhsType
+            default:
+                return false
+            }
+        }
 }
 
 class PlayerController {
@@ -114,21 +138,12 @@ class PlayerController {
         playButtonDelegate?.setPlayButtonImage()
     }
     
-    func intermitPlayer() {
+    func intermitPlayer(type : IntermitType) {
+        status = .intermit(status, type)
         player.pause()
-        status = .intermit
         
-        NotificateTo()
+        if type == .button { NotificateTo() }
         playButtonDelegate?.setPlayButtonImage()
-    }
-    
-    func autoIntermittPlayer(intermitCategory : PlayerStatus) {
-        player.pause()
-        status = intermitCategory
-        
-        print("autoIntermittPlayer", status)
-        playButtonDelegate?.setPlayButtonImage()
-        print("after setPlaybtn")
     }
     
     func changePlayerTime(changedTime : TimeInterval) {

@@ -186,7 +186,7 @@ extension PlayerLowerView {
     @objc private func tapSecondBackButton() {
         let changedTime = playerController.player.currentTime - Double(secondTerm)
         
-        playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
+        playerController.intermitPlayer(type: .button)
         if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
@@ -194,7 +194,7 @@ extension PlayerLowerView {
     @objc private func tapSecondFrontButton() {
         let changedTime = playerController.player.currentTime + Double(secondTerm)
         
-        playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
+        playerController.intermitPlayer(type: .button)
         if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
         else { playerController.changePlayerTime(changedTime: changedTime) }
     }
@@ -224,7 +224,7 @@ extension PlayerLowerView {
             sectionStart = audio.sectionStart[section-1]
         }
         
-        playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
+        playerController.intermitPlayer(type: .button)
         playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
     }
     
@@ -233,7 +233,7 @@ extension PlayerLowerView {
         if nextSection != audio.sectionStart.count {
             let sectionStart = audio.sectionStart[nextSection]
             
-            playerController.autoIntermittPlayer(intermitCategory : .autoIntermit)
+            playerController.intermitPlayer(type: .button)
             playerController.changePlayerTime(changedTime: Double(sectionStart) / playerController.changedAmountPerSec)
         }
     }
@@ -365,12 +365,6 @@ extension PlayerLowerView {
 // PlayerLowerView UI
 extension PlayerLowerView {
     private func setLayout() {
-        
-        
-//        speedSettingView.snp.makeConstraints{
-//            $0.top.equalTo(normalControllerSV.snp.bottom)
-//            $0.bottom.leading.trailing.equalToSuperview()
-//        }
         
         self.addSubview(verticalStackView)
         

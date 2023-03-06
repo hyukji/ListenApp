@@ -9,30 +9,36 @@ import UIKit
 
 class MyWaveImgStackView : UIStackView {
     
-    var subWaveViewArr : [UIImageView] = []
+    var basicWaveViewArr : [UIImageView] = []
+    var nowWaveViewArr : [UIImageView] = []
 
     func popWaveImg() {
         let cnt = arrangedSubviews.count
         removeFully(view : arrangedSubviews[cnt-1])
-        subWaveViewArr.remove(at: cnt-1)
+        basicWaveViewArr.remove(at: cnt-1)
+        nowWaveViewArr.remove(at: cnt-1)
     }
     
     func popLeftWaveImg() -> CGFloat {
         let view = arrangedSubviews[0] as! UIImageView
         removeFully(view : arrangedSubviews[0])
-        subWaveViewArr.remove(at: 0)
+        basicWaveViewArr.remove(at: 0)
+        nowWaveViewArr.remove(at: 0)
         
         return view.image?.size.width ?? 0
     }
     
-    func appendWaveImg(view : UIImageView, subView : UIImageView) {
+    func appendWaveImg(view : UIImageView, nowView : UIImageView) {
         self.addArrangedSubview(view)
-        subWaveViewArr.append(subView)
+        basicWaveViewArr.append(view)
+        nowWaveViewArr.append(nowView)
     }
     
-    func appendLeftWaveImg(view : UIImageView, subView : UIImageView) -> CGFloat {
+    func appendLeftWaveImg(view : UIImageView, nowView : UIImageView) -> CGFloat {
         insertArrangedSubview(view, at: 0)
-        subWaveViewArr.insert(subView, at: 0)
+        basicWaveViewArr.insert(view, at: 0)
+        nowWaveViewArr.insert(nowView, at: 0)
+        
         return view.image?.size.width ?? 0
     }
 
@@ -45,10 +51,11 @@ class MyWaveImgStackView : UIStackView {
         arrangedSubviews.forEach{
             removeFully(view: $0)
         }
-        subWaveViewArr = []
+        basicWaveViewArr = []
+        nowWaveViewArr = []
     }
     
-    func changeWaveImage(WaveIdx : Int, view : UIImageView) {
+    func changeWaveImageForRepeat(WaveIdx : Int, view : UIImageView) {
         for i in 0..<arrangedSubviews.count {
             if arrangedSubviews[i].tag == WaveIdx {
                 removeFully(view: arrangedSubviews[i])
@@ -57,13 +64,20 @@ class MyWaveImgStackView : UIStackView {
         }
     }
     
-    func changeWithSubArr(WaveIdx : Int) {
+    func changeWithBasicArr(WaveIdx : Int) {
         for i in 0..<arrangedSubviews.count {
             if arrangedSubviews[i].tag == WaveIdx {
-                let view = arrangedSubviews[i] as! UIImageView
                 removeFully(view: arrangedSubviews[i])
-                insertArrangedSubview(subWaveViewArr[i], at: i)
-                subWaveViewArr[i] = view
+                insertArrangedSubview(basicWaveViewArr[i], at: i)
+            }
+        }
+    }
+    
+    func changeWithNowArr(WaveIdx : Int) {
+        for i in 0..<arrangedSubviews.count {
+            if arrangedSubviews[i].tag == WaveIdx {
+                removeFully(view: arrangedSubviews[i])
+                insertArrangedSubview(nowWaveViewArr[i], at: i)
             }
         }
     }

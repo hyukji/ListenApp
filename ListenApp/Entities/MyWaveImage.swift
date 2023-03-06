@@ -189,7 +189,7 @@ class MyWaveformImageDrawer {
         //        }
 
         let format = UIGraphicsImageRendererFormat()
-        format.scale = configuration.scale
+        format.scale = 0.0
         let renderer = UIGraphicsImageRenderer(size: configuration.size, format: format)
 //        let dampenedSamples = configuration.shouldDampen ? dampen(samples, with: configuration) : samples
 
@@ -236,8 +236,8 @@ class MyWaveformImageDrawer {
     
     private func drawBackground(on context: CGContext, with configuration: Waveform.Configuration) {
         context.setFillColor(configuration.backgroundColor.cgColor)
-        let size = CGSize(width: configuration.size.width, height: configuration.size.height - 50)
-        context.fill(CGRect(origin: CGPoint(x: 0, y: 10), size: size))
+        let size = CGSize(width: configuration.size.width, height: configuration.size.height - 35)
+        context.fill(CGRect(origin: CGPoint(x: 0, y: 7), size: size))
     }
     
     
@@ -251,9 +251,9 @@ class MyWaveformImageDrawer {
         path.move(to: CGPoint(x: xPos, y: configuration.size.height * 0.05))
         let rectangle = CGRect(
             x: xPos,
-            y: 10,
+            y: 7,
             width: rectWidth,
-            height: configuration.size.height - 50)
+            height: configuration.size.height - 35)
         path.addRect(rectangle)
         
         
@@ -271,7 +271,7 @@ class MyWaveformImageDrawer {
                            with configuration: Waveform.Configuration) {
         let samples = audio.waveAnalysis[range]
         let graphRect = CGRect(origin: CGPoint(x: 0, y: 0), size: configuration.size)
-        let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * (graphRect.size.height - 50) + 10
+        let positionAdjustedGraphCenter = CGFloat(configuration.position.value()) * (graphRect.size.height - 35) + 7
         let drawMappingFactor = graphRect.size.height * configuration.verticalScalingFactor
         let minimumGraphAmplitude: CGFloat = 1 / configuration.scale // we want to see at least a 1px line for silence
         
@@ -320,8 +320,10 @@ class MyWaveformImageDrawer {
             let xPos = x + leftOffset - 50
             // 눈금 그리기
             if t % 100 == 0 {
-                path.move(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 40))
-                path.addLine(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 27))
+                if t >= 0 {
+                    path.move(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 28))
+                    path.addLine(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 18))
+                }
                 
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.alignment = .left
@@ -332,16 +334,15 @@ class MyWaveformImageDrawer {
                 
                 let label = UILabel()
                 label.text = String(format: "%02d:%02d", min, sec)
-                label.font = .systemFont(ofSize: 15)
-                label.textColor = UIColor.label
+                label.font = .systemFont(ofSize: 12)
+                label.textColor = .secondaryLabel
                 
-                let labelRect = CGRect(x: xPos, y: Int(configuration.size.height) - 32, width: 50, height: 32)
+                let labelRect = CGRect(x: xPos, y: Int(configuration.size.height) - 20, width: 50, height: 20)
                 label.drawText(in: labelRect)
             }
-            else if t % 25 == 0 {
-                path.move(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 40))
-                path.addLine(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 32))
-                
+            else if t % 25 == 0 && t >= 0 {
+                path.move(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 28))
+                path.addLine(to: CGPoint(x: xPos, y: Int(configuration.size.height) - 23))
             }
         }
         
@@ -352,7 +353,7 @@ class MyWaveformImageDrawer {
         let config = configuration.stripeConfig
         context.setLineWidth(1)
         context.setLineCap(config.lineCap)
-        context.setStrokeColor(UIColor.darkGray.cgColor)
+        context.setStrokeColor(UIColor.secondaryLabel.cgColor)
         context.strokePath()
         
     }
@@ -360,23 +361,33 @@ class MyWaveformImageDrawer {
     private func drawIndicator(context: CGContext, xPos: Double, color : CGColor, configuration : Waveform.Configuration) {
         let path = CGMutablePath()
         
-        let rectangle = CGRect(
+        let rect = CGRect(
             x: xPos,
-            y: 10,
+            y: 7,
             width: 1,
-            height: configuration.size.height - 50)
+            height: configuration.size.height - 35)
         
-        path.addRect(rectangle)
+        path.addRect(rect)
         context.addPath(path)
         
-        let rect = CGRect(
+        
+        let upperRect = CGRect(
             x: xPos - 3,
             y: 0,
             width: 7,
-            height: 10)
+            height: 7)
         
-        let roundRect = UIBezierPath(ovalIn: rect)
-        context.addPath(roundRect.cgPath)
+        let UpperRoundRect = UIBezierPath(ovalIn: upperRect)
+        context.addPath(UpperRoundRect.cgPath)
+        
+        let lowerRect = CGRect(
+            x: xPos - 3,
+            y: configuration.size.height - 28,
+            width: 7,
+            height: 7)
+
+        let lowerRoundRect = UIBezierPath(ovalIn: lowerRect)
+        context.addPath(lowerRoundRect.cgPath)
         
         context.setFillColor(color)
         context.setLineWidth(0)

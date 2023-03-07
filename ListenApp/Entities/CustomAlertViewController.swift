@@ -24,6 +24,7 @@ enum AlertCategory {
     case newFolder
     case addWifiFile
     case addCableFile
+    case errorSendMail
 }
 
 class CustomAlertViewController: UIViewController {
@@ -241,6 +242,7 @@ extension AlertCategory {
         case .newFolder: return .canCancel
         case .addWifiFile: return .onlyConfirm
         case .addCableFile: return .onlyConfirm
+        case .errorSendMail: return .onlyConfirm
         }
     }
     
@@ -254,19 +256,24 @@ extension AlertCategory {
             return "Wifi 파일 추가"
         case .addCableFile:
             return "USB 파일 추가"
+        case .errorSendMail:
+            return "메일 전송 실패"
         }
     }
     
     var alertText: String {
         switch self {
         case .rename:
-            return "변경할 이름을 적어주세요"
+            return "변경할 이름을 적어주세요."
         case .newFolder:
-            return "새로운 파일 이름을 적어주세요"
+            return "새로운 파일 이름을 적어주세요."
         case .addWifiFile:
-            return "기기와 동일한 와이파이에 연결한 후에 하단의 주소로 접속해주세요"
+            return "기기와 동일한 와이파이에 연결한 후에 하단의 주소로 접속해주세요."
         case .addCableFile:
-            return "연결 후에 파일로 이도애주세요"
+            return "케이블 연결 후에 파일을 이동해주세요."
+        case .errorSendMail:
+            return "아이폰 이메일 설정을 확인하고 다시 시도해주세요."
+            
         }
     }
 }

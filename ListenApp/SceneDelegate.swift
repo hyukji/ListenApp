@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import StoreKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,6 +21,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
         
+        print("rating hidden")
+//        SKStoreReviewController.requestReview(in: windowScene)
+//        - Development 환경에서는 항상 뜨고,
+//        - TestFlight 환경에서는 뜨지 않으며,
+//        - 실제로 배포되었을 때는, 애플 정책을 따른다고 되어있다.
+
         // 테마 적용
         window?.overrideUserInterfaceStyle = AdminUserDefault.shared.getThema()
         return

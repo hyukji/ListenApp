@@ -35,17 +35,6 @@ class SettingTableViewCell : UITableViewCell {
         return imageView
     }()
     
-    
-//    lazy var controlSwitch: UISwitch = {
-//        let swicth: UISwitch = UISwitch()
-//
-//        swicth.isOn = false
-//
-//        // Set the event to be called when switching On / Off of Switch.
-////        swicth.addTarget(self, action: #selector(onClickSwitch(sender:)), for: UIControlEvents.valueChanged)
-//        return swicth
-//    }()
-    
     private lazy var accessoryLabel : UILabel = {
         let label = UILabel()
         label.text = "미정"
@@ -61,7 +50,6 @@ class SettingTableViewCell : UITableViewCell {
         cellData = data
         leftimgView.image = UIImage(systemName: data.icon)
         titleLabel.text = data.text
-        
         
         [leftimgView, titleLabel].forEach{
             addSubview($0)
@@ -113,11 +101,11 @@ class SettingTableViewCell : UITableViewCell {
             }
         default:
             addSubview(chevronImgView)
+            accessoryLabel.text = ""
             chevronImgView.snp.makeConstraints{
                 $0.centerY.equalToSuperview()
                 $0.trailing.equalToSuperview().inset(15)
             }
-            
         }
         
     }

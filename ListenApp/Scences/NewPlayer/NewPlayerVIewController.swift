@@ -32,7 +32,7 @@ class NewPlayerVIewController : UIViewController {
     let windowWidth = UIScreen.main.bounds.size.width
     var waveHeight = 0
     
-    var nowSectionIdx = -1
+    var nowSectionIdx = 0
     var leftSectionIdx = 0
     var rightSectionIdx = 0
     
@@ -161,15 +161,16 @@ class NewPlayerVIewController : UIViewController {
         playerController.player.delegate = self
         setLayout()
         configureTimeAndView()
-        
         repeatTerm = getRepeatTerm()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        // 처음으로 viewDidLayoutSubviews가 호출 될때
         if waveHeight == 0 && Int(scrollStackView.frame.size.height) != 0 {
             waveHeight = Int(scrollStackView.frame.size.height)
             configureWaveImgView()
+            scrollStackView.changeWithNowArr(WaveIdx: nowSectionIdx)
             
             addNotificationObserver(){
                 self.playerController.playPlayer()
@@ -179,9 +180,16 @@ class NewPlayerVIewController : UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // 첫번째 appear 제외
         if waveHeight != 0 {
-            resetScrollStackView()
-            adminTimer()
+            repeatTerm = getRepeatTerm()
+            playerLowerView.configureSecondButtonImage()
+            playerLowerView.configureSpeedSelector()
+
+            // disappear 할때 삭제함
+            addNotificationObserver(){
+                self.adminTimer()
+            }
         }
     }
     
@@ -520,7 +528,6 @@ extension NewPlayerVIewController {
         
         let newSectionIdx = getSectionidx(target: Int(targetAnalysis))
         if nowSectionIdx != newSectionIdx {
-            
             let originSectionIdx = nowSectionIdx
             nowSectionIdx = newSectionIdx
             
@@ -532,6 +539,10 @@ extension NewPlayerVIewController {
 //            if playerController.status == .play || playerController.status == .pause {
 //                CoreDataFunc.shared.updateCurrentTime(audio: audio)
 //            }
+            
+            if playerController.shouldSectionRepeat {
+                scrollStackView.changeWaveImageForRepeat(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx, status: .repeatWave))
+            }
         }
 
     }

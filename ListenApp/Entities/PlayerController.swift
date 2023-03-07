@@ -60,7 +60,8 @@ class PlayerController {
     var isNewAudio = false
     
     let changedAmountPerSec = 100.0
-    var repeatTerm = 1.0
+//    var repeatTerm = 1.0
+    var sectondTerm = 5
     
     // ab반복
     var shouldABRepeat = false

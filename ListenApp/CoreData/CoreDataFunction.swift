@@ -15,7 +15,7 @@ class CoreDataFunc {
     static let shared = CoreDataFunc()
     static var shouldUpdateCount = 0
     
-    var appDelegate : AppDelegate!
+    weak var appDelegate : AppDelegate!
     var context : NSManagedObjectContext!
     var audioList : [AudioData] = []
     

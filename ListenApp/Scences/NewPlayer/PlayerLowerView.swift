@@ -12,7 +12,8 @@ class PlayerLowerView : UIView {
     let audio = PlayerController.playerController.audio!
     
     let playButton = UIButton()
-    var secondTerm = 5
+    let secondFrontButton = UIButton()
+    let secondBackButton = UIButton()
     
     lazy var normalControllerSV : UIStackView = {
         let stackView = UIStackView()
@@ -23,18 +24,6 @@ class PlayerLowerView : UIView {
         
         stackView.tintColor = .label
         
-        let secondFrontButton = UIButton()
-        let secondBackButton = UIButton()
-        
-        let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30), scale: .default)
-        
-        if secondTerm > 3 {
-            secondBackButton.setImage(UIImage(systemName: "gobackward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
-            secondFrontButton.setImage(UIImage(systemName: "goforward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
-        } else {
-            secondBackButton.setImage(UIImage(named : "gobackward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
-            secondFrontButton.setImage(UIImage(named : "goforward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
-        }
         setPlayButtonImage()
         
         playButton.addTarget(self, action: #selector(tapPlayButton(_:)), for: .touchUpInside)
@@ -142,13 +131,26 @@ class PlayerLowerView : UIView {
         super .init(frame: frame)
         
         setLayout()
+        configureSecondButtonImage()
         configureSpeedSelector()
-        secondTerm = getSecondTerm()
         playerController.playButtonDelegate = self
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configureSecondButtonImage() {
+        let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30), scale: .default)
+        let secondTerm = getSecondTerm()
+        
+        if secondTerm > 3 {
+            secondBackButton.setImage(UIImage(systemName: "gobackward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
+            secondFrontButton.setImage(UIImage(systemName: "goforward.\(secondTerm)", withConfiguration: secondImageConfig), for: .normal)
+        } else {
+            secondBackButton.setImage(UIImage(named : "gobackward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
+            secondFrontButton.setImage(UIImage(named : "goforward.\(secondTerm)", in: nil, with: secondImageConfig), for: .normal)
+        }
     }
     
     private func getSecondTerm() -> Int {
@@ -184,7 +186,7 @@ extension PlayerLowerView {
     }
     
     @objc private func tapSecondBackButton() {
-        let changedTime = playerController.player.currentTime - Double(secondTerm)
+        let changedTime = playerController.player.currentTime - Double(getSecondTerm())
         
         playerController.intermitPlayer(type: .button)
         if changedTime < 0 { playerController.changePlayerTime(changedTime: 0) }
@@ -192,7 +194,7 @@ extension PlayerLowerView {
     }
     
     @objc private func tapSecondFrontButton() {
-        let changedTime = playerController.player.currentTime + Double(secondTerm)
+        let changedTime = playerController.player.currentTime + Double(getSecondTerm())
         
         playerController.intermitPlayer(type: .button)
         if audio.duration < changedTime { playerController.changePlayerTime(changedTime: audio.duration) }
@@ -309,7 +311,7 @@ extension PlayerLowerView {
     }
     
     // SpeedSettingView 초기화
-    private func configureSpeedSelector() {
+    func configureSpeedSelector() {
         
         let rate = String(format: "%.1f", PlayerController.playerController.player.rate)
         speedButton.setTitle("\(rate)x", for: .normal)

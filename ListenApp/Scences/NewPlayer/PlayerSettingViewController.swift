@@ -35,10 +35,14 @@ class PlayerSettingViewController : UIViewController {
         setLayout()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        tableView.reloadData()
+    }
+    
     func setData() {
         audioSettingList = [
             SettingCategory(name: "startLocation", text: "시작 위치", icon: "play", type: .listSetting),
-            SettingCategory(name: "rateSetting", text: "재생 속도", icon: "forward.circle", type: .rateSetting),
+            SettingCategory(name: "rateSetting", text: "초기 재생 속도", icon: "forward.circle", type: .rateSetting),
             SettingCategory(name: "secondTerm", text: "초단위 이동", icon: "arrow.triangle.2.circlepath", type: .listSetting),
             SettingCategory(name: "repeatTerm", text: "반복 대기시간", icon: "repeat.circle", type: .listSetting)
         ]
@@ -118,9 +122,7 @@ extension PlayerSettingViewController : UITableViewDelegate, UITableViewDataSour
 
 extension PlayerSettingViewController : ListSettingProtocol {
     func ChangeListSetting(indexPath: IndexPath, selectedInt: Int) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
         adminUserDefault.saveListSettingData(name: audioSettingList[indexPath.row].name, new: selectedInt)
-        cell.setLayout(data : audioSettingList[indexPath.row])
     }
 }
 
@@ -128,9 +130,9 @@ extension PlayerSettingViewController : ListSettingProtocol {
 
 extension PlayerSettingViewController : RateSettingProtocol {
     func ChangeRateSetting(selectedValue: Float) {
-        let indexPath = IndexPath(row: 1, section: 1)
-        guard let cell = tableView.cellForRow(at: indexPath) as? SettingTableViewCell else {return}
         adminUserDefault.saveRateSettingData(new: selectedValue)
-        cell.setLayout(data : audioSettingList[indexPath.row])
+        if PlayerController.playerController.player != nil {
+            PlayerController.playerController.player.rate = AdminUserDefault.shared.rateSetting
+        }
     }
 }

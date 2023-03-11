@@ -334,8 +334,6 @@ extension PlayListViewController {
         
         filemanager.deleteFilesInDocument(items: selectedItems)
         changeTableViewEditingAndLayout()
-        
-        reflashPlayList()
     }
     
     func changeEditingFooterButtonStatus() {

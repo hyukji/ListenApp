@@ -10,8 +10,15 @@ import SnapKit
 
 class PlayListTableViewCell : UITableViewCell {
     
+    lazy var imgViewContainer : UIView = {
+        let container = UIView()
+        
+        return container
+    }()
+    
     lazy var imgView : UIImageView = {
         let imageView = UIImageView()
+        imageView.tintColor = .label
         
         return imageView
     }()
@@ -67,16 +74,18 @@ class PlayListTableViewCell : UITableViewCell {
     func setLayout(item : DocumentItem, duration : TimeInterval) {
         self.selectionStyle = .default
         
-        [imgView, rightIconButton, stackView].forEach{
+        [imgViewContainer, rightIconButton, stackView].forEach{
             contentView.addSubview($0)
         }
-        
+        imgViewContainer.addSubview(imgView)
         
         let buttonImgConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
         if item.type == .file {
+            
+            imgViewContainer.layer.borderWidth = 1
+            imgViewContainer.layer.borderColor = UIColor.lightGray.cgColor
+            
             imgView.contentMode = .scaleAspectFit
-            imgView.layer.borderWidth = 1
-            imgView.layer.borderColor = UIColor.lightGray.cgColor
             imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
             
             timeLabel.isHidden = false
@@ -86,10 +95,12 @@ class PlayListTableViewCell : UITableViewCell {
             rightIconButton.setImage(image, for: .normal)
         }
         else {
-            imgView.layer.borderWidth = 0
-            imgView.tintColor = .label
+            imgViewContainer.layer.borderWidth = 0
+            
             imgView.contentMode = .scaleAspectFit
             imgView.image =  UIImage(systemName: "folder")
+            let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .light), scale: .default)
+            imgView.image =  UIImage(systemName: "folder", withConfiguration: imageConfig)
             
             timeLabel.isHidden = true
             
@@ -99,10 +110,16 @@ class PlayListTableViewCell : UITableViewCell {
         
         titleLabel.text = item.title
         
-        imgView.snp.makeConstraints{
+        imgViewContainer.snp.makeConstraints{
             $0.top.bottom.equalToSuperview().inset(10)
             $0.leading.equalToSuperview().offset(20)
-            $0.width.equalTo(imgView.snp.height)
+            $0.width.equalTo(imgViewContainer.snp.height)
+        }
+        
+        imgView.snp.makeConstraints{
+//            $0.height.width.equalToSuperview()
+            $0.height.width.equalToSuperview().multipliedBy(0.9)
+            $0.centerX.centerY.equalToSuperview()
         }
         
         rightIconButton.snp.makeConstraints{
@@ -111,10 +128,10 @@ class PlayListTableViewCell : UITableViewCell {
         }
         
         stackView.snp.makeConstraints{
-            $0.leading.equalTo(imgView.snp.trailing).offset(10)
+            $0.leading.equalTo(imgViewContainer.snp.trailing).offset(10)
             $0.trailing.equalTo(rightIconButton.snp.leading).offset(-10)
-            $0.top.equalTo(imgView).inset(5)
-            $0.bottom.equalTo(imgView).inset(5)
+            $0.top.equalTo(imgViewContainer).inset(5)
+            $0.bottom.equalTo(imgViewContainer).inset(5)
         }
         
     }

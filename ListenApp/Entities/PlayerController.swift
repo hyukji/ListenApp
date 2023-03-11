@@ -143,7 +143,6 @@ class PlayerController {
         status = .intermit(status, type)
         player.pause()
         
-        if type == .button { NotificateTo() }
         playButtonDelegate?.setPlayButtonImage()
     }
     

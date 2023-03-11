@@ -535,10 +535,10 @@ extension NewPlayerVIewController {
             scrollStackView.changeWithNowArr(WaveIdx: nowSectionIdx)
             
             // 데이터에 현재 시간 저장
-            audio.currentTime = playerController.player.currentTime
-//            if playerController.status == .play || playerController.status == .pause {
-//                CoreDataFunc.shared.updateCurrentTime(audio: audio)
-//            }
+            if playerController.status == .play || playerController.status == .pause {
+                audio.currentTime = playerController.player.currentTime
+                CoreDataFunc.shared.updateCurrentTime(audio: audio)
+            }
             
             if playerController.shouldSectionRepeat {
                 scrollStackView.changeWaveImageForRepeat(WaveIdx: nowSectionIdx, view: drawWaveImage(idx: nowSectionIdx, status: .repeatWave))

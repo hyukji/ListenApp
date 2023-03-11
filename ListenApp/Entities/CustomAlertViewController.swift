@@ -28,10 +28,16 @@ enum AlertCategory {
 }
 
 class CustomAlertViewController: UIViewController {
+    private lazy var mainImgView : UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = alertCategory.mainImage
+        
+        return imageView
+    }()
     
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = 40
         
         return view
     }()
@@ -40,7 +46,7 @@ class CustomAlertViewController: UIViewController {
         let view = UIStackView()
         view.axis = .vertical
         view.alignment = .center
-        view.spacing = 12
+        view.spacing = 10
         
         return view
     }()
@@ -51,7 +57,6 @@ class CustomAlertViewController: UIViewController {
         view.spacing = 14
         view.distribution = .fillEqually
         
-        view.addArrangedSubview(cancelButton)
         view.addArrangedSubview(confirmButton)
         
         return view
@@ -60,7 +65,8 @@ class CustomAlertViewController: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = alertCategory.alertTitle
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = .systemFont(ofSize: 25, weight: .bold)
+        label.textAlignment = .center
         
         return label
     }()
@@ -68,7 +74,10 @@ class CustomAlertViewController: UIViewController {
     private lazy var textLabel: UILabel = {
         let label = UILabel()
         label.text = alertCategory.alertText
+        label.font = .systemFont(ofSize: 15)
+        label.textColor = .secondaryLabel
         label.numberOfLines = 0
+        label.textAlignment = .center
         
         return label
     }()
@@ -76,8 +85,9 @@ class CustomAlertViewController: UIViewController {
     private lazy var IPadderssLabel: UILabel = {
         let label = UILabel()
         label.text = IPaddress
-        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.font = .systemFont(ofSize: 19, weight: .semibold)
         label.numberOfLines = 0
+        label.textAlignment = .center
         
         return label
     }()
@@ -94,11 +104,14 @@ class CustomAlertViewController: UIViewController {
     private lazy var cancelButton: UIButton = {
         let button = UIButton()
         
-        button.layer.cornerRadius = 15
-        button.layer.borderWidth = 1
-        button.setTitle(cancelButtonText, for: .normal)
-        button.setTitleColor(.label, for: .normal)
+//        button.layer.cornerRadius = 25
+//        button.layer.borderWidth = 1
         
+//        button.setTitle(cancelButtonText, for: .normal)
+        
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 13, weight: .semibold), scale: .default)
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: imageConfig)!, for: .normal)
+        button.tintColor = .secondaryLabel
         button.addTarget(self, action: #selector(tapcancelButton), for: .touchUpInside)
         
         return button
@@ -107,16 +120,35 @@ class CustomAlertViewController: UIViewController {
     private lazy var confirmButton: UIButton = {
         let button = UIButton()
         
-        button.layer.cornerRadius = 15
+        button.layer.cornerRadius = 25
         button.layer.borderWidth = 1
-        button.setTitleColor(.label, for: .normal)
+//        button.setTitleColor(.systemBackground, for: .normal)
+//        button.setTitle(confirmButtonText, for: .normal)
+//        button.backgroundColor = .tintColor
+        
+        
+        button.layer.borderColor = UIColor.tintColor.cgColor
+        button.setTitleColor(.tintColor, for: .normal)
         button.setTitle(confirmButtonText, for: .normal)
+        button.backgroundColor = .systemBackground
+        
         
         button.addTarget(self, action: #selector(tapconfirmButton), for: .touchUpInside)
         
         return button
     }()
     
+    
+    private lazy var additionalLabel: UILabel = {
+        let label = UILabel()
+        label.text = "파일 이동 후에 창을 닫아주세요."
+        label.font = .systemFont(ofSize: 15)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        
+        return label
+    }()
     
     
     weak var delegate : CustomAlertDelegate?
@@ -127,7 +159,6 @@ class CustomAlertViewController: UIViewController {
     
     var IPaddress = ""
     var confirmButtonText = "확인"
-    var cancelButtonText = "취소"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -148,12 +179,19 @@ class CustomAlertViewController: UIViewController {
         case .rename, .newFolder:
             textField.isHidden = false
             IPadderssLabel.isHidden = true
+            additionalLabel.isHidden = true
         case .addWifiFile:
             textField.isHidden = true
             IPadderssLabel.isHidden = false
+            additionalLabel.isHidden = false
+        case .addCableFile:
+            textField.isHidden = true
+            IPadderssLabel.isHidden = true
+            additionalLabel.isHidden = false
         default:
             textField.isHidden = true
             IPadderssLabel.isHidden = true
+            additionalLabel.isHidden = true
         }
         
     }
@@ -192,21 +230,18 @@ class CustomAlertViewController: UIViewController {
         
         containerView.addSubview(contentStackView)
         containerView.addSubview(buttonStackView)
+        containerView.addSubview(mainImgView)
+        containerView.addSubview(cancelButton)
+        
         
         contentStackView.addArrangedSubview(titleLabel)
+        contentStackView.setCustomSpacing(15, after: titleLabel)
         contentStackView.addArrangedSubview(textLabel)
         contentStackView.addArrangedSubview(textField)
         contentStackView.addArrangedSubview(IPadderssLabel)
+        contentStackView.addArrangedSubview(additionalLabel)
         
-        
-        if alertCategory.alerttype == .canCancel {
-            buttonStackView.addArrangedSubview(cancelButton)
-            buttonStackView.addArrangedSubview(confirmButton)
-        }
-        else {
-            buttonStackView.addArrangedSubview(confirmButton)
-        }
-        
+        buttonStackView.addArrangedSubview(confirmButton)
         
         containerView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
@@ -214,22 +249,38 @@ class CustomAlertViewController: UIViewController {
             $0.top.greaterThanOrEqualToSuperview().inset(50)
             $0.bottom.lessThanOrEqualToSuperview().inset(50)
         }
-
+        
+        buttonStackView.snp.makeConstraints {
+            $0.height.equalTo(50)
+            $0.bottom.equalToSuperview().inset(25)
+            $0.leading.trailing.equalTo(containerView).inset(25)
+            $0.centerX.equalToSuperview()
+        }
+        
+        mainImgView.snp.makeConstraints {
+            $0.top.equalTo(containerView).inset(25)
+            $0.centerX.equalToSuperview()
+        }
+        
         contentStackView.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(containerView).inset(30)
-            $0.bottom.equalToSuperview().offset(-100)
+            $0.top.equalTo(mainImgView.snp.bottom).offset(15)
+            $0.leading.trailing.equalTo(containerView).inset(25)
+            $0.bottom.equalTo(buttonStackView.snp.top).offset(-25)
+        }
+
+        cancelButton.snp.makeConstraints {
+            $0.top.equalTo(containerView).inset(25)
+            $0.trailing.equalTo(containerView).inset(25)
+        }
+        
+        IPadderssLabel.snp.makeConstraints{
+            $0.height.equalTo(40)
         }
         
         textField.snp.makeConstraints{
             $0.width.equalToSuperview()
         }
         
-        buttonStackView.snp.makeConstraints {
-            $0.height.equalTo(40)
-            $0.bottom.equalToSuperview().inset(30)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(contentStackView.snp.width)
-        }
     }
 }
 
@@ -273,7 +324,24 @@ extension AlertCategory {
             return "케이블 연결 후에 파일을 이동해주세요."
         case .errorSendMail:
             return "아이폰 이메일 설정을 확인하고 다시 시도해주세요."
-            
         }
     }
+    
+    
+    var mainImage: UIImage {
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 50, weight: .regular), scale: .default)
+        switch self {
+        case .addWifiFile:
+            return UIImage(systemName: "wifi", withConfiguration: imageConfig)!
+        case .addCableFile:
+            return UIImage(systemName: "tray.and.arrow.down", withConfiguration: imageConfig)!
+        case .errorSendMail:
+            return UIImage(systemName: "envelope.badge.shield.half.filled", withConfiguration: imageConfig)!
+        default:
+            return UIImage()
+        }
+    }
+    
+    
+    
 }

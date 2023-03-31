@@ -21,7 +21,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
         
-        print("rating hidden")
 //        SKStoreReviewController.requestReview(in: windowScene)
 //        - Development 환경에서는 항상 뜨고,
 //        - TestFlight 환경에서는 뜨지 않으며,

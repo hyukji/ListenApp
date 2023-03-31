@@ -30,6 +30,12 @@ class PlayerLowerView : UIView {
         secondBackButton.addTarget(self, action: #selector(tapSecondBackButton), for: .touchUpInside)
         secondFrontButton.addTarget(self, action: #selector(tapSecondFrontButton), for: .touchUpInside)
         
+//        playButton.tintColor = UIColor(rgb: 0x666666)
+//        secondBackButton.tintColor = UIColor(rgb: 0x777777)
+//        secondFrontButton.tintColor = UIColor(rgb: 0x777777)
+        playButton.tintColor = UIColor(rgb: 0x333333)
+        secondBackButton.tintColor = UIColor(rgb: 0x333333)
+        secondFrontButton.tintColor = UIColor(rgb: 0x333333)
         
         [secondBackButton, playButton, secondFrontButton].forEach{
             stackView.addArrangedSubview($0)
@@ -40,7 +46,7 @@ class PlayerLowerView : UIView {
     
     let waveRepeatButton : UIButton = {
         let button = UIButton()
-        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular), scale: .default)
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 19, weight: .regular), scale: .default)
         button.setImage(UIImage(systemName: "repeat", withConfiguration: imageConfig), for: .normal)
 //        button.setImage(UIImage(named: "waveRepeat", in: nil, with: imageConfig), for: .normal)
         button.tintColor = (PlayerController.playerController.shouldSectionRepeat) ? .orange : .label
@@ -51,7 +57,7 @@ class PlayerLowerView : UIView {
         let button = UIButton()
         button.setTitle(String(format: "%.1fx", PlayerController.playerController.player.rate), for: .normal)
         button.setTitleColor(.label, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 21, weight: .regular)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
         return button
     }()
     
@@ -74,7 +80,14 @@ class PlayerLowerView : UIView {
         waveBackButton.addTarget(self, action: #selector(tapWaveBackButton), for: .touchUpInside)
         waveFrontButton.addTarget(self, action: #selector(tapWaveFrontButton), for: .touchUpInside)
         
-        [waveBackButton, waveFrontButton].forEach{
+//        waveBackButton.tintColor = .secondaryLabel
+//        waveFrontButton.tintColor = .secondaryLabel
+        
+        waveBackButton.tintColor = UIColor(rgb: 0x666666)
+        waveFrontButton.tintColor = UIColor(rgb: 0x666666)
+        
+        
+        [waveRepeatButton, waveBackButton, waveFrontButton, speedButton].forEach{
             stackView.addArrangedSubview($0)
         }
         
@@ -84,8 +97,10 @@ class PlayerLowerView : UIView {
     private lazy var waveContollerContainer : UIView = {
         let view = UIView()
 
+        view.layer.borderColor = UIColor(rgb: 0xcccccc).cgColor
         view.layer.borderWidth = 2
-        view.layer.cornerRadius = 35
+        view.layer.cornerRadius = 15
+        view.backgroundColor = .tertiarySystemGroupedBackground
 
         view.addSubview(waveControllerSV)
 
@@ -104,7 +119,8 @@ class PlayerLowerView : UIView {
         waveRepeatButton.addTarget(self, action: #selector(tapWaveRepeatButton), for: .touchUpInside)
         speedButton.addTarget(self, action: #selector(tapSpeedButton), for: .touchUpInside)
         
-        [waveRepeatButton, waveContollerContainer, speedButton].forEach{
+        [waveContollerContainer].forEach{
+//        [waveRepeatButton, waveContollerContainer, speedButton].forEach{
             stackView.addArrangedSubview($0)
         }
         
@@ -141,7 +157,7 @@ class PlayerLowerView : UIView {
     }
     
     func configureSecondButtonImage() {
-        let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30), scale: .default)
+        let secondImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 27), scale: .default)
         let secondTerm = getSecondTerm()
         
         if secondTerm > 3 {
@@ -164,7 +180,7 @@ class PlayerLowerView : UIView {
 
 extension PlayerLowerView : AdminPlayBtnProtocol {
     func setPlayButtonImage() {
-        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 45), scale: .default)
+        let playImageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 35), scale: .default)
         switch playerController.status {
         case .play:
             playButton.setImage(UIImage(systemName: "pause.fill", withConfiguration: playImageConfig), for: .normal)
@@ -250,7 +266,7 @@ extension PlayerLowerView {
             playerController.positionSectionStart = audio.sectionStart[section]
             playerController.positionSectionEnd = audio.sectionEnd[section]
             
-            waveRepeatButton.tintColor = tintColor
+            waveRepeatButton.tintColor = UIColor(rgb: 0xEC8489)
         } else {
             // 반복 설정 해제
             playerController.shouldSectionRepeat = false
@@ -375,7 +391,8 @@ extension PlayerLowerView {
         }
         
         normalControllerSV.snp.makeConstraints{
-            $0.width.equalTo(300)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(220)
             $0.height.equalTo(108)
         }
         
@@ -386,14 +403,14 @@ extension PlayerLowerView {
         }
 
         waveContollerContainer.snp.makeConstraints{
-            $0.width.equalTo(170)
+            $0.width.equalTo(300)
             $0.height.equalToSuperview()
         }
 
         waveControllerSV.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
-            $0.width.equalTo(155)
+            $0.width.equalTo(300)
             $0.height.equalToSuperview().multipliedBy(0.9)
         }
         

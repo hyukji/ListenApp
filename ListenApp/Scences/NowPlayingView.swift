@@ -31,7 +31,7 @@ class NowPlayingView : UIView {
         let label = UILabel()
         
         label.text = ""
-        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = .white
         
         return label

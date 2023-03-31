@@ -105,6 +105,8 @@ enum Waveform {
         public let sectionColor: UIColor
         
         public let sectionRepeatColor: UIColor
+        
+        public let graduationColor : UIColor
 
         /// Waveform drawing style, defaults to `.gradient`.
         public let stripeConfig: StripeConfig
@@ -146,11 +148,11 @@ enum Waveform {
 
 
         public init(size: CGSize = .zero,
-//                    backgroundColor: UIColor = UIColor(rgb: 0xcededed),
-                    backgroundColor: UIColor = .systemGray6,
+                    backgroundColor: UIColor = .tertiarySystemGroupedBackground,
                     stripeConfig: StripeConfig = .init(color: .label),
                     sectionColor : UIColor = UIColor(rgb: 0xfce0ac),
                     sectionRepeatColor : UIColor = UIColor(rgb: 0xFFD384),
+                    graduationColor : UIColor = .secondaryLabel,
                     dampening: Dampening? = nil,
                     position: Position = .middle,
                     scale: CGFloat = UIScreen.main.scale,
@@ -164,6 +166,7 @@ enum Waveform {
             self.backgroundColor = backgroundColor
             self.sectionColor = sectionColor
             self.sectionRepeatColor = sectionRepeatColor
+            self.graduationColor = graduationColor
             self.stripeConfig = stripeConfig
             self.dampening = dampening
             self.position = position
@@ -211,6 +214,7 @@ class MyWaveformImageDrawer {
     }
     
     private func draw(on context: CGContext, from range: Range<Int>, with configuration: Waveform.Configuration) {
+        print("draw wave", range)
         context.setAllowsAntialiasing(configuration.shouldAntialias)
         context.setShouldAntialias(configuration.shouldAntialias)
 
@@ -335,7 +339,7 @@ class MyWaveformImageDrawer {
                 let label = UILabel()
                 label.text = String(format: "%02d:%02d", min, sec)
                 label.font = .systemFont(ofSize: 12)
-                label.textColor = .secondaryLabel
+                label.textColor = configuration.graduationColor
                 
                 let labelRect = CGRect(x: xPos, y: Int(configuration.size.height) - 20, width: 50, height: 20)
                 label.drawText(in: labelRect)
@@ -353,7 +357,7 @@ class MyWaveformImageDrawer {
         let config = configuration.stripeConfig
         context.setLineWidth(1)
         context.setLineCap(config.lineCap)
-        context.setStrokeColor(UIColor.secondaryLabel.cgColor)
+        context.setStrokeColor(configuration.graduationColor.cgColor)
         context.strokePath()
         
     }

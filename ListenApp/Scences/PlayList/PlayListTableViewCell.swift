@@ -16,9 +16,23 @@ class PlayListTableViewCell : UITableViewCell {
         return container
     }()
     
-    lazy var imgView : UIImageView = {
+    lazy var fileImgView : UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .label
+        
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = UIImage(named: "MusicBasic") ?? UIImage()
+        
+        return imageView
+    }()
+    
+    lazy var folderImgView : UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .label
+        
+        imageView.contentMode = .scaleAspectFit
+        let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .light), scale: .default)
+        imageView.image =  UIImage(systemName: "folder", withConfiguration: imageConfig)
         
         return imageView
     }()
@@ -77,7 +91,8 @@ class PlayListTableViewCell : UITableViewCell {
         [imgViewContainer, rightIconButton, stackView].forEach{
             contentView.addSubview($0)
         }
-        imgViewContainer.addSubview(imgView)
+        imgViewContainer.addSubview(folderImgView)
+        imgViewContainer.addSubview(fileImgView)
         
         let buttonImgConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
         if item.type == .file {
@@ -85,8 +100,8 @@ class PlayListTableViewCell : UITableViewCell {
             imgViewContainer.layer.borderWidth = 1
             imgViewContainer.layer.borderColor = UIColor.lightGray.cgColor
             
-            imgView.contentMode = .scaleAspectFit
-            imgView.image = UIImage(named: "MusicBasic") ?? UIImage()
+            folderImgView.isHidden = true
+            fileImgView.isHidden = false
             
             timeLabel.isHidden = false
             timeLabel.text = duration.toString()
@@ -97,10 +112,8 @@ class PlayListTableViewCell : UITableViewCell {
         else {
             imgViewContainer.layer.borderWidth = 0
             
-            imgView.contentMode = .scaleAspectFit
-            imgView.image =  UIImage(systemName: "folder")
-            let imageConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 20, weight: .light), scale: .default)
-            imgView.image =  UIImage(systemName: "folder", withConfiguration: imageConfig)
+            folderImgView.isHidden = false
+            fileImgView.isHidden = true
             
             timeLabel.isHidden = true
             
@@ -116,9 +129,15 @@ class PlayListTableViewCell : UITableViewCell {
             $0.width.equalTo(imgViewContainer.snp.height)
         }
         
-        imgView.snp.makeConstraints{
+        folderImgView.snp.makeConstraints{
 //            $0.height.width.equalToSuperview()
             $0.height.width.equalToSuperview().multipliedBy(0.9)
+            $0.centerX.centerY.equalToSuperview()
+        }
+        
+        fileImgView.snp.makeConstraints{
+//            $0.height.width.equalToSuperview()
+            $0.height.width.equalToSuperview().multipliedBy(0.3)
             $0.centerX.centerY.equalToSuperview()
         }
         

@@ -543,7 +543,7 @@ extension NewPlayerVIewController {
             // 데이터에 현재 시간 저장
             if playerController.status == .play || playerController.status == .pause {
                 audio.currentTime = playerController.player.currentTime
-                CoreDataFunc.shared.updateCurrentTime(audio: audio)
+                CoreDataFunc.shared.updateCurrentTime(audio: self.audio)
             }
             
             if playerController.shouldSectionRepeat {

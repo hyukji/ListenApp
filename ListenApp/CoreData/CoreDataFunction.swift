@@ -21,7 +21,7 @@ class CoreDataFunc {
     
     private init() {
         appDelegate = UIApplication.shared.delegate as? AppDelegate
-        context = appDelegate.persistentContainer.viewContext
+        context = appDelegate.persistentContainer.newBackgroundContext()
         
         audioList = fetchAudio()
     }
@@ -320,25 +320,27 @@ extension CoreDataFunc {
         }
         
         // coredata에 있는 값 업데이트
-        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
-        fetchRequest.predicate = NSPredicate(
-            format: "fileSystemFileNumber == %d && creationDate == %@", audio.fileSystemFileNumber, audio.creationDate as NSDate
-        )
-        do {
-            let result = try self.context.fetch(fetchRequest)
-            if result.count > 0 {
-                let CoreDataAudio = result[0]
-                CoreDataAudio.setValue(audio.currentTime, forKey: "currentTime")
+        context.perform {
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Audio")
+            fetchRequest.predicate = NSPredicate(
+                format: "fileSystemFileNumber == %d && creationDate == %@", audio.fileSystemFileNumber, audio.creationDate as NSDate
+            )
+            do {
+                let result = try self.context.fetch(fetchRequest)
+                if result.count > 0 {
+                    let CoreDataAudio = result[0]
+                    CoreDataAudio.setValue(audio.currentTime, forKey: "currentTime")
+                }
+            } catch {
+                print(error)
             }
-        } catch {
-            print(error)
-        }
-        
-        
-        do {
-            try context.save()
-        } catch {
-            print(error)
+            
+            
+            do {
+                try self.context.save()
+            } catch {
+                print(error)
+            }
         }
         
     }

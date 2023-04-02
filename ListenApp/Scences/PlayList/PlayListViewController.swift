@@ -386,7 +386,7 @@ extension PlayListViewController {
         tabBarController?.tabBar.isHidden = false
         
         self.editingFooter.isHidden = true
-        self.nowPlayingView.isHidden = false
+        self.nowPlayingView.isHidden = NowPlayingView.shouldHidden
         
         self.tableView.reloadData()
         

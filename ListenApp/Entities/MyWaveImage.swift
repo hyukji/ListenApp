@@ -229,12 +229,16 @@ class MyWaveformImageDrawer {
     
     private func drawABIndicator(from range: Range<Int>, on context: CGContext, with configuration: Waveform.Configuration) {
         if let positionA = PlayerController.playerController.positionA {
-            let xPos = Double(positionA - range.lowerBound)
-            drawIndicator(context: context, xPos: xPos, color : UIColor.red.cgColor, configuration: configuration)
+            if range.contains(positionA) {
+                let xPos = Double(positionA + leftOffset - range.lowerBound)
+                drawIndicator(context: context, xPos: xPos, color : UIColor.red.cgColor, configuration: configuration)
+            }
         }
         if let positionB = PlayerController.playerController.positionB {
-            let xPos = Double(positionB - range.lowerBound)
-            drawIndicator(context: context, xPos: xPos, color : UIColor.blue.cgColor, configuration: configuration)
+            if range.contains(positionB) {
+                let xPos = Double(positionB + leftOffset - range.lowerBound)
+                drawIndicator(context: context, xPos: xPos, color : UIColor.blue.cgColor, configuration: configuration)
+            }
         }
     }
     

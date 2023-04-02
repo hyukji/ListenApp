@@ -12,8 +12,10 @@ class AdminUserDefault {
     static let shared = AdminUserDefault()
     
     let settingData: [String: [String]] = [
-        "thema" : ["시스템 설정 모드", "라이트 모드", "다크 모드"],
-        "language" : ["한국어", "영어"],
+//        "thema" : ["시스템 설정 모드", "라이트 모드", "다크 모드"],
+//        "language" : ["한국어", "영어"],
+        "thema" : ["라이트 모드"],
+        "language" : ["한국어"],
         "startLocation" : ["처음부터", "종료된 시점부터"],
         "secondTerm" : ["1s", "2s", "3s", "5s", "10s", "15s"],
         "repeatTerm" : ["0s", "0.5s", "1s", "2s", "3s", "5s", "10s", "15s"]

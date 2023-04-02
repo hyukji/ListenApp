@@ -276,13 +276,13 @@ extension CoreDataFunc {
         for (idx, data) in samples.enumerated() {
             if isSilence {
                 // 무음이다가 소리가 들린다면
-                if data < 0.8 {
+                if data < 0.98 {
                     isSilence = false
                     sectionStart.append(idx)
                 }
             }
             else {
-                if data > 0.8 {
+                if data > 0.98 {
                     // 소리가 들리다가 조용해 진다며
                     cnt += 1
                     if cnt == 1 {

@@ -143,6 +143,8 @@ extension PlayListViewController {
             }
         }
         NowPlayingView.shouldHidden = true
+        nowPlayingView.isHidden = true
+        
     }
     
     // when NowPlayingView was tapped, push PlayerVC to navigation
@@ -385,6 +387,8 @@ extension PlayListViewController {
         
         self.editingFooter.isHidden = true
         self.nowPlayingView.isHidden = false
+        
+        self.tableView.reloadData()
         
     }
 }

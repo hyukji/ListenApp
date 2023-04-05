@@ -281,7 +281,7 @@
 			mainGroup = 19B41EDF296FFEA200DC30C1;
 			packageReferences = (
 				19657EBC29DD9139006FFCCC /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
-				19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit.git" */,
+				19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			productRefGroup = 19B41EE9296FFEA200DC30C1 /* Products */;
 			projectDirPath = "";
@@ -512,6 +512,8 @@
 				DEVELOPMENT_TEAM = F3D9B82VHA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ListenApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Onpeat;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -522,8 +524,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = jh.ListenApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyukji.Onpeat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -541,6 +546,8 @@
 				DEVELOPMENT_TEAM = F3D9B82VHA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ListenApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Onpeat;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -551,8 +558,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = jh.ListenApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyukji.Onpeat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -591,7 +601,7 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit.git" */ = {
+		19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
 			requirement = {
@@ -609,7 +619,7 @@
 		};
 		19657EC029DD9159006FFCCC /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit.git" */;
+			package = 19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */

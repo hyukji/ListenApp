@@ -388,7 +388,7 @@ extension PlayListViewController {
         self.editingFooter.isHidden = true
         self.nowPlayingView.isHidden = NowPlayingView.shouldHidden
         
-        self.tableView.reloadData()
+        self.setPlayList()
         
     }
 }

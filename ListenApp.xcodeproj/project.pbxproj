@@ -12,6 +12,8 @@
 		19201FCE29ACFA3D00B36283 /* hexUIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19201FCD29ACFA3D00B36283 /* hexUIColor.swift */; };
 		193FAB6C29759C3500385BD4 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193FAB6B29759C3500385BD4 /* PlayerController.swift */; };
 		19547B0829A65DBE00F8AEDE /* ListSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19547B0729A65DBE00F8AEDE /* ListSettingViewController.swift */; };
+		19657EBE29DD9139006FFCCC /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 19657EBD29DD9139006FFCCC /* DSWaveformImage */; };
+		19657EC129DD9159006FFCCC /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 19657EC029DD9159006FFCCC /* SnapKit */; };
 		19825AA429B6544A00C1C6F1 /* PlayerSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19825AA329B6544A00C1C6F1 /* PlayerSettingViewController.swift */; };
 		199BF310297AD88B00DAD3E1 /* MyWebUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF30F297AD88B00DAD3E1 /* MyWebUploader.swift */; };
 		199BF312297AEB4900DAD3E1 /* MyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199BF311297AEB4900DAD3E1 /* MyFileManager.swift */; };
@@ -24,7 +26,6 @@
 		19B41EEE296FFEA200DC30C1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41EED296FFEA200DC30C1 /* SceneDelegate.swift */; };
 		19B41EF5296FFEA300DC30C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19B41EF4296FFEA300DC30C1 /* Assets.xcassets */; };
 		19B41F042970011800DC30C1 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F032970011800DC30C1 /* TabBarController.swift */; };
-		19B41F072970013000DC30C1 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 19B41F062970013000DC30C1 /* SnapKit */; };
 		19B41F092970017100DC30C1 /* NowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F082970017100DC30C1 /* NowPlayingView.swift */; };
 		19B41F172970022E00DC30C1 /* PlayListHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F162970022E00DC30C1 /* PlayListHeaderView.swift */; };
 		19B41F192970023D00DC30C1 /* PlayListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B41F182970023D00DC30C1 /* PlayListTableViewCell.swift */; };
@@ -40,11 +41,11 @@
 		19B827372983F97400B2AB9C /* NewPlayerVIewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B827362983F97400B2AB9C /* NewPlayerVIewController.swift */; };
 		19B8273B2983F9D700B2AB9C /* PlayerLowerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B8273A2983F9D700B2AB9C /* PlayerLowerView.swift */; };
 		19BAE879297BB2DD0074A5F2 /* PlayListMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19BAE878297BB2DD0074A5F2 /* PlayListMenu.swift */; };
-		19D775D32978046A00252A52 /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 19D775D22978046A00252A52 /* DSWaveformImage */; };
-		3DC72E23D6975446F4DE91E8 /* Pods_ListenApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36D110751DE6A5A000243E42 /* Pods_ListenApp.framework */; };
+		DE4B98F745CB835BD69AACC3 /* Pods_ListenApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F038FB0BCC0688D98E66305 /* Pods_ListenApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E921702F2A157FADD8E28C5 /* Pods-ListenApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ListenApp.debug.xcconfig"; path = "Target Support Files/Pods-ListenApp/Pods-ListenApp.debug.xcconfig"; sourceTree = "<group>"; };
 		19015320298FD2D800BDB429 /* StackViewSubViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewSubViews.swift; sourceTree = "<group>"; };
 		19201FC929AC81B400B36283 /* RateSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateSettingViewController.swift; sourceTree = "<group>"; };
 		19201FCD29ACFA3D00B36283 /* hexUIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexUIColor.swift; sourceTree = "<group>"; };
@@ -79,9 +80,8 @@
 		19B827362983F97400B2AB9C /* NewPlayerVIewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPlayerVIewController.swift; sourceTree = "<group>"; };
 		19B8273A2983F9D700B2AB9C /* PlayerLowerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerLowerView.swift; sourceTree = "<group>"; };
 		19BAE878297BB2DD0074A5F2 /* PlayListMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListMenu.swift; sourceTree = "<group>"; };
-		36D110751DE6A5A000243E42 /* Pods_ListenApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ListenApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7F26B11B73A0C3D37BD988AE /* Pods-ListenApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ListenApp.debug.xcconfig"; path = "Target Support Files/Pods-ListenApp/Pods-ListenApp.debug.xcconfig"; sourceTree = "<group>"; };
-		E95A5ACEE65507482DBFCF52 /* Pods-ListenApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ListenApp.release.xcconfig"; path = "Target Support Files/Pods-ListenApp/Pods-ListenApp.release.xcconfig"; sourceTree = "<group>"; };
+		1CE4F9EE70AE3326735A37CF /* Pods-ListenApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ListenApp.release.xcconfig"; path = "Target Support Files/Pods-ListenApp/Pods-ListenApp.release.xcconfig"; sourceTree = "<group>"; };
+		3F038FB0BCC0688D98E66305 /* Pods_ListenApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ListenApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,9 +89,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				19D775D32978046A00252A52 /* DSWaveformImage in Frameworks */,
-				19B41F072970013000DC30C1 /* SnapKit in Frameworks */,
-				3DC72E23D6975446F4DE91E8 /* Pods_ListenApp.framework in Frameworks */,
+				19657EC129DD9159006FFCCC /* SnapKit in Frameworks */,
+				19657EBE29DD9139006FFCCC /* DSWaveformImage in Frameworks */,
+				DE4B98F745CB835BD69AACC3 /* Pods_ListenApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,7 +104,7 @@
 				19B41EEA296FFEA200DC30C1 /* ListenApp */,
 				19B41EE9296FFEA200DC30C1 /* Products */,
 				B56D132C95873565FEEDE6D4 /* Pods */,
-				E54A3B50B0277DC9548E3F2B /* Frameworks */,
+				9E96120062C538C351C90D87 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,21 +212,21 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		9E96120062C538C351C90D87 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3F038FB0BCC0688D98E66305 /* Pods_ListenApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B56D132C95873565FEEDE6D4 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				7F26B11B73A0C3D37BD988AE /* Pods-ListenApp.debug.xcconfig */,
-				E95A5ACEE65507482DBFCF52 /* Pods-ListenApp.release.xcconfig */,
+				0E921702F2A157FADD8E28C5 /* Pods-ListenApp.debug.xcconfig */,
+				1CE4F9EE70AE3326735A37CF /* Pods-ListenApp.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		E54A3B50B0277DC9548E3F2B /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				36D110751DE6A5A000243E42 /* Pods_ListenApp.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,11 +236,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 19B41EFC296FFEA300DC30C1 /* Build configuration list for PBXNativeTarget "ListenApp" */;
 			buildPhases = (
-				E8A3CCC52AEB691B91532997 /* [CP] Check Pods Manifest.lock */,
+				0B564725B6D5D78AC9688306 /* [CP] Check Pods Manifest.lock */,
 				19B41EE4296FFEA200DC30C1 /* Sources */,
 				19B41EE5296FFEA200DC30C1 /* Frameworks */,
 				19B41EE6296FFEA200DC30C1 /* Resources */,
-				30F5A6CE66624D67B576A5E1 /* [CP] Embed Pods Frameworks */,
+				98084AD03383719F06931721 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -248,8 +248,8 @@
 			);
 			name = ListenApp;
 			packageProductDependencies = (
-				19B41F062970013000DC30C1 /* SnapKit */,
-				19D775D22978046A00252A52 /* DSWaveformImage */,
+				19657EBD29DD9139006FFCCC /* DSWaveformImage */,
+				19657EC029DD9159006FFCCC /* SnapKit */,
 			);
 			productName = ListenApp;
 			productReference = 19B41EE8296FFEA200DC30C1 /* ListenApp.app */;
@@ -280,8 +280,8 @@
 			);
 			mainGroup = 19B41EDF296FFEA200DC30C1;
 			packageReferences = (
-				19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */,
-				19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
+				19657EBC29DD9139006FFCCC /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
+				19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit.git" */,
 			);
 			productRefGroup = 19B41EE9296FFEA200DC30C1 /* Products */;
 			projectDirPath = "";
@@ -304,24 +304,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		30F5A6CE66624D67B576A5E1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ListenApp/Pods-ListenApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ListenApp/Pods-ListenApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ListenApp/Pods-ListenApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E8A3CCC52AEB691B91532997 /* [CP] Check Pods Manifest.lock */ = {
+		0B564725B6D5D78AC9688306 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -341,6 +324,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		98084AD03383719F06931721 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ListenApp/Pods-ListenApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ListenApp/Pods-ListenApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ListenApp/Pods-ListenApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -503,7 +503,7 @@
 		};
 		19B41EFD296FFEA300DC30C1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F26B11B73A0C3D37BD988AE /* Pods-ListenApp.debug.xcconfig */;
+			baseConfigurationReference = 0E921702F2A157FADD8E28C5 /* Pods-ListenApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -532,7 +532,7 @@
 		};
 		19B41EFE296FFEA300DC30C1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E95A5ACEE65507482DBFCF52 /* Pods-ListenApp.release.xcconfig */;
+			baseConfigurationReference = 1CE4F9EE70AE3326735A37CF /* Pods-ListenApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -583,15 +583,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
-		19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */ = {
+		19657EBC29DD9139006FFCCC /* XCRemoteSwiftPackageReference "DSWaveformImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dmrschmidt/DSWaveformImage";
 			requirement = {
@@ -599,18 +591,26 @@
 				minimumVersion = 9.0.0;
 			};
 		};
+		19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit.git" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		19B41F062970013000DC30C1 /* SnapKit */ = {
+		19657EBD29DD9139006FFCCC /* DSWaveformImage */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 19B41F052970013000DC30C1 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
-		};
-		19D775D22978046A00252A52 /* DSWaveformImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 19D775D12978046A00252A52 /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
+			package = 19657EBC29DD9139006FFCCC /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
 			productName = DSWaveformImage;
+		};
+		19657EC029DD9159006FFCCC /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19657EBF29DD9159006FFCCC /* XCRemoteSwiftPackageReference "SnapKit.git" */;
+			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

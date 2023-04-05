@@ -59,7 +59,7 @@
 		199F3AD829792141001C6A3B /* CoreDataFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFunction.swift; sourceTree = "<group>"; };
 		19A615D4299BAB1B00766660 /* MyWaveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWaveImage.swift; sourceTree = "<group>"; };
 		19A717E829A7B99A004E3081 /* AdminUserDefault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminUserDefault.swift; sourceTree = "<group>"; };
-		19B41EE8296FFEA200DC30C1 /* ListenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ListenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		19B41EE8296FFEA200DC30C1 /* Onpeat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Onpeat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19B41EEB296FFEA200DC30C1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		19B41EED296FFEA200DC30C1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		19B41EF4296FFEA300DC30C1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 		19B41EE9296FFEA200DC30C1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				19B41EE8296FFEA200DC30C1 /* ListenApp.app */,
+				19B41EE8296FFEA200DC30C1 /* Onpeat.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -232,9 +232,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		19B41EE7296FFEA200DC30C1 /* ListenApp */ = {
+		19B41EE7296FFEA200DC30C1 /* Onpeat */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 19B41EFC296FFEA300DC30C1 /* Build configuration list for PBXNativeTarget "ListenApp" */;
+			buildConfigurationList = 19B41EFC296FFEA300DC30C1 /* Build configuration list for PBXNativeTarget "Onpeat" */;
 			buildPhases = (
 				0B564725B6D5D78AC9688306 /* [CP] Check Pods Manifest.lock */,
 				19B41EE4296FFEA200DC30C1 /* Sources */,
@@ -246,13 +246,13 @@
 			);
 			dependencies = (
 			);
-			name = ListenApp;
+			name = Onpeat;
 			packageProductDependencies = (
 				19657EBD29DD9139006FFCCC /* DSWaveformImage */,
 				19657EC029DD9159006FFCCC /* SnapKit */,
 			);
 			productName = ListenApp;
-			productReference = 19B41EE8296FFEA200DC30C1 /* ListenApp.app */;
+			productReference = 19B41EE8296FFEA200DC30C1 /* Onpeat.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -287,7 +287,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				19B41EE7296FFEA200DC30C1 /* ListenApp */,
+				19B41EE7296FFEA200DC30C1 /* Onpeat */,
 			);
 		};
 /* End PBXProject section */
@@ -581,7 +581,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		19B41EFC296FFEA300DC30C1 /* Build configuration list for PBXNativeTarget "ListenApp" */ = {
+		19B41EFC296FFEA300DC30C1 /* Build configuration list for PBXNativeTarget "Onpeat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				19B41EFD296FFEA300DC30C1 /* Debug */,
